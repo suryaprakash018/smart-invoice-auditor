@@ -1,242 +1,691 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Invoice & Contract Compliance Auditor</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Veritas AP | Autonomous Vendor Contract Compliance & HITL Auditor</title>
+  
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    code, pre { font-family: 'JetBrains Mono', monospace; }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-
-  <!-- Navigation Bar -->
-  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center font-extrabold text-white text-lg shadow-lg shadow-indigo-500/20">
-          AI
-        </div>
-        <div>
-          <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-            InvoiceAudit<span class="text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded-full font-semibold">HITL Agent</span>
-          </h1>
-          <p class="text-xs text-slate-400">Autonomous Contract Compliance & Discrepancy Prevention</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <div class="text-right hidden sm:block">
-          <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Active Contract</div>
-          <div class="text-sm font-semibold text-slate-200">CloudScale Innovations (MSA-2025-CS01)</div>
-        </div>
-        <div class="h-8 w-px bg-slate-800 hidden sm:block"></div>
-        <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium">
-          <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Engine Online
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
-
-    <!-- KPI / Metrics Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-sm">
-        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Overcharges Prevented</div>
-        <div id="statSavings" class="text-3xl font-extrabold text-emerald-400">$0.00</div>
-        <div class="text-xs text-slate-500 mt-2 flex items-center gap-1">
-          <svg class="w-4 h-4 text-emerald-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-          Direct cash leakage protected via HITL
-        </div>
-      </div>
-
-      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-sm">
-        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Contract Compliance SLA</div>
-        <div class="text-3xl font-extrabold text-cyan-400">100% Deterministic</div>
-        <div class="text-xs text-slate-500 mt-2">Zero hallucinated financial approvals</div>
-      </div>
-
-      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-sm">
-        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Decisions Handled</div>
-        <div id="statDecisions" class="text-3xl font-extrabold text-indigo-400">0</div>
-        <div class="text-xs text-slate-500 mt-2">Human reviews logged with legal audit trail</div>
-      </div>
-    </div>
-
-    <!-- Action Triggers / Quick Demo Controls -->
-    <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div>
-          <h2 class="text-base font-semibold text-white">Select or Upload Invoice to Audit</h2>
-          <p class="text-sm text-slate-400">Simulate incoming vendor invoices or upload a custom PDF document.</p>
-        </div>
-        <div class="flex flex-wrap items-center gap-3">
-          <button onclick="auditSample('overcharged')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500/20 to-orange-500/20 hover:from-red-500/30 hover:to-orange-500/30 border border-red-500/40 text-red-300 font-semibold text-sm transition flex items-center gap-2 shadow-sm">
-            <span>🚨</span>
-            Audit Sample: Overcharged Invoice (+$1,550)
-          </button>
-          <button onclick="auditSample('valid')" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-slate-300 font-semibold text-sm transition flex items-center gap-2">
-            <span>✅</span>
-            Audit Sample: Compliant Invoice
-          </button>
-          <label class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition cursor-pointer flex items-center gap-2 shadow-lg shadow-indigo-600/20">
-            <span>📄</span> Upload Custom PDF
-            <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="uploadPdf(event)">
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div id="loadingIndicator" class="hidden py-16 text-center">
-      <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-indigo-500 border-t-transparent"></div>
-      <p class="text-slate-400 text-sm mt-4 font-medium">Extracting line items & auditing contract compliance...</p>
-    </div>
-
-    <!-- Audit Results Workspace -->
-    <div id="resultsWorkspace" class="hidden space-y-6">
-
-      <!-- Status Banner -->
-      <div id="statusBanner" class="p-6 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-3">
-            <span id="statusBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></span>
-            <h3 id="invoiceHeader" class="text-xl font-bold text-white"></h3>
-          </div>
-          <p id="statusSubtitle" class="text-sm mt-1"></p>
-        </div>
-        <div class="text-right">
-          <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Total Overcharge Detected</div>
-          <div id="overchargeHeader" class="text-3xl font-black"></div>
-        </div>
-      </div>
-
-      <!-- Discrepancies & Line Items Comparison -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- Line Items Table (7 cols) -->
-        <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-          <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center justify-between">
-            <span>Billed Invoice Breakdown</span>
-            <span id="lineItemsCount" class="text-xs font-normal text-slate-500"></span>
-          </h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead class="text-xs text-slate-400 uppercase border-b border-slate-800 bg-slate-950/40">
-                <tr>
-                  <th class="py-3 px-3">Description</th>
-                  <th class="py-3 px-2 text-right">Qty</th>
-                  <th class="py-3 px-2 text-right">Billed Rate</th>
-                  <th class="py-3 px-3 text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody id="lineItemsBody" class="divide-y divide-slate-800/60"></tbody>
-            </table>
-          </div>
-
-          <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center text-sm font-semibold">
-            <span class="text-slate-400">Total Billed:</span>
-            <span id="totalBilledText" class="text-lg text-white font-bold"></span>
-          </div>
-        </div>
-
-        <!-- Discrepancies Details (5 cols) -->
-        <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
-          <div>
-            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">
-              Contract Compliance Findings
-            </h3>
-            <div id="discrepanciesList" class="space-y-3"></div>
-          </div>
-
-          <!-- Quick Contract Reference -->
-          <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 space-y-1">
-            <div class="font-semibold text-slate-300">Contracted Rate Card (MSA-2025-CS01):</div>
-            <div>• Senior DevOps Engineer: $80.00/hr (Max 160 hrs/mo)</div>
-            <div>• QA Automation Engineer: $55.00/hr</div>
-            <div>• Unapproved Surcharges: Prohibited without written Change Order</div>
-            <div>• Payment Terms: Net 30</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Human-in-the-Loop Action Center (Shown when FLAGGED) -->
-      <div id="hitlActionSection" class="bg-gradient-to-b from-indigo-950/30 to-slate-900/90 border border-indigo-500/30 rounded-2xl p-6 shadow-xl">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="h-8 w-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
-            👤
-          </div>
-          <div>
-            <h3 class="text-base font-bold text-white">Human-in-the-Loop (HITL) Action Center</h3>
-            <p class="text-xs text-slate-400">Compliance requires human sign-off before financial rejection or payment release.</p>
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Auto-Drafted Vendor Dispute Notice (Editable)
-            </label>
-            <textarea id="disputeEmailInput" rows="7" class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 transition leading-relaxed"></textarea>
-          </div>
-
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-            <div class="text-xs text-slate-400">
-              Select one action to commit this audit to the legal record:
-            </div>
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-              <button onclick="commitDecision('APPROVE_OVERCHARGE')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition">
-                Approve Exception
-              </button>
-              <button onclick="commitDecision('REJECT')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-semibold border border-red-500/40 transition">
-                Reject Invoice
-              </button>
-              <button onclick="commitDecision('DISPUTE_AND_EMAIL')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
-                <span>✉️</span> Dispatch Dispute Notice
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Live Audit History / Activity Log -->
-    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
-      <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center justify-between">
-        <span>Compliance Activity Log</span>
-        <span class="text-xs text-slate-500">Immutable Ledger</span>
-      </h3>
-      <div id="activityLog" class="space-y-3">
-        <div class="text-xs text-slate-500 italic py-2">No actions recorded yet this session. Run an audit to record a decision.</div>
-      </div>
-    </div>
-
-  </main>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind & Chart.js & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <script>
-    let currentAuditData = null;
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            surface: {
+              DEFAULT: '#0B0F19',
+              card: '#111827',
+              border: '#1F2937',
+              hover: '#1E293B',
+            }
+          }
+        }
+      }
+    }
+  </script>
 
+  <style>
+    /* Custom scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0B0F19; }
+    ::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+    .glow-effect {
+      box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-surface text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="w-full md:w-64 bg-[#080C14] border-r border-surface-border flex-shrink-0 flex flex-col justify-between p-4 z-40">
+    <div class="space-y-6">
+      <!-- App Brand -->
+      <div class="flex items-center gap-3 px-2 py-2">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-brand-500/25">
+          <i data-lucide="shield-alert" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold tracking-tight text-white text-base">Veritas<span class="text-brand-500">AP</span></span>
+            <span class="text-[10px] font-bold bg-brand-500/20 text-brand-400 px-1.5 py-0.5 rounded border border-brand-500/30">ENTERPRISE</span>
+          </div>
+          <p class="text-[11px] text-slate-400">Autonomous Compliance</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1">
+        <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-600/10 border border-brand-500/20 shadow-sm transition">
+          <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-400"></i>
+          <span>Overview & Analytics</span>
+        </button>
+
+        <button onclick="switchTab('audit-studio')" id="nav-audit-studio" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition">
+          <i data-lucide="scan-line" class="w-4 h-4 text-slate-400"></i>
+          <span>Audit Studio (HITL)</span>
+        </button>
+
+        <button onclick="switchTab('contracts')" id="nav-contracts" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition">
+          <i data-lucide="file-check-2" class="w-4 h-4 text-slate-400"></i>
+          <span>Contract Vault</span>
+        </button>
+
+        <button onclick="switchTab('ledger')" id="nav-ledger" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition">
+          <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+          <span>Compliance Ledger</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Active Workspace & User Profile -->
+    <div class="pt-4 border-t border-surface-border space-y-3">
+      <div class="px-3 py-2.5 rounded-xl bg-slate-900/80 border border-surface-border">
+        <div class="flex items-center justify-between text-xs mb-1">
+          <span class="text-slate-400 font-medium">Compliance SLA</span>
+          <span class="text-emerald-400 font-bold">100%</span>
+        </div>
+        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+          <div class="bg-emerald-500 h-full w-full rounded-full"></div>
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1.5 flex items-center gap-1">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Deterministic Verification Active
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 px-2 py-1">
+        <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-white border border-indigo-400/30">
+          SP
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-slate-200 truncate">Surya Prakash</div>
+          <div class="text-[10px] text-slate-500 truncate">Lead AP Compliance Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+    <!-- TOP HEADER -->
+    <header class="h-16 border-b border-surface-border bg-[#080C14]/70 backdrop-blur sticky top-0 z-30 px-6 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <h2 id="pageTitle" class="text-sm font-bold text-white tracking-wide uppercase">Overview & Analytics</h2>
+        <span class="h-4 w-px bg-surface-border"></span>
+        <div class="flex items-center gap-2 text-xs text-slate-400">
+          <span>Active Contract Vault:</span>
+          <span class="font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20 font-semibold">CloudScale MSA-2025</span>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-3">
+        <button onclick="auditSample('overcharged')" class="px-3.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-red-400"></i>
+          <span>Demo: Overcharge Discrepancy (+$1,550)</span>
+        </button>
+
+        <button onclick="auditSample('valid')" class="px-3.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Demo: Compliant ($0)</span>
+        </button>
+
+        <label class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-brand-600/30">
+          <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+          <span>Upload PDF</span>
+          <input type="file" id="pdfUploadInput" accept="application/pdf" class="hidden" onchange="uploadPdf(event)">
+        </label>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="p-6 md:p-8 space-y-8 flex-1 max-w-7xl mx-auto w-full">
+
+      <!-- ============================================== -->
+      <!-- TAB 1: OVERVIEW & ANALYTICS                     -->
+      <!-- ============================================== -->
+      <div id="tab-analytics" class="tab-content space-y-6">
+
+        <!-- STAT METRIC CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Stat 1 -->
+          <div class="p-5 rounded-2xl bg-surface-card border border-surface-border shadow-sm hover:border-slate-700 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">
+              <span>Overcharges Blocked</span>
+              <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="shield-check" class="w-4 h-4"></i></span>
+            </div>
+            <div id="statSavingsOverview" class="text-2xl font-extrabold text-emerald-400 font-mono tracking-tight">$0.00</div>
+            <div class="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
+              <span class="text-emerald-400 font-semibold flex items-center">↑ 100%</span>
+              <span>Direct cash leakage arrested</span>
+            </div>
+          </div>
+
+          <!-- Stat 2 -->
+          <div class="p-5 rounded-2xl bg-surface-card border border-surface-border shadow-sm hover:border-slate-700 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">
+              <span>Invoices Processed</span>
+              <span class="p-1.5 rounded-lg bg-brand-500/10 text-brand-400"><i data-lucide="file-text" class="w-4 h-4"></i></span>
+            </div>
+            <div id="statAuditedCount" class="text-2xl font-extrabold text-white font-mono tracking-tight">0</div>
+            <div class="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5">
+              <span class="text-brand-400 font-semibold">Real-time</span>
+              <span>Multimodal extraction latency ~1.2s</span>
+            </div>
+          </div>
+
+          <!-- Stat 3 -->
+          <div class="p-5 rounded-2xl bg-surface-card border border-surface-border shadow-sm hover:border-slate-700 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">
+              <span>Audit Exception Rate</span>
+              <span class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="alert-circle" class="w-4 h-4"></i></span>
+            </div>
+            <div id="statExceptionRate" class="text-2xl font-extrabold text-amber-400 font-mono tracking-tight">0.0%</div>
+            <div class="text-[11px] text-slate-400 mt-2">Vendor billing anomaly frequency</div>
+          </div>
+
+          <!-- Stat 4 -->
+          <div class="p-5 rounded-2xl bg-surface-card border border-surface-border shadow-sm hover:border-slate-700 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">
+              <span>HITL Interventions</span>
+              <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400"><i data-lucide="user-check" class="w-4 h-4"></i></span>
+            </div>
+            <div id="statDecisionsCount" class="text-2xl font-extrabold text-indigo-400 font-mono tracking-tight">0</div>
+            <div class="text-[11px] text-slate-400 mt-2">Manual dispute sign-offs logged</div>
+          </div>
+        </div>
+
+        <!-- CHARTS ROW -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Chart 1: Monthly Financial Leakage Prevented (8 cols) -->
+          <div class="lg:col-span-8 p-6 rounded-2xl bg-surface-card border border-surface-border space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Financial Leakage vs. Prevented Overcharges</h3>
+                <p class="text-xs text-slate-400">Monthly billing volume compared against contractual audit enforcement</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 font-mono">Q1 2026 Fiscal</span>
+            </div>
+            <div class="h-64">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Discrepancy Breakdown by Violation Type (4 cols) -->
+          <div class="lg:col-span-4 p-6 rounded-2xl bg-surface-card border border-surface-border space-y-4">
+            <div>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Violation Breakdown</h3>
+              <p class="text-xs text-slate-400">Distribution of detected billing discrepancies</p>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="breakdownChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY TEASER -->
+        <div class="p-6 rounded-2xl bg-surface-card border border-surface-border space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="clock" class="w-4 h-4 text-brand-400"></i>
+              <span>Live Compliance Stream</span>
+            </h3>
+            <button onclick="switchTab('ledger')" class="text-xs text-brand-400 hover:text-brand-300 font-semibold flex items-center gap-1">
+              <span>View Full Ledger</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <div id="overviewStream" class="divide-y divide-surface-border">
+            <div class="py-3 text-xs text-slate-500 italic">No audits recorded yet in this session. Trigger a sample above to view live events.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============================================== -->
+      <!-- TAB 2: AUDIT STUDIO (HITL WORKSPACE)            -->
+      <!-- ============================================== -->
+      <div id="tab-audit-studio" class="tab-content hidden space-y-6">
+
+        <!-- Empty state placeholder when no audit run yet -->
+        <div id="auditEmptyState" class="py-16 text-center rounded-2xl bg-surface-card border border-dashed border-surface-border space-y-4">
+          <div class="h-16 w-16 mx-auto rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-400">
+            <i data-lucide="file-search" class="w-8 h-8"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">No Invoice Loaded for Inspection</h3>
+            <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">
+              Select one of the sample presets in the top header or upload your own PDF invoice to trigger the multimodal audit engine.
+            </p>
+          </div>
+          <div class="flex justify-center gap-3 pt-2">
+            <button onclick="auditSample('overcharged')" class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-xs font-semibold transition flex items-center gap-2">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              Audit Overcharged Sample
+            </button>
+            <button onclick="auditSample('valid')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              Audit Compliant Sample
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Audit Results Container -->
+        <div id="auditActiveState" class="hidden space-y-6">
+
+          <!-- EXECUTIVE AUDIT BANNER -->
+          <div id="studioBanner" class="p-6 rounded-2xl border transition-all duration-300 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-xl">
+            <div class="space-y-1">
+              <div class="flex items-center gap-3">
+                <span id="studioBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider font-mono"></span>
+                <h3 id="studioInvoiceTitle" class="text-xl font-bold text-white tracking-tight"></h3>
+              </div>
+              <p id="studioSubtitle" class="text-xs"></p>
+            </div>
+            <div class="flex items-center gap-6 border-t lg:border-t-0 lg:border-l border-slate-800 pt-4 lg:pt-0 lg:pl-6">
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Billed Total</div>
+                <div id="studioBilledTotal" class="text-xl font-bold text-white font-mono"></div>
+              </div>
+              <div class="h-8 w-px bg-slate-800"></div>
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Authorized SLA Total</div>
+                <div id="studioExpectedTotal" class="text-xl font-bold text-emerald-400 font-mono"></div>
+              </div>
+              <div class="h-8 w-px bg-slate-800"></div>
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Net Discrepancy</div>
+                <div id="studioOverchargeTotal" class="text-2xl font-black font-mono"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DUAL PANE INSPECTION STUDIO -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- LEFT PANE: Billed Document Line Items (7 cols) -->
+            <div class="lg:col-span-7 p-6 rounded-2xl bg-surface-card border border-surface-border space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-surface-border">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="layers" class="w-4 h-4 text-brand-400"></i>
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Extracted Document Line Items</h4>
+                </div>
+                <span class="text-xs font-mono text-slate-500">Gemini 2.5 Multimodal Extraction</span>
+              </div>
+
+              <!-- Table -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="text-[11px] text-slate-400 uppercase border-b border-slate-800 bg-slate-900/60 font-semibold">
+                    <tr>
+                      <th class="py-3 px-3">Description</th>
+                      <th class="py-3 px-2 text-right">Units/Hrs</th>
+                      <th class="py-3 px-2 text-right">Billed Rate</th>
+                      <th class="py-3 px-3 text-right">Total Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studioLineItemsBody" class="divide-y divide-surface-border font-mono"></tbody>
+                </table>
+              </div>
+
+              <div class="pt-3 border-t border-surface-border flex justify-between items-center text-xs">
+                <span class="text-slate-400 font-sans">Payment Terms Specified: <span id="studioPaymentTerms" class="font-bold text-slate-200"></span></span>
+                <span class="text-slate-400 font-sans">Subtotal: <span id="studioSubtotal" class="font-mono text-white font-bold"></span></span>
+              </div>
+            </div>
+
+            <!-- RIGHT PANE: Contract Matching & Discrepancies (5 cols) -->
+            <div class="lg:col-span-5 p-6 rounded-2xl bg-surface-card border border-surface-border flex flex-col justify-between space-y-4">
+              <div>
+                <div class="flex items-center justify-between pb-3 border-b border-surface-border mb-4">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Contract Compliance Violations</h4>
+                  </div>
+                  <span id="violationsCount" class="text-xs px-2 py-0.5 rounded-full font-bold"></span>
+                </div>
+
+                <div id="studioDiscrepanciesContainer" class="space-y-3"></div>
+              </div>
+
+              <!-- Contract Rule Reference Card -->
+              <div class="p-4 rounded-xl bg-slate-900/80 border border-surface-border text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                    <i data-lucide="scale" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    Governing Legal Agreement:
+                  </span>
+                  <span class="font-mono text-indigo-400 font-semibold">MSA-2025-CS01</span>
+                </div>
+                <div class="text-[11px] text-slate-400 space-y-1 pt-1 border-t border-slate-800">
+                  <p>• <strong>Senior DevOps Engineer:</strong> $80.00/hr (Cap: 160 hrs/mo)</p>
+                  <p>• <strong>QA Automation Engineer:</strong> $55.00/hr</p>
+                  <p>• <strong>Unapproved Surcharges:</strong> Strict zero-tolerance without Change Order</p>
+                  <p>• <strong>Payment Terms:</strong> Net 30 days mandatory</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- HUMAN-IN-THE-LOOP ACTION CENTER (When FLAGGED) -->
+          <div id="studioHitlSection" class="p-6 rounded-2xl bg-gradient-to-b from-brand-950/20 via-surface-card to-surface-card border border-brand-500/30 shadow-2xl space-y-4 glow-effect">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
+                  <i data-lucide="user-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="text-base font-bold text-white tracking-tight">Human-in-the-Loop (HITL) Action Center</h4>
+                  <p class="text-xs text-slate-400">Financial compliance protocol mandates human sign-off prior to dispute delivery or AP block.</p>
+                </div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-amber-400 animate-ping"></span>
+                Action Required
+              </span>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">
+                Auto-Drafted Formal Legal Dispute Letter (Customizable)
+              </label>
+              <textarea id="studioDisputeDraft" rows="8" class="w-full bg-[#080C14] border border-surface-border rounded-xl p-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-brand-500 leading-relaxed transition"></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-surface-border">
+              <div class="text-xs text-slate-400">
+                Decision will be committed to the immutable compliance ledger with your admin ID.
+              </div>
+              <div class="flex items-center gap-3 w-full sm:w-auto">
+                <button onclick="commitDecision('APPROVE_OVERCHARGE')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                  <span>Grant Exception</span>
+                </button>
+                <button onclick="commitDecision('REJECT')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-bold border border-red-500/40 transition flex items-center gap-2">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                  <span>Reject Invoice</span>
+                </button>
+                <button onclick="commitDecision('DISPUTE_AND_EMAIL')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-extrabold shadow-lg shadow-brand-600/30 transition flex items-center gap-2">
+                  <i data-lucide="send" class="w-4 h-4"></i>
+                  <span>Dispatch Dispute & AP Hold</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ============================================== -->
+      <!-- TAB 3: CONTRACT VAULT                           -->
+      <!-- ============================================== -->
+      <div id="tab-contracts" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white">Active Master Services Agreements (MSAs)</h3>
+            <p class="text-xs text-slate-400">Contractual terms, agreed rate cards, and change order rules governing automated audits.</p>
+          </div>
+          <button onclick="showToast('Contract Upload', 'Contact Procurement to register new Master Service Agreements.', 'info')" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-2 shadow-md shadow-brand-600/20">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Register New Contract</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Contract Card 1 -->
+          <div class="p-6 rounded-2xl bg-surface-card border border-surface-border space-y-4 hover:border-slate-700 transition">
+            <div class="flex items-center justify-between pb-3 border-b border-surface-border">
+              <div>
+                <span class="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20">MSA-2025-CS01</span>
+                <h4 class="text-base font-bold text-white mt-1">CloudScale Innovations</h4>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">ACTIVE</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-xs">
+              <div>
+                <span class="text-slate-500">Effective Date:</span>
+                <div class="font-mono text-slate-200 font-semibold">2025-01-01</div>
+              </div>
+              <div>
+                <span class="text-slate-500">Expiration Date:</span>
+                <div class="font-mono text-slate-200 font-semibold">2026-12-31</div>
+              </div>
+              <div>
+                <span class="text-slate-500">Payment Terms:</span>
+                <div class="font-bold text-slate-200">Net 30 Days</div>
+              </div>
+              <div>
+                <span class="text-slate-500">Dispute Window:</span>
+                <div class="font-bold text-slate-200">45 Days</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Approved Rate Cards:</div>
+              <div class="space-y-1.5 text-xs font-mono">
+                <div class="p-2 rounded-lg bg-[#080C14] flex justify-between text-slate-300">
+                  <span>Senior DevOps Engineer</span>
+                  <span class="font-bold text-emerald-400">$80.00/hr (Max 160 hrs)</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#080C14] flex justify-between text-slate-300">
+                  <span>QA Automation Engineer</span>
+                  <span class="font-bold text-emerald-400">$55.00/hr (Max 160 hrs)</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#080C14] flex justify-between text-slate-300">
+                  <span>Cloud Solutions Architect</span>
+                  <span class="font-bold text-emerald-400">$120.00/hr (Max 80 hrs)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contract Card 2 (Mock second contract) -->
+          <div class="p-6 rounded-2xl bg-surface-card border border-surface-border space-y-4 hover:border-slate-700 transition opacity-80">
+            <div class="flex items-center justify-between pb-3 border-b border-surface-border">
+              <div>
+                <span class="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">MSA-2024-NX09</span>
+                <h4 class="text-base font-bold text-white mt-1">Nexus Data Systems</h4>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-800 text-slate-400">RENEWAL DUE</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-xs">
+              <div>
+                <span class="text-slate-500">Effective Date:</span>
+                <div class="font-mono text-slate-200 font-semibold">2024-06-01</div>
+              </div>
+              <div>
+                <span class="text-slate-500">Expiration Date:</span>
+                <div class="font-mono text-slate-200 font-semibold">2025-06-01</div>
+              </div>
+              <div>
+                <span class="text-slate-500">Payment Terms:</span>
+                <div class="font-bold text-slate-200">Net 45 Days</div>
+              </div>
+              <div>
+                <span class="text-slate-500">Agreed Surcharge:</span>
+                <div class="font-bold text-slate-200">None Permitted</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Approved Rate Cards:</div>
+              <div class="space-y-1.5 text-xs font-mono">
+                <div class="p-2 rounded-lg bg-[#080C14] flex justify-between text-slate-300">
+                  <span>Staff Data Engineer</span>
+                  <span class="font-bold text-emerald-400">$130.00/hr</span>
+                </div>
+                <div class="p-2 rounded-lg bg-[#080C14] flex justify-between text-slate-300">
+                  <span>MLOps Infrastructure Consultant</span>
+                  <span class="font-bold text-emerald-400">$145.00/hr</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- TAB 4: COMPLIANCE LEDGER                        -->
+      <!-- ============================================== -->
+      <div id="tab-ledger" class="tab-content hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white">Immutable Compliance Audit Ledger</h3>
+            <p class="text-xs text-slate-400">Chronological cryptographic record of all automated audits, human decisions, and financial dispute dispatches.</p>
+          </div>
+          <button onclick="exportLedgerCSV()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Export CSV</span>
+          </button>
+        </div>
+
+        <div class="rounded-2xl bg-surface-card border border-surface-border overflow-hidden">
+          <table class="w-full text-left text-xs">
+            <thead class="text-[11px] text-slate-400 uppercase bg-[#080C14] border-b border-surface-border font-semibold">
+              <tr>
+                <th class="py-3.5 px-4">Invoice #</th>
+                <th class="py-3.5 px-4">Vendor</th>
+                <th class="py-3.5 px-3">Disputed Amount</th>
+                <th class="py-3.5 px-3">HITL Action Taken</th>
+                <th class="py-3.5 px-4">Status Summary</th>
+              </tr>
+            </thead>
+            <tbody id="fullLedgerBody" class="divide-y divide-surface-border font-mono">
+              <tr>
+                <td colspan="5" class="py-8 text-center text-slate-500 font-sans italic">No decisions logged yet. Run an audit in the Studio to generate records.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- JAVASCRIPT LOGIC & TELEMETRY -->
+  <script>
+    // State
+    let currentAuditData = null;
+    let auditHistory = [];
+    let totalSavingsBlocked = 0;
+    let trendChartInstance = null;
+    let breakdownChartInstance = null;
+
+    // Initialize Lucide icons
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      initCharts();
+    });
+
+    // Navigation Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.className = "nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition";
+      });
+
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.classList.remove('hidden');
+
+      const navBtn = document.getElementById(`nav-${tabId}`);
+      if (navBtn) {
+        navBtn.className = "nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-600/10 border border-brand-500/20 shadow-sm transition";
+      }
+
+      // Title update
+      const titles = {
+        'analytics': 'Overview & Analytics',
+        'audit-studio': 'Document Audit Studio (HITL)',
+        'contracts': 'Contract Vault & Rate Cards',
+        'ledger': 'Compliance Ledger & Audit Trail'
+      };
+      document.getElementById('pageTitle').textContent = titles[tabId] || 'Overview';
+      lucide.createIcons();
+    }
+
+    // Modern Toast Notification
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const colors = {
+        success: 'border-emerald-500/40 bg-emerald-950/90 text-emerald-300',
+        error: 'border-red-500/40 bg-red-950/90 text-red-300',
+        info: 'border-brand-500/40 bg-brand-950/90 text-brand-300',
+      };
+
+      toast.className = `pointer-events-auto p-4 rounded-xl border ${colors[type]} shadow-2xl flex items-start gap-3 w-80 backdrop-blur transition-all duration-300 transform translate-x-10 opacity-0`;
+      toast.innerHTML = `
+        <div class="flex-1">
+          <div class="text-xs font-bold text-white uppercase tracking-wider">${title}</div>
+          <div class="text-xs text-slate-300 mt-1 leading-snug">${message}</div>
+        </div>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-x-10', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('translate-x-10', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Audit Sample Invoices
     async function auditSample(type) {
-      showLoading(true);
+      showToast("Ingesting Document", `Auditing sample ${type} invoice against MSA...`, "info");
       try {
         const res = await fetch(`/api/audit-sample/${type}`, { method: 'POST' });
-        if (!res.ok) throw new Error("Audit failed");
+        if (!res.ok) throw new Error("Audit request failed");
         currentAuditData = await res.json();
-        renderAuditResults(currentAuditData);
+        
+        // Render in Studio
+        renderAuditStudio(currentAuditData);
+        switchTab('audit-studio');
+
+        if (currentAuditData.report.status === "PASSED") {
+          showToast("Compliance Passed", "All line items and terms match contract terms ($0 overcharge).", "success");
+        } else {
+          showToast("Discrepancies Detected", `Identified $${currentAuditData.report.total_overcharge.toFixed(2)} in contract violations!`, "error");
+        }
       } catch (err) {
-        alert("Error auditing sample: " + err.message);
-      } finally {
-        showLoading(false);
+        showToast("Audit Error", err.message, "error");
       }
     }
 
+    // Upload custom PDF
     async function uploadPdf(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -244,7 +693,7 @@
       const formData = new FormData();
       formData.append('file', file);
 
-      showLoading(true);
+      showToast("Uploading Document", `Processing ${file.name} with Gemini Multimodal AI...`, "info");
       try {
         const res = await fetch('/api/audit-upload', {
           method: 'POST',
@@ -255,93 +704,113 @@
           throw new Error(err.detail || "Upload audit failed");
         }
         currentAuditData = await res.json();
-        renderAuditResults(currentAuditData);
+        renderAuditStudio(currentAuditData);
+        switchTab('audit-studio');
+        showToast("Audit Completed", `Successfully extracted and evaluated ${file.name}.`, "success");
       } catch (err) {
-        alert("Upload Error: " + err.message);
-      } finally {
-        showLoading(false);
+        showToast("Upload Error", err.message, "error");
       }
     }
 
-    function showLoading(show) {
-      document.getElementById('loadingIndicator').classList.toggle('hidden', !show);
-      if (show) {
-        document.getElementById('resultsWorkspace').classList.add('hidden');
-      }
-    }
+    // Render Studio
+    function renderAuditStudio(data) {
+      const { invoice, report, contract } = data;
 
-    function renderAuditResults(data) {
-      const { invoice, report } = data;
-      document.getElementById('resultsWorkspace').classList.remove('hidden');
+      document.getElementById('auditEmptyState').classList.add('hidden');
+      document.getElementById('auditActiveState').classList.remove('hidden');
 
       const isPassed = report.status === "PASSED";
 
-      // Status Banner
-      const statusBanner = document.getElementById('statusBanner');
-      const statusBadge = document.getElementById('statusBadge');
-      const statusSubtitle = document.getElementById('statusSubtitle');
-      const overchargeHeader = document.getElementById('overchargeHeader');
+      // Studio Banner Styling
+      const banner = document.getElementById('studioBanner');
+      const badge = document.getElementById('studioBadge');
+      const subtitle = document.getElementById('studioSubtitle');
 
-      document.getElementById('invoiceHeader').textContent = `${invoice.vendor_name} — Invoice #${report.invoice_number}`;
+      document.getElementById('studioInvoiceTitle').textContent = `${invoice.vendor_name} — Invoice #${report.invoice_number}`;
+      document.getElementById('studioBilledTotal').textContent = `$${invoice.total_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      document.getElementById('studioExpectedTotal').textContent = `$${report.total_expected.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+      const overchargeElem = document.getElementById('studioOverchargeTotal');
 
       if (isPassed) {
-        statusBanner.className = "p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex flex-col md:flex-row md:items-center justify-between gap-4";
-        statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-        statusBadge.textContent = "PASSED COMPLIANCE";
-        statusSubtitle.textContent = "All line item rates, terms, and charges match contracted terms perfectly.";
-        statusSubtitle.className = "text-sm text-emerald-300/80 mt-1";
-        overchargeHeader.className = "text-3xl font-black text-emerald-400";
-        overchargeHeader.textContent = "$0.00";
-        document.getElementById('hitlActionSection').classList.add('hidden');
+        banner.className = "p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-xl";
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+        badge.textContent = "PASSED COMPLIANCE";
+        subtitle.textContent = "All billed rate items, quantities, and payment terms adhere precisely to Master Agreement terms.";
+        subtitle.className = "text-xs text-emerald-300/80";
+        overchargeElem.className = "text-2xl font-black font-mono text-emerald-400";
+        overchargeElem.textContent = "$0.00";
+        document.getElementById('studioHitlSection').classList.add('hidden');
       } else {
-        statusBanner.className = "p-6 rounded-2xl border border-red-500/30 bg-red-950/20 flex flex-col md:flex-row md:items-center justify-between gap-4";
-        statusBadge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30";
-        statusBadge.textContent = "FLAGGED FOR DISCREPANCIES";
-        statusSubtitle.textContent = `Identified ${report.discrepancies.length} discrepancy items violating contracted terms.`;
-        statusSubtitle.className = "text-sm text-red-300/80 mt-1";
-        overchargeHeader.className = "text-3xl font-black text-red-400";
-        overchargeHeader.textContent = `+$${report.total_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-        document.getElementById('hitlActionSection').classList.remove('hidden');
-        document.getElementById('disputeEmailInput').value = report.suggested_dispute_email || "";
+        banner.className = "p-6 rounded-2xl border border-red-500/30 bg-red-950/20 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-xl";
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30";
+        badge.textContent = "FLAGGED DISCREPANCIES";
+        subtitle.textContent = `Identified ${report.discrepancies.length} material violation(s) generating unauthorized billing leakage.`;
+        subtitle.className = "text-xs text-red-300/80";
+        overchargeElem.className = "text-2xl font-black font-mono text-red-400";
+        overchargeElem.textContent = `+$${report.total_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        document.getElementById('studioHitlSection').classList.remove('hidden');
+        document.getElementById('studioDisputeDraft').value = report.suggested_dispute_email || "";
       }
 
       // Render Line Items
-      const lineItemsBody = document.getElementById('lineItemsBody');
+      const lineItemsBody = document.getElementById('studioLineItemsBody');
       lineItemsBody.innerHTML = '';
       invoice.line_items.forEach(item => {
+        const isFlagged = report.discrepancies.some(d => d.description.toLowerCase().includes(item.description.toLowerCase().substring(0, 15)));
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-800/40 transition";
+        tr.className = isFlagged ? "bg-red-500/10 hover:bg-red-500/20 transition" : "hover:bg-slate-800/40 transition";
         tr.innerHTML = `
-          <td class="py-3 px-3 font-medium text-slate-200">${item.description}</td>
-          <td class="py-3 px-2 text-right text-slate-400">${item.quantity}</td>
-          <td class="py-3 px-2 text-right text-slate-300 font-mono">$${item.unit_price.toFixed(2)}</td>
-          <td class="py-3 px-3 text-right text-white font-mono font-semibold">$${item.total_price.toFixed(2)}</td>
+          <td class="py-3.5 px-3 font-medium ${isFlagged ? 'text-red-200' : 'text-slate-200'}">
+            ${isFlagged ? '<span class="inline-block mr-1 text-red-400">⚠️</span>' : ''}
+            ${item.description}
+          </td>
+          <td class="py-3.5 px-2 text-right text-slate-400">${item.quantity}</td>
+          <td class="py-3.5 px-2 text-right ${isFlagged ? 'text-red-400 font-bold' : 'text-slate-300'}">$${item.unit_price.toFixed(2)}</td>
+          <td class="py-3.5 px-3 text-right ${isFlagged ? 'text-red-300 font-bold' : 'text-white'}">$${item.total_price.toFixed(2)}</td>
         `;
         lineItemsBody.appendChild(tr);
       });
-      document.getElementById('totalBilledText').textContent = `$${invoice.total_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+      document.getElementById('studioPaymentTerms').textContent = invoice.payment_terms || "Not Specified";
+      document.getElementById('studioSubtotal').textContent = `$${invoice.subtotal.toFixed(2)}`;
 
       // Render Discrepancies
-      const discList = document.getElementById('discrepanciesList');
-      discList.innerHTML = '';
+      const container = document.getElementById('studioDiscrepanciesContainer');
+      container.innerHTML = '';
+      const countBadge = document.getElementById('violationsCount');
+
       if (report.discrepancies.length === 0) {
-        discList.innerHTML = '<div class="text-xs text-emerald-400 font-medium">✓ Zero discrepancies found. Invoice is compliant.</div>';
+        countBadge.className = "text-xs px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+        countBadge.textContent = "0 Issues";
+        container.innerHTML = `
+          <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-400 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Verified compliant against contract rate cards and clauses.</span>
+          </div>
+        `;
       } else {
+        countBadge.className = "text-xs px-2 py-0.5 rounded-full font-bold bg-red-500/20 text-red-400 border border-red-500/30";
+        countBadge.textContent = `${report.discrepancies.length} Violations`;
+
         report.discrepancies.forEach(d => {
           const div = document.createElement('div');
-          div.className = "p-3.5 rounded-xl border border-red-500/20 bg-red-950/20 text-xs space-y-1";
+          div.className = "p-3.5 rounded-xl border border-red-500/30 bg-red-950/20 text-xs space-y-1";
           div.innerHTML = `
             <div class="flex items-center justify-between">
-              <span class="font-bold text-red-400 uppercase tracking-wider">${d.type}</span>
-              <span class="font-mono font-bold text-red-300">${d.overcharge > 0 ? '+$' + d.overcharge.toFixed(2) : '$0.00'}</span>
+              <span class="font-bold text-red-400 uppercase tracking-wider font-mono">${d.type}</span>
+              <span class="font-mono font-bold text-red-300">${d.overcharge > 0 ? '+$' + d.overcharge.toFixed(2) : 'TERMS MISMATCH'}</span>
             </div>
-            <p class="text-slate-300">${d.description}</p>
+            <p class="text-slate-300 leading-relaxed font-sans">${d.description}</p>
           `;
-          discList.appendChild(div);
+          container.appendChild(div);
         });
       }
+
+      lucide.createIcons();
     }
 
+    // Commit HITL Decision
     async function commitDecision(action) {
       if (!currentAuditData) return;
       const { invoice, report } = currentAuditData;
@@ -351,8 +820,8 @@
         vendor_name: report.vendor_name,
         action: action,
         disputed_amount: report.total_overcharge,
-        dispute_email_content: document.getElementById('disputeEmailInput').value,
-        reviewer_notes: "Reviewed via HITL Dashboard"
+        dispute_email_content: document.getElementById('studioDisputeDraft').value,
+        reviewer_notes: "Reviewed by Surya Prakash via HITL Studio"
       };
 
       try {
@@ -363,34 +832,168 @@
         });
         const result = await res.json();
 
-        // Update stats
-        document.getElementById('statSavings').textContent = `$${result.total_savings_to_date.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-        const decisionsElem = document.getElementById('statDecisions');
-        decisionsElem.textContent = parseInt(decisionsElem.textContent || 0) + 1;
+        // Update local telemetry
+        totalSavingsBlocked = result.total_savings_to_date;
+        document.getElementById('statSavingsOverview').textContent = `$${totalSavingsBlocked.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        
+        auditHistory.unshift({
+          invoice_number: body.invoice_number,
+          vendor_name: body.vendor_name,
+          disputed_amount: body.disputed_amount,
+          action: action,
+          message: result.message,
+          timestamp: new Date().toLocaleTimeString()
+        });
 
-        // Add to activity log
-        const log = document.getElementById('activityLog');
-        if (log.querySelector('div.italic')) {
-          log.innerHTML = '';
-        }
-        const entry = document.createElement('div');
-        entry.className = "p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-xs flex items-center justify-between gap-4";
-        entry.innerHTML = `
-          <div>
-            <span class="font-bold text-white">#${body.invoice_number}</span> (${body.vendor_name}) — 
-            <span class="text-slate-300">${result.message}</span>
-          </div>
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${action === 'DISPUTE_AND_EMAIL' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-slate-800 text-slate-300'}">
-            ${action}
-          </span>
-        `;
-        log.prepend(entry);
-
-        alert("Action Recorded: " + result.message);
-        document.getElementById('hitlActionSection').classList.add('hidden');
+        updateTelemetryUI();
+        showToast("Decision Committed", result.message, "success");
+        document.getElementById('studioHitlSection').classList.add('hidden');
       } catch (err) {
-        alert("Failed to commit decision: " + err.message);
+        showToast("Decision Error", err.message, "error");
       }
+    }
+
+    // Update Telemetry & Tables
+    function updateTelemetryUI() {
+      document.getElementById('statAuditedCount').textContent = auditHistory.length;
+      document.getElementById('statDecisionsCount').textContent = auditHistory.length;
+      
+      const flagged = auditHistory.filter(h => h.disputed_amount > 0).length;
+      const rate = auditHistory.length > 0 ? ((flagged / auditHistory.length) * 100).toFixed(1) : "0.0";
+      document.getElementById('statExceptionRate').textContent = `${rate}%`;
+
+      // Update Overview Stream
+      const stream = document.getElementById('overviewStream');
+      stream.innerHTML = '';
+      auditHistory.slice(0, 5).forEach(h => {
+        const div = document.createElement('div');
+        div.className = "py-3 flex items-center justify-between text-xs";
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="font-mono font-bold text-white">#${h.invoice_number}</span>
+            <span class="text-slate-400 font-sans">${h.vendor_name}</span>
+            <span class="text-slate-500 font-mono text-[11px]">${h.timestamp}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-mono font-bold text-emerald-400">${h.disputed_amount > 0 ? 'Blocked +$' + h.disputed_amount.toFixed(2) : '$0.00'}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${h.action === 'DISPUTE_AND_EMAIL' ? 'bg-brand-500/20 text-brand-300 border border-brand-500/30' : 'bg-slate-800 text-slate-300'}">
+              ${h.action}
+            </span>
+          </div>
+        `;
+        stream.appendChild(div);
+      });
+
+      // Update Full Ledger Table
+      const ledgerBody = document.getElementById('fullLedgerBody');
+      ledgerBody.innerHTML = '';
+      auditHistory.forEach(h => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 transition";
+        tr.innerHTML = `
+          <td class="py-3.5 px-4 font-bold text-white">#${h.invoice_number}</td>
+          <td class="py-3.5 px-4 text-slate-300 font-sans font-medium">${h.vendor_name}</td>
+          <td class="py-3.5 px-3 text-emerald-400 font-bold">${h.disputed_amount > 0 ? '+$' + h.disputed_amount.toFixed(2) : '$0.00'}</td>
+          <td class="py-3.5 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${h.action === 'DISPUTE_AND_EMAIL' ? 'bg-brand-500/20 text-brand-300 border border-brand-500/30' : 'bg-slate-800 text-slate-300'}">
+              ${h.action}
+            </span>
+          </td>
+          <td class="py-3.5 px-4 text-slate-400 font-sans text-xs">${h.message}</td>
+        `;
+        ledgerBody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // Export CSV
+    function exportLedgerCSV() {
+      if (auditHistory.length === 0) {
+        showToast("Export", "No ledger entries to export.", "info");
+        return;
+      }
+      let csv = "Invoice Number,Vendor,Disputed Amount,Action,Message,Timestamp\n";
+      auditHistory.forEach(h => {
+        csv += `"${h.invoice_number}","${h.vendor_name}","${h.disputed_amount}","${h.action}","${h.message}","${h.timestamp}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `compliance_audit_ledger_${Date.now()}.csv`;
+      a.click();
+      showToast("Export Ready", "Compliance ledger CSV generated and downloaded.", "success");
+    }
+
+    // Initialize Interactive Charts
+    function initCharts() {
+      // 1. Trend Chart
+      const trendCtx = document.getElementById('trendChart').getContext('2d');
+      trendChartInstance = new Chart(trendCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [
+            {
+              label: 'Total Vendor Spend ($k)',
+              data: [42, 58, 64, 52, 70, 61],
+              backgroundColor: '#1E293B',
+              borderRadius: 6,
+            },
+            {
+              label: 'Leakage Blocked ($k)',
+              data: [3.2, 5.8, 7.1, 4.2, 8.5, 6.9],
+              backgroundColor: '#6366F1',
+              borderRadius: 6,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 11 } }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: '#1F2937' },
+              ticks: { color: '#64748B', font: { family: 'Plus Jakarta Sans' } }
+            },
+            y: {
+              grid: { color: '#1F2937' },
+              ticks: { color: '#64748B', font: { family: 'Plus Jakarta Sans' } }
+            }
+          }
+        }
+      });
+
+      // 2. Breakdown Donut Chart
+      const breakdownCtx = document.getElementById('breakdownChart').getContext('2d');
+      breakdownChartInstance = new Chart(breakdownCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Rate Mismatch', 'Unapproved Fees', 'Scope/Hours Exceeded', 'Payment Terms'],
+          datasets: [{
+            data: [65, 20, 10, 5],
+            backgroundColor: ['#6366F1', '#EC4899', '#F59E0B', '#10B981'],
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 10 } }
+            }
+          },
+          cutout: '70%'
+        }
+      });
     }
   </script>
 </body>
