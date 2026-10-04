@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  veritas-ap:
+    build: .
+    container_name: veritas-ap-auditor
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/data/compliance.db
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
