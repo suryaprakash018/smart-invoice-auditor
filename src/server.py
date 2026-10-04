@@ -52,9 +52,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+
 SAMPLES_DIR = os.path.join(BASE_DIR, "data", "sample_invoices")
 UPLOADS_DIR = os.path.join(BASE_DIR, "data", "uploads")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
+
+# Mount data folder for static PDF viewing
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "data")), name="static")
 
 extractor = InvoiceExtractor()
 engine_audit = ContractAuditEngine()
