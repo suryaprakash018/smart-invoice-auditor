@@ -23,6 +23,22 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
 
+  <!-- Immediate Theme Initialization (Prevents FOUC) -->
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('veritas_theme');
+        if (savedTheme === 'light') {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
+        } else {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -222,6 +238,103 @@
       color: #93C5FD;
       font-weight: 600;
     }
+
+    /* ======================================================== */
+    /* LIGHT MODE ENTERPRISE HIGH-CONTRAST PALETTE REFINEMENTS */
+    /* ======================================================== */
+    html.light body {
+      background-color: #F8FAFC !important;
+      color: #0F172A !important;
+    }
+    html.light .bg-bg {
+      background-color: #F8FAFC !important;
+    }
+    html.light .bg-surface {
+      background-color: #FFFFFF !important;
+    }
+    html.light .bg-panel {
+      background-color: #FFFFFF !important;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    }
+    html.light .bg-subtle {
+      background-color: #F1F5F9 !important;
+    }
+    html.light .bg-subtleHover {
+      background-color: #E2E8F0 !important;
+    }
+    html.light .border-border {
+      border-color: #E2E8F0 !important;
+    }
+    html.light .bg-\[\#10141C\] {
+      background-color: #F8FAFC !important;
+      border-color: #E2E8F0 !important;
+    }
+    html.light .text-white {
+      color: #0F172A !important;
+    }
+    html.light .text-slate-100 {
+      color: #0F172A !important;
+    }
+    html.light .text-slate-200 {
+      color: #1E293B !important;
+    }
+    html.light .text-slate-300 {
+      color: #334155 !important;
+    }
+    html.light .text-slate-400 {
+      color: #64748B !important;
+    }
+    html.light .text-slate-500 {
+      color: #94A3B8 !important;
+    }
+    html.light .btn-secondary {
+      background: #FFFFFF !important;
+      color: #1E293B !important;
+      border-color: #E2E8F0 !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    html.light .btn-secondary:hover {
+      background: #F8FAFC !important;
+      border-color: #CBD5E1 !important;
+    }
+    html.light input, html.light textarea, html.light select {
+      background-color: #FFFFFF !important;
+      border-color: #CBD5E1 !important;
+      color: #0F172A !important;
+    }
+    html.light input::placeholder, html.light textarea::placeholder {
+      color: #94A3B8 !important;
+    }
+    html.light .optical-pin {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      border-color: #E2E8F0 !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    html.light #pdfCanvas {
+      box-shadow: 0 12px 28px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06) !important;
+    }
+    html.light .text-terracotta-light {
+      color: #DC2626 !important;
+    }
+    html.light .text-amber-light {
+      color: #B45309 !important;
+    }
+    html.light .tab-active {
+      background: rgba(59, 130, 246, 0.1) !important;
+      border-color: rgba(59, 130, 246, 0.4) !important;
+      color: #1D4ED8 !important;
+      font-weight: 600;
+    }
+    html.light ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    html.light ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+    }
+    html.light ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-bg text-slate-100 overflow-x-hidden selection:bg-brand selection:text-white">
@@ -284,6 +397,15 @@
         <span>Upload PDF</span>
         <input type="file" id="customPdfInput" accept="application/pdf" class="hidden" onchange="handleFileUpload(event)">
       </label>
+
+      <div class="h-4 w-px bg-border"></div>
+
+      <!-- Dual Theme Setting (Dark / Light Mode) -->
+      <button id="themeToggleBtn" onclick="toggleTheme()" class="btn-secondary px-2.5 py-1.5 rounded-lg text-slate-200 text-xs flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Toggle Light / Dark Mode">
+        <i id="themeIconSun" data-lucide="sun" class="w-3.5 h-3.5 text-amber"></i>
+        <i id="themeIconMoon" data-lucide="moon" class="w-3.5 h-3.5 text-brand hidden"></i>
+        <span id="themeLabel" class="text-xs font-semibold">Light</span>
+      </button>
     </div>
   </header>
 
@@ -847,8 +969,42 @@
     let batchPollInterval = null;
 
     document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem('veritas_theme') || 'dark';
+      updateThemeUI(savedTheme);
       lucide.createIcons();
     });
+
+    function updateThemeUI(theme) {
+      const isDark = (theme === 'dark');
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        const sun = document.getElementById('themeIconSun');
+        const moon = document.getElementById('themeIconMoon');
+        const label = document.getElementById('themeLabel');
+        if (sun) sun.classList.remove('hidden');
+        if (moon) moon.classList.add('hidden');
+        if (label) label.textContent = 'Light';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        const sun = document.getElementById('themeIconSun');
+        const moon = document.getElementById('themeIconMoon');
+        const label = document.getElementById('themeLabel');
+        if (sun) sun.classList.add('hidden');
+        if (moon) moon.classList.remove('hidden');
+        if (label) label.textContent = 'Dark';
+      }
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      const isCurrentlyDark = document.documentElement.classList.contains('dark');
+      const targetTheme = isCurrentlyDark ? 'light' : 'dark';
+      localStorage.setItem('veritas_theme', targetTheme);
+      updateThemeUI(targetTheme);
+      showToast("Theme Switched", `Interface set to ${targetTheme === 'dark' ? 'Dark' : 'Light'} Mode.`, "info");
+    }
 
     function showToast(title, msg, type = 'info') {
       const container = document.getElementById('toastRoot');
