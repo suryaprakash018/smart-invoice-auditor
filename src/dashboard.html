@@ -694,15 +694,19 @@
           if (boxes[idx]) boxes[idx].classList.remove('active');
         };
 
+        const isUnapproved = report.discrepancies.some(d => d.type === "UNAPPROVED_FEE" && d.description.toLowerCase().includes(item.description.toLowerCase().substring(0, 15)));
+        const contractRateDisplay = isUnapproved ? "$0.00" : "$80.00";
+        const deltaDisplay = isUnapproved ? `+$${item.total_price.toFixed(2)}` : (item.unit_price > 80 ? `+$${((item.unit_price - 80) * item.quantity).toFixed(2)}` : "$0.00");
+
         tr.innerHTML = `
           <td class="py-2.5 px-3 ${isFlagged ? 'text-red-300 font-semibold' : 'text-slate-300'}">
             ${isFlagged ? '<span class="text-red-400 mr-1">⚠️</span>' : ''}${item.description}
           </td>
           <td class="py-2.5 px-2 text-right text-slate-400">${item.quantity}</td>
           <td class="py-2.5 px-2 text-right font-mono ${isFlagged ? 'text-red-400 font-bold' : 'text-slate-300'}">$${item.unit_price.toFixed(2)}</td>
-          <td class="py-2.5 px-2 text-right font-mono text-slate-400">$80.00</td>
+          <td class="py-2.5 px-2 text-right font-mono text-slate-400">${contractRateDisplay}</td>
           <td class="py-2.5 px-3 text-right font-mono font-bold ${isFlagged ? 'text-red-400' : 'text-emerald-400'}">
-            ${isFlagged ? '+$' + (item.unit_price > 80 ? ((item.unit_price - 80) * item.quantity).toFixed(2) : item.total_price.toFixed(2)) : '$0.00'}
+            ${isFlagged ? deltaDisplay : '$0.00'}
           </td>
         `;
         tableBody.appendChild(tr);
