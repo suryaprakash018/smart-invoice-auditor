@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veritas AP | Autonomous Contract Compliance & Forensic Audit Studio</title>
+  <title>Veritas AP Enterprise | Autonomous Contract Compliance & Forensic Audit Studio</title>
   
   <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
+  <!-- GSAP 3.12.5 for Ultra-Smooth Enterprise Micro-Interactions -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
   <!-- PDF.js for High-Fidelity In-Browser PDF Vector Rendering -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
@@ -35,18 +38,27 @@
             panel: '#1A1D24',
             subtle: '#222630',
             subtleHover: '#2A303D',
-            border: 'rgba(255, 255, 255, 0.07)',
-            borderHover: 'rgba(255, 255, 255, 0.14)',
-            coral: {
-              DEFAULT: '#E55039',
-              light: '#FF6B6B',
-              bg: 'rgba(229, 80, 57, 0.08)',
-              border: 'rgba(229, 80, 57, 0.28)',
+            border: 'rgba(255, 255, 255, 0.08)',
+            borderHover: 'rgba(255, 255, 255, 0.16)',
+            terracotta: {
+              DEFAULT: '#E06D53',
+              light: '#F87171',
+              dark: '#C2410C',
+              bg: 'rgba(224, 109, 83, 0.09)',
+              border: 'rgba(224, 109, 83, 0.32)',
             },
-            mint: {
+            amber: {
+              DEFAULT: '#D97706',
+              light: '#FBBF24',
+              dark: '#B45309',
+              bg: 'rgba(217, 119, 6, 0.09)',
+              border: 'rgba(217, 119, 6, 0.32)',
+            },
+            emerald: {
               DEFAULT: '#10B981',
               light: '#34D399',
-              bg: 'rgba(16, 185, 129, 0.08)',
+              dark: '#059669',
+              bg: 'rgba(16, 185, 129, 0.09)',
               border: 'rgba(16, 185, 129, 0.28)',
             },
             brand: {
@@ -93,7 +105,7 @@
       z-index: 20;
     }
 
-    /* High-Precision Optical Vector Bounding Frames */
+    /* High-Precision Optical Vector Bounding Frames (Refined Terracotta & Emerald) */
     .optical-vector-frame {
       position: absolute;
       border-radius: 4px;
@@ -102,13 +114,14 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .optical-frame-danger {
-      border: 1px solid rgba(229, 80, 57, 0.75);
-      background: rgba(229, 80, 57, 0.08);
-      box-shadow: 0 0 16px rgba(229, 80, 57, 0.15);
+      border: 1px solid rgba(224, 109, 83, 0.85);
+      background: rgba(224, 109, 83, 0.09);
+      box-shadow: 0 0 16px rgba(224, 109, 83, 0.16);
     }
     .optical-frame-danger:hover {
-      border-color: rgba(255, 107, 107, 0.95);
-      background: rgba(229, 80, 57, 0.14);
+      border-color: rgba(248, 113, 113, 0.95);
+      background: rgba(224, 109, 83, 0.15);
+      box-shadow: 0 0 20px rgba(224, 109, 83, 0.3);
     }
     .optical-frame-success {
       border: 1px solid rgba(16, 185, 129, 0.75);
@@ -168,6 +181,28 @@
       transform: translateY(1px);
     }
 
+    .btn-emerald {
+      background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 12px rgba(16, 185, 129, 0.25);
+      font-weight: 600;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-emerald:hover {
+      background: linear-gradient(180deg, #34D399 0%, #10B981 100%);
+    }
+
+    .btn-terracotta {
+      background: linear-gradient(180deg, #E06D53 0%, #C2410C 100%);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 12px rgba(224, 109, 83, 0.25);
+      font-weight: 600;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-terracotta:hover {
+      background: linear-gradient(180deg, #F87171 0%, #E06D53 100%);
+    }
+
     /* Custom Sleek Scrollbar */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: #0F1115; }
@@ -178,6 +213,14 @@
     #pdfCanvas {
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
       border-radius: 6px;
+    }
+
+    /* Action Hub Subtab Transitions */
+    .tab-active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.45);
+      color: #93C5FD;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -208,26 +251,34 @@
       <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400">
         <span class="text-slate-500 font-medium">Governing MSA:</span>
         <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-panel border border-border text-xs font-medium text-slate-200">
-          <span class="h-1.5 w-1.5 rounded-full bg-mint animate-pulse"></span>
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald animate-pulse"></span>
           <span>CloudScale Innovations (MSA-2025-CS01)</span>
         </div>
       </div>
     </div>
 
     <!-- Quick Ingestion Triggers -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2.5">
       <button onclick="auditSampleInvoice('overcharged')" class="btn-secondary px-3.5 py-1.5 rounded-lg text-slate-200 text-xs flex items-center gap-2">
-        <span class="h-2 w-2 rounded-full bg-coral"></span>
+        <span class="h-2 w-2 rounded-full bg-terracotta"></span>
         <span>Audit Overcharged (+$1,550)</span>
       </button>
 
       <button onclick="auditSampleInvoice('valid')" class="btn-secondary px-3.5 py-1.5 rounded-lg text-slate-200 text-xs flex items-center gap-2">
-        <span class="h-2 w-2 rounded-full bg-mint"></span>
+        <span class="h-2 w-2 rounded-full bg-emerald"></span>
         <span>Audit Compliant ($0)</span>
       </button>
 
       <div class="h-4 w-px bg-border"></div>
 
+      <!-- Batch Processing Trigger -->
+      <label class="btn-secondary px-3.5 py-1.5 rounded-lg text-slate-200 text-xs cursor-pointer flex items-center gap-1.5 hover:text-white" title="Queue multiple PDF invoices for background processing">
+        <i data-lucide="layers" class="w-3.5 h-3.5 text-brand"></i>
+        <span>Batch Audit</span>
+        <input type="file" id="batchPdfInput" multiple accept="application/pdf" class="hidden" onchange="handleBatchUpload(event)">
+      </label>
+
+      <!-- Single Upload Trigger -->
       <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs cursor-pointer flex items-center gap-1.5">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Upload PDF</span>
@@ -239,7 +290,7 @@
   <!-- ============================================== -->
   <!-- 2. TELEMETRY & SYSTEM BENCHMARK STRIP          -->
   <!-- ============================================== -->
-  <div class="border-b border-border bg-[#10141C] px-6 py-2.5 flex items-center justify-between text-xs text-slate-400">
+  <div class="border-b border-border bg-[#10141C] px-6 py-2 flex items-center justify-between text-xs text-slate-400">
     <div class="flex items-center gap-6">
       <div class="flex items-center gap-2">
         <span class="text-slate-500 font-medium">Extraction:</span>
@@ -247,7 +298,7 @@
       </div>
       <div class="flex items-center gap-2">
         <span class="text-slate-500 font-medium">Benchmark Precision:</span>
-        <span class="text-mint font-semibold tabular-nums">100.0% (20/20 Vectors)</span>
+        <span class="text-emerald font-semibold tabular-nums">100.0% (20/20 Vectors)</span>
       </div>
       <div class="flex items-center gap-2">
         <span class="text-slate-500 font-medium">Audit Latency:</span>
@@ -255,13 +306,13 @@
       </div>
       <div class="flex items-center gap-2">
         <span class="text-slate-500 font-medium">Database:</span>
-        <span class="text-slate-300 font-medium">SQLite (compliance.db)</span>
+        <span class="text-slate-300 font-medium">PostgreSQL 16 Ready</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2">
       <span class="text-slate-500 font-medium">Cumulative Savings Protected:</span>
-      <span id="telemetrySavings" class="text-mint font-bold text-sm tabular-nums">$0.00</span>
+      <span id="telemetrySavings" class="text-emerald font-bold text-sm tabular-nums">$0.00</span>
     </div>
   </div>
 
@@ -271,13 +322,13 @@
   <div class="flex-1 flex overflow-hidden">
 
     <!-- -------------------------------------------- -->
-    <!-- LEFT VIEWPORT: REAL PDF DOCUMENT VIEWER (52%)-->
+    <!-- LEFT VIEWPORT: MULTI-PAGE PDF VIEWER (52%)   -->
     <!-- -------------------------------------------- -->
     <div class="w-[52%] border-r border-border bg-bg flex flex-col justify-between overflow-hidden relative">
       
-      <!-- Viewer Controls -->
+      <!-- Viewer Controls with Multi-Page Navigation -->
       <div class="h-12 px-6 border-b border-border bg-surface/90 backdrop-blur-sm flex items-center justify-between text-xs text-slate-400">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
           <!-- Document vs Contract Tab Switcher -->
           <div class="flex items-center bg-panel p-1 rounded-lg border border-border">
             <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-3 py-1 rounded-md text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5 shadow-sm">
@@ -289,14 +340,25 @@
               <span>Governing Contract (§4.2)</span>
             </button>
           </div>
+
+          <!-- Multi-Page Document Navigator -->
+          <div id="pageNavControls" class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-panel border border-border">
+            <button id="prevPageBtn" onclick="changePdfPage(-1)" class="p-1 rounded hover:bg-subtle text-slate-400 hover:text-white transition disabled:opacity-30 disabled:cursor-not-allowed" title="Previous Page">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+            </button>
+            <span id="pageIndicator" class="text-[11px] text-slate-300 font-semibold tabular-nums px-1.5">Page 1 of 1</span>
+            <button id="nextPageBtn" onclick="changePdfPage(1)" class="p-1 rounded hover:bg-subtle text-slate-400 hover:text-white transition disabled:opacity-30 disabled:cursor-not-allowed" title="Next Page">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <span id="docScaleIndicator" class="text-xs text-slate-400 font-medium tabular-nums">100% Fit</span>
+          <span id="docScaleIndicator" class="text-xs text-slate-400 font-medium tabular-nums">115% Vector</span>
           <span class="h-3 w-px bg-border"></span>
-          <span class="text-xs text-mint font-medium flex items-center gap-1.5">
-            <span class="h-1.5 w-1.5 rounded-full bg-mint animate-ping"></span>
-            Real-time Optical Grounding
+          <span class="text-xs text-emerald font-medium flex items-center gap-1.5">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald animate-ping"></span>
+            Optical Grounding Active
           </span>
         </div>
       </div>
@@ -312,7 +374,7 @@
           <div>
             <h3 class="text-sm font-bold text-white tracking-tight">No Invoice Loaded</h3>
             <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
-              Click <strong class="text-coral font-semibold">Audit Overcharged</strong> above to observe the AI isolate contract violations on the actual PDF.
+              Click <strong class="text-terracotta-light font-semibold">Audit Overcharged</strong> above to observe the AI isolate contract violations directly on the PDF.
             </p>
           </div>
         </div>
@@ -336,7 +398,7 @@
               <i data-lucide="file-check-2" class="w-4 h-4 text-brand"></i>
               <span class="font-bold text-white text-xs tracking-tight">Master Services Agreement (MSA-2025-CS01)</span>
             </div>
-            <span class="text-[10px] text-mint px-2.5 py-0.5 rounded-full bg-mint-bg border border-mint-border font-semibold">Legally Binding</span>
+            <span class="text-[10px] text-emerald px-2.5 py-0.5 rounded-full bg-emerald-bg border border-emerald-border font-semibold">Legally Binding</span>
           </div>
 
           <div class="space-y-4 text-slate-300 leading-relaxed text-xs">
@@ -374,11 +436,11 @@
         <div class="flex items-center gap-2">
           <span id="footerFileName">Source: invoice_overcharged.pdf</span>
           <span>•</span>
-          <span>Rendered via PDF.js Vector Engine</span>
+          <span>Multi-Page Vector Engine</span>
         </div>
         <div class="text-slate-300 flex items-center gap-1.5">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-mint"></i>
-          <span>Immutable Paper Trail</span>
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald"></i>
+          <span>Immutable Audit Ledger</span>
         </div>
       </div>
 
@@ -389,7 +451,7 @@
     <!-- -------------------------------------------- -->
     <div class="w-[48%] bg-surface flex flex-col justify-between overflow-y-auto">
       
-      <div class="p-7 space-y-7">
+      <div class="p-7 space-y-6">
 
         <!-- 1. EXECUTIVE AUDIT RESULT BANNER -->
         <div id="auditHeaderBanner" class="p-5 rounded-xl border border-border border-l-4 border-l-slate-700 bg-panel flex items-center justify-between transition-all shadow-md">
@@ -398,7 +460,7 @@
               <span id="badgeComplianceStatus" class="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide bg-subtle text-slate-400 border border-border">System Idle</span>
               <h3 id="txtInvoiceTitle" class="text-sm font-bold text-white tracking-tight">No Active Audit</h3>
             </div>
-            <p id="txtAuditSummary" class="text-xs text-slate-400 leading-relaxed mt-1">Select an invoice to trigger deterministic contract verification.</p>
+            <p id="txtAuditSummary" class="text-xs text-slate-400 leading-relaxed mt-1">Select an invoice or upload to trigger deterministic contract verification.</p>
           </div>
           <div class="text-right">
             <div class="text-[11px] font-medium text-slate-400">Total Discrepancy</div>
@@ -407,39 +469,39 @@
         </div>
 
         <!-- 2. MINIMALIST PIPELINE MILESTONES (Autonomous Reasoning Trace) -->
-        <div id="agentTraceStepper" class="hidden p-4 rounded-xl border border-border bg-panel/90 space-y-3.5 shadow-sm">
+        <div id="agentTraceStepper" class="hidden p-4 rounded-xl border border-border bg-panel/90 space-y-3 shadow-sm">
           <div class="flex items-center justify-between text-xs">
             <div class="flex items-center gap-2">
               <span class="h-2 w-2 rounded-full bg-brand animate-pulse"></span>
-              <span class="font-bold text-slate-200 text-xs tracking-tight">Autonomous Reasoning Pipeline</span>
+              <span class="font-bold text-slate-200 text-xs tracking-tight">Autonomous Reasoning Pipeline Trace</span>
             </div>
-            <span class="text-[10px] font-semibold text-mint bg-mint-bg border border-mint-border px-2.5 py-0.5 rounded-full">4/4 Complete</span>
+            <span class="text-[10px] font-semibold text-emerald bg-emerald-bg border border-emerald-border px-2.5 py-0.5 rounded-full">4/4 Complete</span>
           </div>
 
-          <!-- Horizontal Milestone Track -->
+          <!-- Horizontal Milestone Track with GSAP target milestones -->
           <div class="grid grid-cols-4 gap-3 pt-1">
-            <div class="flex items-center gap-2">
-              <span class="h-2 w-2 rounded-full bg-mint flex-shrink-0"></span>
+            <div class="milestone-item flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-emerald flex-shrink-0"></span>
               <div class="min-w-0">
                 <div class="text-[11px] font-medium text-slate-300 truncate">1. Optical Parse</div>
-                <div class="text-[10px] text-slate-500">150 DPI Vector</div>
+                <div class="text-[10px] text-slate-500">150 DPI Vectors</div>
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="h-2 w-2 rounded-full bg-mint flex-shrink-0"></span>
+            <div class="milestone-item flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-emerald flex-shrink-0"></span>
               <div class="min-w-0">
                 <div class="text-[11px] font-medium text-slate-300 truncate">2. Neural Schema</div>
                 <div class="text-[10px] text-slate-500">Pydantic V2</div>
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="h-2 w-2 rounded-full bg-mint flex-shrink-0"></span>
+            <div class="milestone-item flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-emerald flex-shrink-0"></span>
               <div class="min-w-0">
                 <div class="text-[11px] font-medium text-slate-300 truncate">3. Contract Diff</div>
                 <div class="text-[10px] text-slate-500">MSA-2025-CS01</div>
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="milestone-item flex items-center gap-2">
               <span class="h-2 w-2 rounded-full bg-brand animate-pulse flex-shrink-0"></span>
               <div class="min-w-0">
                 <div class="text-[11px] font-semibold text-white truncate">4. Scope Solve</div>
@@ -450,13 +512,13 @@
         </div>
 
         <!-- 3. LINE ITEMS AUDIT TABLE -->
-        <div class="space-y-3.5">
+        <div class="space-y-3">
           <div class="flex items-center justify-between text-xs">
             <span class="font-bold text-slate-200 text-xs tracking-tight flex items-center gap-1.5">
               <i data-lucide="table-properties" class="w-3.5 h-3.5 text-brand"></i>
               <span>Line Items & Rate Discrepancy Audit</span>
             </span>
-            <span class="text-xs text-slate-400 font-medium">Validated Against Rate Schedule A</span>
+            <span class="text-xs text-slate-400 font-medium">Reconciled to Rate Schedule A</span>
           </div>
 
           <div class="rounded-xl border border-border overflow-hidden bg-panel shadow-sm">
@@ -473,7 +535,7 @@
               <tbody id="lineItemsTableBody" class="divide-y divide-border/60 text-xs">
                 <tr>
                   <td colspan="5" class="py-10 text-center text-slate-500 text-xs">
-                    No active audit. Click a button above to run verification.
+                    No active audit. Select an invoice above to run compliance checks.
                   </td>
                 </tr>
               </tbody>
@@ -485,16 +547,16 @@
             <div class="text-slate-400">Stated Terms: <span id="summaryTerms" class="text-slate-200 font-semibold">--</span></div>
             <div class="flex items-center gap-5">
               <span class="text-slate-400">Billed: <strong id="summaryBilled" class="text-white font-semibold">--</strong></span>
-              <span class="text-slate-400">Authorized: <strong id="summaryAuthorized" class="text-mint font-semibold">--</strong></span>
+              <span class="text-slate-400">Authorized: <strong id="summaryAuthorized" class="text-emerald font-semibold">--</strong></span>
             </div>
           </div>
         </div>
 
         <!-- 4. ISOLATED CONTRACT VIOLATIONS -->
-        <div class="space-y-3.5">
+        <div class="space-y-3">
           <div class="flex items-center justify-between text-xs">
             <span class="font-bold text-slate-200 text-xs tracking-tight flex items-center gap-1.5">
-              <i data-lucide="shield-x" class="w-3.5 h-3.5 text-coral"></i>
+              <i data-lucide="shield-x" class="w-3.5 h-3.5 text-terracotta"></i>
               <span>Isolated Contract Violations</span>
             </span>
             <span id="violationCountBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-subtle text-slate-400 border border-border">0 Violations</span>
@@ -533,7 +595,7 @@
           </div>
 
           <!-- Chat Thread Container -->
-          <div id="copilotChatThread" class="max-h-56 overflow-y-auto rounded-lg bg-bg border border-border p-3.5 space-y-2.5 text-xs font-sans">
+          <div id="copilotChatThread" class="max-h-52 overflow-y-auto rounded-lg bg-bg border border-border p-3.5 space-y-2.5 text-xs font-sans">
             <div class="text-slate-400 italic text-[11px]">
               Veritas Copilot is ready. Ask any question about contract clauses, request rate compromises, or adapt dispute tone.
             </div>
@@ -548,50 +610,165 @@
           </div>
         </div>
 
-        <!-- 6. HUMAN-IN-THE-LOOP ACTION & DISPUTE COMPOSER -->
+        <!-- 6. MULTI-TIER GRANULAR CONTROL CENTER (HITL Dispute & Routing Hub) -->
         <div id="hitlComposerSection" class="hidden rounded-xl border border-border bg-panel p-6 space-y-5 shadow-lg">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="h-2 w-2 rounded-full bg-brand animate-ping"></span>
-              <h4 class="text-xs font-bold text-white tracking-tight">Human-in-the-Loop Dispute Center</h4>
+              <span class="h-2 w-2 rounded-full bg-terracotta animate-ping"></span>
+              <h4 class="text-xs font-bold text-white tracking-tight">Granular Human-in-the-Loop Action Hub</h4>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="downloadCertificatePdf()" class="btn-secondary text-xs font-semibold text-mint border-mint-border hover:bg-mint-bg px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
+              <button onclick="downloadCertificatePdf()" class="btn-secondary text-xs font-semibold text-emerald border-emerald-border hover:bg-emerald-bg px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
                 <i data-lucide="file-check" class="w-3.5 h-3.5"></i>
                 <span>Download Audit Certificate (PDF)</span>
               </button>
             </div>
           </div>
 
-          <div class="space-y-2.5">
+          <!-- Action Tray Mode Switcher Tabs -->
+          <div class="grid grid-cols-4 gap-1.5 p-1 bg-bg rounded-lg border border-border text-xs">
+            <button onclick="switchHitlMode('dispute')" id="hitlTabDispute" class="tab-active py-2 px-2.5 rounded-md text-[11px] transition text-center flex items-center justify-center gap-1.5">
+              <i data-lucide="send" class="w-3 h-3"></i>
+              <span>1. Full Dispute</span>
+            </button>
+            <button onclick="switchHitlMode('partial')" id="hitlTabPartial" class="py-2 px-2.5 rounded-md text-[11px] text-slate-400 hover:text-slate-200 transition text-center flex items-center justify-center gap-1.5">
+              <i data-lucide="badge-percent" class="w-3 h-3"></i>
+              <span>2. Partial Remit</span>
+            </button>
+            <button onclick="switchHitlMode('conditional')" id="hitlTabConditional" class="py-2 px-2.5 rounded-md text-[11px] text-slate-400 hover:text-slate-200 transition text-center flex items-center justify-center gap-1.5">
+              <i data-lucide="hourglass" class="w-3 h-3"></i>
+              <span>3. Conditional</span>
+            </button>
+            <button onclick="switchHitlMode('route')" id="hitlTabRoute" class="py-2 px-2.5 rounded-md text-[11px] text-slate-400 hover:text-slate-200 transition text-center flex items-center justify-center gap-1.5">
+              <i data-lucide="git-branch" class="w-3 h-3"></i>
+              <span>4. Route / Escalate</span>
+            </button>
+          </div>
+
+          <!-- Tray Subpanel 1: Full Dispute & Legal Notice -->
+          <div id="hitlPanelDispute" class="space-y-3">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-300 font-medium">Auto-Drafted Vendor Dispute Notice (Legal §4.2 Attached):</span>
+              <span class="text-slate-300 font-medium">Auto-Drafted Vendor Notice (§4.2 Legal Clauses Attached):</span>
               <button onclick="copyDisputeText()" class="text-xs font-semibold text-brand hover:text-brand-light flex items-center gap-1.5 transition">
                 <i data-lucide="copy" class="w-3 h-3"></i>
                 <span>Copy Notice</span>
               </button>
             </div>
-            <textarea id="disputeEmailBox" rows="7" class="w-full rounded-lg bg-bg border border-border p-3.5 text-xs text-slate-200 focus:outline-none focus:border-brand transition leading-relaxed font-sans"></textarea>
+            <textarea id="disputeEmailBox" rows="6" class="w-full rounded-lg bg-bg border border-border p-3.5 text-xs text-slate-200 focus:outline-none focus:border-brand transition leading-relaxed font-sans"></textarea>
+            
+            <div class="flex justify-end gap-2.5 pt-1">
+              <button onclick="commitDecision('DISPUTE_AND_EMAIL')" class="btn-terracotta px-5 py-2.5 rounded-lg text-white text-xs font-bold shadow-md flex items-center gap-2">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <span>Dispatch Formal Dispute & AP Hold</span>
+              </button>
+            </div>
           </div>
 
-          <!-- HITL Decision Action Buttons -->
-          <div class="flex items-center justify-between gap-3 pt-3 border-t border-border">
-            <div class="text-[11px] text-slate-400 font-sans">
-              Sign-off identity: <strong class="text-slate-200 font-medium">Surya Prakash (Lead AP Compliance)</strong>
+          <!-- Tray Subpanel 2: Partial Approval & Credit Memo -->
+          <div id="hitlPanelPartial" class="hidden space-y-3.5">
+            <div class="p-3.5 rounded-lg bg-emerald-bg border border-emerald-border text-xs text-slate-300 space-y-1">
+              <div class="font-semibold text-emerald flex items-center gap-1.5">
+                <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                <span>Remit Legitimate Contracted Base ($3,200.00)</span>
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Approve verified rate card line items for immediate payment while placing the unapproved overcharges on hold pending vendor credit memo.
+              </p>
             </div>
 
-            <div class="flex items-center gap-2.5">
-              <button onclick="commitDecision('APPROVE_OVERCHARGE')" class="btn-secondary px-4 py-2 rounded-lg text-slate-300 text-xs font-semibold">
-                Grant Exception
-              </button>
-              <button onclick="commitDecision('REJECT')" class="px-4 py-2 rounded-lg bg-coral-bg hover:bg-coral-bg/80 text-coral-light border border-coral-border text-xs font-semibold transition active:scale-95">
-                Reject Invoice
-              </button>
-              <button onclick="commitDecision('DISPUTE_AND_EMAIL')" class="btn-primary px-5 py-2 rounded-lg text-white text-xs font-bold shadow-md flex items-center gap-2">
-                <i data-lucide="send" class="w-3.5 h-3.5"></i>
-                <span>Dispatch Dispute & AP Hold</span>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="space-y-1">
+                <label class="text-[11px] text-slate-400 font-medium">Approved Remittance Amount ($)</label>
+                <input type="number" id="inputPartialApproved" step="0.01" value="3200.00" oninput="updatePartialMath()" class="w-full rounded-lg bg-bg border border-border p-2.5 text-xs text-white font-mono focus:border-emerald focus:outline-none">
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] text-slate-400 font-medium">Withheld Overcharge Balance</label>
+                <div id="displayPartialWithheld" class="p-2.5 rounded-lg bg-subtle border border-border text-terracotta-light font-mono text-xs font-semibold tabular-nums">$1,550.00</div>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-400 font-medium">Credit Memo / Settlement Requirement</label>
+              <input type="text" id="inputPartialMemo" value="Vendor credit memo requested for unapproved §4.2 surcharge ($350) and $15/hr rate deviation ($1,200)" class="w-full rounded-lg bg-bg border border-border p-2.5 text-xs text-slate-200 focus:border-emerald focus:outline-none font-sans">
+            </div>
+
+            <div class="flex justify-end gap-2.5 pt-1">
+              <button onclick="commitPartialDecision()" class="btn-emerald px-5 py-2.5 rounded-lg text-white text-xs font-bold shadow-md flex items-center gap-2">
+                <i data-lucide="badge-percent" class="w-3.5 h-3.5"></i>
+                <span id="btnPartialLabel">Authorize Partial Payment ($3,200.00)</span>
               </button>
             </div>
+          </div>
+
+          <!-- Tray Subpanel 3: Conditional Line-Item Hold -->
+          <div id="hitlPanelConditional" class="hidden space-y-3.5">
+            <div class="space-y-1.5">
+              <label class="text-xs text-slate-300 font-medium">Contingent Condition for Releasing Funds:</label>
+              <select id="selectConditionType" class="w-full rounded-lg bg-bg border border-border p-2.5 text-xs text-slate-200 focus:border-amber focus:outline-none font-sans">
+                <option value="RATE_CARD_AMENDMENT">Contingent on Rate Card Amendment Execution (§4.2)</option>
+                <option value="SOW_HOURS_AUDIT">Contingent on Client Project Lead Sign-off of DevOps Hours</option>
+                <option value="CREDIT_MEMO_PENDING">Contingent on Vendor Credit Memo Issuance</option>
+                <option value="MANAGED_SERVICE_SLA">Contingent on SLA Uptime Verification</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-[11px] text-slate-400 font-medium">Targeted Line Items Subject to Condition:</label>
+              <div class="space-y-1.5 text-xs">
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-bg border border-border text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="condCheckDevops" checked class="rounded bg-subtle text-amber border-border focus:ring-0">
+                  <span class="flex-1">Senior DevOps Rate Delta ($15.00/hr overcharge)</span>
+                  <span class="text-terracotta-light font-mono font-semibold">+$1,200.00</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-bg border border-border text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="condCheckSurcharge" checked class="rounded bg-subtle text-amber border-border focus:ring-0">
+                  <span class="flex-1">Unauthorized Platform Support Surcharge</span>
+                  <span class="text-terracotta-light font-mono font-semibold">+$350.00</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-2.5 pt-1">
+              <button onclick="commitConditionalDecision()" class="btn-secondary px-5 py-2.5 rounded-lg text-amber-light border-amber-border hover:bg-amber-bg text-xs font-bold shadow-md flex items-center gap-2">
+                <i data-lucide="hourglass" class="w-3.5 h-3.5"></i>
+                <span>Enforce Conditional Hold</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tray Subpanel 4: Workflow Escalation & Routing -->
+          <div id="hitlPanelRoute" class="hidden space-y-3.5">
+            <div class="space-y-1.5">
+              <label class="text-xs text-slate-300 font-medium">Escalate to Department Authority:</label>
+              <select id="selectRoutingTarget" class="w-full rounded-lg bg-bg border border-border p-2.5 text-xs text-slate-200 focus:border-brand focus:outline-none font-sans">
+                <option value="Legal & General Counsel">Legal & General Counsel (Contract Discrepancy & Indemnity)</option>
+                <option value="Procurement Operations Lead">Procurement Operations Lead (MSA SOW Terms Reconciliation)</option>
+                <option value="VP of Finance & Treasury">VP of Finance & Treasury (Overcharge Threshold Authorization)</option>
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-400 font-medium">Escalation Briefing & Internal Rationale:</label>
+              <textarea id="routeReasonNotes" rows="3" class="w-full rounded-lg bg-bg border border-border p-3 text-xs text-slate-200 focus:border-brand focus:outline-none font-sans" placeholder="State reason for routing this invoice to executive/legal review..."></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2.5 pt-1">
+              <button onclick="commitRoutingDecision()" class="btn-primary px-5 py-2.5 rounded-lg text-white text-xs font-bold shadow-md flex items-center gap-2">
+                <i data-lucide="git-branch" class="w-3.5 h-3.5"></i>
+                <span>Dispatch Workflow Escalation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Global Decision Sign-off & Secondary Override -->
+          <div class="flex items-center justify-between gap-3 pt-3 border-t border-border">
+            <div class="text-[11px] text-slate-400 font-sans">
+              Sign-off: <strong class="text-slate-200 font-medium">Surya Prakash (Lead AP Compliance)</strong>
+            </div>
+
+            <button onclick="commitDecision('APPROVE_OVERCHARGE')" class="text-xs text-slate-500 hover:text-slate-300 transition underline underline-offset-2">
+              Grant Executive Override & Full Exception
+            </button>
           </div>
         </div>
 
@@ -601,7 +778,7 @@
       <div class="p-5 border-t border-border bg-[#10141C] flex items-center justify-between text-xs text-slate-400">
         <div class="flex items-center gap-2">
           <i data-lucide="database" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span>Relational Ledger: <strong>compliance.db</strong></span>
+          <span>Relational Ledger: <strong>PostgreSQL 16 / compliance.db</strong></span>
         </div>
         <div class="text-xs text-slate-400 tabular-nums">
           Decisions Committed: <strong id="footerDecisionCount" class="text-white font-semibold">0</strong>
@@ -612,15 +789,62 @@
 
   </div>
 
+  <!-- BATCH PROCESSING ASYNC PROGRESS MODAL -->
+  <div id="batchProgressModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+    <div class="bg-panel border border-border rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-border pb-3.5">
+        <div class="flex items-center gap-2.5">
+          <div class="h-8 w-8 rounded-lg bg-brand/20 text-brand flex items-center justify-center">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white tracking-tight">Asynchronous Batch Audit Queue</h3>
+            <p class="text-[11px] text-slate-400">Concurrent Background Workers</p>
+          </div>
+        </div>
+        <span id="batchProgressBadge" class="text-[10px] px-2.5 py-0.5 rounded-full bg-brand/20 text-brand-light font-semibold border border-brand/30">QUEUED</span>
+      </div>
+
+      <!-- Live Progress Bar -->
+      <div class="space-y-2">
+        <div class="flex justify-between text-xs text-slate-300">
+          <span id="batchCountLabel" class="font-medium">0 / 0 Documents Audited</span>
+          <span id="batchPercentLabel" class="font-mono font-bold text-brand">0%</span>
+        </div>
+        <div class="w-full bg-bg rounded-full h-2.5 overflow-hidden border border-border">
+          <div id="batchProgressBar" class="bg-gradient-to-r from-brand via-cyan-400 to-emerald h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Batch File Results List -->
+      <div id="batchResultsList" class="max-h-56 overflow-y-auto space-y-2 rounded-lg bg-bg p-3 border border-border text-xs">
+        <div class="text-slate-500 text-center py-4">Ingesting PDF files into background queue...</div>
+      </div>
+
+      <div class="flex justify-end pt-1">
+        <button id="batchCloseBtn" onclick="closeBatchModal()" class="btn-secondary px-5 py-2 rounded-lg text-xs font-semibold hidden">
+          Close Task Viewer
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastRoot" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
-  <!-- CLIENT-SIDE ORCHESTRATION & PDF RENDERING SCRIPT -->
+  <!-- CLIENT-SIDE ORCHESTRATION, GSAP & PDF RENDERING SCRIPT -->
   <script>
     let currentAuditData = null;
     let pdfDoc = null;
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentPdfUrl = null;
+    let currentPdfBytes = null;
+    let isCurrentOvercharged = false;
     let totalSavingsBlocked = 0;
     let decisionsCount = 0;
+    let currentHitlMode = 'dispute';
+    let batchPollInterval = null;
 
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
@@ -631,14 +855,17 @@
       const toast = document.createElement('div');
       
       const theme = {
-        success: 'border-mint-border bg-[#10241B] text-mint',
-        error: 'border-coral-border bg-[#241516] text-coral-light',
+        success: 'border-emerald-border bg-[#10241B] text-emerald',
+        error: 'border-terracotta-border bg-[#241516] text-terracotta-light',
         info: 'border-brand/30 bg-[#121B2B] text-brand-light',
+        amber: 'border-amber-border bg-[#241C10] text-amber-light',
       }[type];
 
       toast.className = `pointer-events-auto p-4 rounded-xl border ${theme} shadow-2xl backdrop-blur-md text-xs w-80 transform transition-all duration-300 translate-y-4 opacity-0`;
       toast.innerHTML = `
-        <div class="font-bold text-white mb-1">${title}</div>
+        <div class="font-bold text-white mb-1 flex items-center justify-between">
+          <span>${title}</span>
+        </div>
         <div class="text-slate-300 leading-relaxed">${msg}</div>
       `;
       container.appendChild(toast);
@@ -666,15 +893,78 @@
       lucide.createIcons();
     }
 
+    // HITL Mode Switcher (Full Dispute, Partial Remit, Conditional Hold, Route)
+    function switchHitlMode(mode) {
+      currentHitlMode = mode;
+      const modes = ['dispute', 'partial', 'conditional', 'route'];
+      
+      modes.forEach(m => {
+        const tab = document.getElementById(`hitlTab${capitalize(m)}`);
+        const panel = document.getElementById(`hitlPanel${capitalize(m)}`);
+        if (m === mode) {
+          tab.className = "tab-active py-2 px-2.5 rounded-md text-[11px] transition text-center flex items-center justify-center gap-1.5";
+          panel.classList.remove('hidden');
+          // GSAP fade in
+          gsap.from(panel, { opacity: 0, y: 6, duration: 0.25, ease: 'power2.out' });
+        } else {
+          tab.className = "py-2 px-2.5 rounded-md text-[11px] text-slate-400 hover:text-slate-200 transition text-center flex items-center justify-center gap-1.5";
+          panel.classList.add('hidden');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function updatePartialMath() {
+      if (!currentAuditData) return;
+      const totalBilled = currentAuditData.invoice.total_amount;
+      const approvedInput = parseFloat(document.getElementById('inputPartialApproved').value) || 0;
+      const withheld = Math.max(0, totalBilled - approvedInput);
+      
+      document.getElementById('displayPartialWithheld').textContent = `$${withheld.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      document.getElementById('btnPartialLabel').textContent = `Authorize Partial Payment ($${approvedInput.toLocaleString('en-US', { minimumFractionDigits: 2 })})`;
+    }
+
+    // Multi-Page Canvas Rendering
+    async function changePdfPage(delta) {
+      if (!pdfDoc) return;
+      const targetPage = currentPage + delta;
+      if (targetPage < 1 || targetPage > totalPages) return;
+
+      currentPage = targetPage;
+      await renderCurrentPage();
+    }
+
+    async function renderCurrentPage() {
+      if (!pdfDoc) return;
+      document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
+      document.getElementById('prevPageBtn').disabled = (currentPage <= 1);
+      document.getElementById('nextPageBtn').disabled = (currentPage >= totalPages);
+
+      const page = await pdfDoc.getPage(currentPage);
+      const canvas = document.getElementById('pdfCanvas');
+      const ctx = canvas.getContext('2d');
+      const viewport = page.getViewport({ scale: 1.15 });
+
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+      // Draw annotations if on page 1
+      drawEvidenceAnnotations(isCurrentOvercharged, viewport.width, currentPage);
+    }
+
     // Trigger Demo Sample Audits
     async function auditSampleInvoice(type) {
       const isOvercharged = (type === 'overcharged');
       const filename = isOvercharged ? "invoice_overcharged.pdf" : "invoice_valid.pdf";
       const pdfUrl = `/static/sample_invoices/${filename}`;
 
-      showToast("Ingesting PDF", `Loading and parsing ${filename}...`, "info");
-      
-      // Trigger Laser Scan
+      showToast("Ingesting PDF", `Parsing ${filename} with Neural Layout Engine...`, "info");
       triggerScanner();
 
       try {
@@ -682,10 +972,10 @@
         if (!res.ok) throw new Error("API returned an error");
         currentAuditData = await res.json();
 
-        // 1. Render Real PDF via PDF.js
-        await renderPdfFromUrl(pdfUrl, isOvercharged);
+        // 1. Render Real PDF via PDF.js with Multi-Page Engine
+        await loadPdfFromUrl(pdfUrl, isOvercharged);
 
-        // 2. Render Audit Intelligence
+        // 2. Render Audit Intelligence with GSAP Micro-Interactions
         renderAuditIntelligence(currentAuditData);
 
         if (isOvercharged) {
@@ -706,7 +996,7 @@
       const formData = new FormData();
       formData.append('file', file);
 
-      showToast("Ingesting Custom Document", `Evaluating ${file.name} with Veritas Neural Layout Engine...`, "info");
+      showToast("Ingesting Document", `Evaluating ${file.name}...`, "info");
       triggerScanner();
 
       try {
@@ -720,11 +1010,10 @@
         }
         currentAuditData = await res.json();
 
-        // Read local file as ArrayBuffer for PDF.js rendering
         const fileReader = new FileReader();
         fileReader.onload = async function() {
-          const typedarray = new Uint8Array(this.result);
-          await renderPdfFromBytes(typedarray, currentAuditData.report.status === "FLAGGED");
+          currentPdfBytes = new Uint8Array(this.result);
+          await loadPdfFromBytes(currentPdfBytes, currentAuditData.report.status === "FLAGGED");
           renderAuditIntelligence(currentAuditData);
           showToast("Audit Complete", `Audited ${file.name} successfully.`, "success");
         };
@@ -734,59 +1023,159 @@
       }
     }
 
+    // Handle Asynchronous Batch Processing
+    async function handleBatchUpload(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
+
+      openBatchModal(files.length);
+
+      try {
+        const res = await fetch('/api/audit-batch', {
+          method: 'POST',
+          body: formData
+        });
+        if (!res.ok) throw new Error("Batch ingestion failed");
+        const batchData = await res.json();
+
+        // Start polling task endpoint
+        startBatchPolling(batchData.batch_id);
+      } catch (err) {
+        showToast("Batch Error", err.message, "error");
+        closeBatchModal();
+      }
+    }
+
+    function openBatchModal(totalFiles) {
+      const modal = document.getElementById('batchProgressModal');
+      modal.classList.remove('hidden');
+      document.getElementById('batchProgressBadge').textContent = 'QUEUED';
+      document.getElementById('batchProgressBadge').className = 'text-[10px] px-2.5 py-0.5 rounded-full bg-brand/20 text-brand-light font-semibold border border-brand/30';
+      document.getElementById('batchProgressBar').style.width = '0%';
+      document.getElementById('batchPercentLabel').textContent = '0%';
+      document.getElementById('batchCountLabel').textContent = `0 / ${totalFiles} Documents Audited`;
+      document.getElementById('batchResultsList').innerHTML = '<div class="text-slate-400 text-center py-4">Distributing files to asynchronous queue workers...</div>';
+      document.getElementById('batchCloseBtn').classList.add('hidden');
+    }
+
+    function closeBatchModal() {
+      if (batchPollInterval) clearInterval(batchPollInterval);
+      document.getElementById('batchProgressModal').classList.add('hidden');
+    }
+
+    function startBatchPolling(taskId) {
+      if (batchPollInterval) clearInterval(batchPollInterval);
+      
+      batchPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/tasks/${taskId}`);
+          if (!res.ok) return;
+          const task = await res.json();
+
+          // Update Progress
+          document.getElementById('batchProgressBar').style.width = `${task.progress_percent}%`;
+          document.getElementById('batchPercentLabel').textContent = `${task.progress_percent}%`;
+          document.getElementById('batchCountLabel').textContent = `${task.completed_files} / ${task.total_files} Documents Audited`;
+          document.getElementById('batchProgressBadge').textContent = task.status;
+
+          // Render Results
+          if (task.results && task.results.length > 0) {
+            const list = document.getElementById('batchResultsList');
+            list.innerHTML = task.results.map(r => `
+              <div class="p-2.5 rounded-lg bg-surface border border-border flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full ${r.compliance_status === 'PASSED' ? 'bg-emerald' : 'bg-terracotta'}"></span>
+                  <span class="font-medium text-slate-200">${r.filename}</span>
+                </div>
+                <span class="font-mono ${r.compliance_status === 'PASSED' ? 'text-emerald' : 'text-terracotta-light'} font-semibold">
+                  ${r.compliance_status === 'PASSED' ? 'Passed ($0)' : `+$${r.total_overcharge.toFixed(2)}`}
+                </span>
+              </div>
+            `).join('');
+          }
+
+          if (task.status === "COMPLETED" || task.status === "FAILED") {
+            clearInterval(batchPollInterval);
+            document.getElementById('batchCloseBtn').classList.remove('hidden');
+            if (task.status === "COMPLETED") {
+              showToast("Batch Finished", `Audited ${task.total_files} invoices in background queue.`, "success");
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }, 600);
+    }
+
     function triggerScanner() {
       const beam = document.getElementById('laserBeam');
       beam.classList.remove('hidden');
       setTimeout(() => beam.classList.add('hidden'), 2500);
     }
 
-    // Render Real PDF from URL via PDF.js
-    async function renderPdfFromUrl(url, isOvercharged) {
+    // Load PDF from URL
+    async function loadPdfFromUrl(url, isOvercharged) {
       document.getElementById('viewerEmptyState').classList.add('hidden');
       document.getElementById('pdfContainerWrapper').classList.remove('hidden');
       switchViewerTab('invoice');
+
+      currentPdfUrl = url;
+      currentPdfBytes = null;
+      isCurrentOvercharged = isOvercharged;
 
       const loadingTask = pdfjsLib.getDocument(url);
       pdfDoc = await loadingTask.promise;
-      const page = await pdfDoc.getPage(1);
+      totalPages = pdfDoc.numPages || 1;
+      currentPage = 1;
 
-      const canvas = document.getElementById('pdfCanvas');
-      const ctx = canvas.getContext('2d');
-      const viewport = page.getViewport({ scale: 1.15 });
-
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-
-      // Draw Floating Evidence Bounding Box Annotation Tags
-      drawEvidenceAnnotations(isOvercharged, viewport.width);
+      await renderCurrentPage();
     }
 
-    async function renderPdfFromBytes(typedarray, isOvercharged) {
+    // Load PDF from Bytes
+    async function loadPdfFromBytes(typedarray, isOvercharged) {
       document.getElementById('viewerEmptyState').classList.add('hidden');
       document.getElementById('pdfContainerWrapper').classList.remove('hidden');
       switchViewerTab('invoice');
 
+      currentPdfBytes = typedarray;
+      currentPdfUrl = null;
+      isCurrentOvercharged = isOvercharged;
+
       const loadingTask = pdfjsLib.getDocument(typedarray);
       pdfDoc = await loadingTask.promise;
-      const page = await pdfDoc.getPage(1);
+      totalPages = pdfDoc.numPages || 1;
+      currentPage = 1;
 
-      const canvas = document.getElementById('pdfCanvas');
-      const ctx = canvas.getContext('2d');
-      const viewport = page.getViewport({ scale: 1.15 });
-
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-      drawEvidenceAnnotations(isOvercharged, viewport.width);
+      await renderCurrentPage();
     }
 
-    // Draw High-Precision Optical Vector Bounding Frames on PDF
-    function drawEvidenceAnnotations(isOvercharged, canvasWidth) {
+    // Draw Optical Vector Frames on Canvas
+    function drawEvidenceAnnotations(isOvercharged, canvasWidth, pageNum) {
       const layer = document.getElementById('annotationLayer');
       layer.innerHTML = '';
+
+      if (pageNum !== 1) {
+        // Subsequent pages display verified clean addendum indicator
+        const frameClean = document.createElement('div');
+        frameClean.className = "optical-vector-frame optical-frame-success";
+        frameClean.style.top = "100px";
+        frameClean.style.left = "36px";
+        frameClean.style.width = "calc(100% - 72px)";
+        frameClean.style.height = "50px";
+        frameClean.innerHTML = `
+          <div class="optical-pin">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
+            <span class="text-emerald">Page ${pageNum}: Verified Addendum & Sign-off</span>
+          </div>
+        `;
+        layer.appendChild(frameClean);
+        return;
+      }
 
       if (isOvercharged) {
         // Frame 1: Senior DevOps Rate Mismatch Line ($95.00/hr)
@@ -798,8 +1187,8 @@
         frame1.style.height = "34px";
         frame1.innerHTML = `
           <div class="optical-pin">
-            <span class="h-1.5 w-1.5 rounded-full bg-coral animate-ping"></span>
-            <span class="text-coral-light">§4.2 Rate Discrepancy (+$1,200.00)</span>
+            <span class="h-1.5 w-1.5 rounded-full bg-terracotta animate-ping"></span>
+            <span class="text-terracotta-light">§4.2 Rate Discrepancy (+$1,200.00)</span>
           </div>
         `;
         frame1.onclick = () => highlightTableRow(0);
@@ -814,12 +1203,15 @@
         frame2.style.height = "34px";
         frame2.innerHTML = `
           <div class="optical-pin">
-            <span class="h-1.5 w-1.5 rounded-full bg-coral animate-ping"></span>
-            <span class="text-coral-light">§4.2 Unapproved Surcharge (+$350.00)</span>
+            <span class="h-1.5 w-1.5 rounded-full bg-terracotta animate-ping"></span>
+            <span class="text-terracotta-light">§4.2 Unapproved Surcharge (+$350.00)</span>
           </div>
         `;
         frame2.onclick = () => highlightTableRow(1);
         layer.appendChild(frame2);
+
+        // GSAP Vector Frame Reveal
+        gsap.from('.optical-vector-frame', { scale: 0.97, opacity: 0, duration: 0.35, ease: 'back.out(1.5)' });
       } else {
         // Frame Valid: Verified Billable Schedule
         const frameValid = document.createElement('div');
@@ -830,11 +1222,12 @@
         frameValid.style.height = "72px";
         frameValid.innerHTML = `
           <div class="optical-pin">
-            <span class="h-1.5 w-1.5 rounded-full bg-mint"></span>
-            <span class="text-mint-light">100% Verified to Rate Schedule A</span>
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
+            <span class="text-emerald">100% Verified to Rate Schedule A</span>
           </div>
         `;
         layer.appendChild(frameValid);
+        gsap.from(frameValid, { scale: 0.98, opacity: 0, duration: 0.35 });
       }
     }
 
@@ -842,14 +1235,29 @@
       const rows = document.querySelectorAll('#lineItemsTableBody tr');
       rows.forEach((r, i) => {
         if (i === idx) {
-          r.classList.add('ring-1', 'ring-coral', 'bg-coral-bg');
+          r.classList.add('ring-1', 'ring-terracotta', 'bg-terracotta-bg');
         } else {
-          r.classList.remove('ring-1', 'ring-coral', 'bg-coral-bg');
+          r.classList.remove('ring-1', 'ring-terracotta', 'bg-terracotta-bg');
         }
       });
     }
 
-    // Render Right Pane Audit Intelligence
+    // GSAP Numeric Interpolation Counter
+    function animateNumericDelta(elemId, targetVal, prefix = '$', isPositive = true) {
+      const elem = document.getElementById(elemId);
+      const startObj = { val: 0 };
+      gsap.to(startObj, {
+        val: targetVal,
+        duration: 0.75,
+        ease: "power2.out",
+        onUpdate: () => {
+          const sign = (isPositive && startObj.val > 0) ? '+' : '';
+          elem.textContent = `${sign}${prefix}${startObj.val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+      });
+    }
+
+    // Render Right Pane Audit Intelligence with GSAP Micro-Interactions
     function renderAuditIntelligence(data) {
       const { invoice, report, contract } = data;
       const isPassed = report.status === "PASSED";
@@ -858,6 +1266,15 @@
       document.getElementById('agentTraceStepper').classList.remove('hidden');
       document.getElementById('copilotSection').classList.remove('hidden');
       document.getElementById('footerFileName').textContent = `Source: ${report.invoice_number}.pdf`;
+
+      // Animate Stepper Milestones via GSAP
+      gsap.from('#agentTraceStepper .milestone-item', {
+        opacity: 0.3,
+        scale: 0.96,
+        stagger: 0.08,
+        duration: 0.4,
+        ease: 'power2.out'
+      });
 
       // Header Banner
       const banner = document.getElementById('auditHeaderBanner');
@@ -869,22 +1286,29 @@
       title.textContent = `${invoice.vendor_name} — #${report.invoice_number}`;
 
       if (isPassed) {
-        banner.className = "p-5 rounded-xl border border-border border-l-4 border-l-mint bg-panel flex items-center justify-between transition-all shadow-md";
-        badge.className = "px-2.5 py-1 rounded-full text-[10px] font-semibold bg-mint-bg text-mint border border-mint-border";
+        banner.className = "p-5 rounded-xl border border-border border-l-4 border-l-emerald bg-panel flex items-center justify-between transition-all shadow-md";
+        badge.className = "px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-bg text-emerald border border-emerald-border";
         badge.textContent = "Passed Compliance";
-        delta.className = "text-2xl font-extrabold tabular-nums text-mint mt-0.5";
+        delta.className = "text-2xl font-extrabold tabular-nums text-emerald mt-0.5";
         delta.textContent = "$0.00";
         summary.textContent = "All billed rate items, quantities, and terms adhere strictly to MSA-2025-CS01.";
         document.getElementById('hitlComposerSection').classList.add('hidden');
       } else {
-        banner.className = "p-5 rounded-xl border border-border border-l-4 border-l-coral bg-panel flex items-center justify-between transition-all shadow-md";
-        badge.className = "px-2.5 py-1 rounded-full text-[10px] font-semibold bg-coral-bg text-coral-light border border-coral-border";
+        banner.className = "p-5 rounded-xl border border-border border-l-4 border-l-terracotta bg-panel flex items-center justify-between transition-all shadow-md";
+        badge.className = "px-2.5 py-1 rounded-full text-[10px] font-semibold bg-terracotta-bg text-terracotta-light border border-terracotta-border";
         badge.textContent = "Flagged for Violations";
-        delta.className = "text-2xl font-extrabold tabular-nums text-coral-light mt-0.5";
-        delta.textContent = `+$${report.total_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        delta.className = "text-2xl font-extrabold tabular-nums text-terracotta-light mt-0.5";
+        
+        // GSAP Numeric Count-Up
+        animateNumericDelta('txtDiscrepancyDelta', report.total_overcharge);
+        
         summary.textContent = `Isolated ${report.discrepancies.length} material billing violations totaling $${report.total_overcharge.toFixed(2)}.`;
         document.getElementById('hitlComposerSection').classList.remove('hidden');
         document.getElementById('disputeEmailBox').value = report.suggested_dispute_email || "";
+
+        // Reset Partial math
+        document.getElementById('inputPartialApproved').value = report.total_expected.toFixed(2);
+        updatePartialMath();
       }
 
       // Line Items Table
@@ -898,20 +1322,29 @@
 
         const tr = document.createElement('tr');
         tr.className = isFlagged 
-          ? "border-l-2 border-l-coral bg-coral-bg/[0.4] hover:bg-coral-bg transition-colors cursor-pointer"
+          ? "border-l-2 border-l-terracotta bg-terracotta-bg/[0.4] hover:bg-terracotta-bg transition-colors cursor-pointer"
           : "hover:bg-subtle/50 transition-colors";
         tr.innerHTML = `
           <td class="py-3.5 px-4 ${isFlagged ? 'text-slate-100 font-semibold' : 'text-slate-300'}">
-            ${isFlagged ? '<span class="text-coral-light font-bold mr-1.5">●</span>' : ''}${item.description}
+            ${isFlagged ? '<span class="text-terracotta-light font-bold mr-1.5">●</span>' : ''}${item.description}
           </td>
           <td class="py-3.5 px-3 text-right tabular-nums text-slate-400 font-medium">${item.quantity}</td>
-          <td class="py-3.5 px-3 text-right tabular-nums ${isFlagged ? 'text-coral-light font-semibold' : 'text-slate-300 font-medium'}">$${item.unit_price.toFixed(2)}</td>
+          <td class="py-3.5 px-3 text-right tabular-nums ${isFlagged ? 'text-terracotta-light font-semibold' : 'text-slate-300 font-medium'}">$${item.unit_price.toFixed(2)}</td>
           <td class="py-3.5 px-3 text-right tabular-nums text-slate-400 font-medium">${contractRateDisplay}</td>
-          <td class="py-3.5 px-4 text-right tabular-nums font-semibold ${isFlagged ? 'text-coral-light' : 'text-mint'}">
+          <td class="py-3.5 px-4 text-right tabular-nums font-semibold ${isFlagged ? 'text-terracotta-light' : 'text-emerald'}">
             ${isFlagged ? deltaDisplay : '$0.00'}
           </td>
         `;
         tableBody.appendChild(tr);
+      });
+
+      // GSAP Staggered Table Rows Entrance
+      gsap.from('#lineItemsTableBody tr', {
+        opacity: 0,
+        y: 8,
+        stagger: 0.05,
+        duration: 0.35,
+        ease: 'power2.out'
       });
 
       // Strip Summary
@@ -927,28 +1360,37 @@
 
       if (report.discrepancies.length === 0) {
         countBadge.textContent = "0 Violations";
-        countBadge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-mint-bg text-mint border border-mint-border";
+        countBadge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-bg text-emerald border border-emerald-border";
         violContainer.innerHTML = `
-          <div class="p-4 rounded-xl bg-mint-bg border border-mint-border text-xs text-mint flex items-center gap-2.5 shadow-sm">
+          <div class="p-4 rounded-xl bg-emerald-bg border border-emerald-border text-xs text-emerald flex items-center gap-2.5 shadow-sm">
             <i data-lucide="check-circle" class="w-4 h-4"></i>
             <span>Verified 100% compliant with Master Services Agreement clauses.</span>
           </div>
         `;
       } else {
         countBadge.textContent = `${report.discrepancies.length} Violations`;
-        countBadge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-coral-bg text-coral-light border border-coral-border";
+        countBadge.className = "text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-terracotta-bg text-terracotta-light border border-terracotta-border";
 
         report.discrepancies.forEach(d => {
           const div = document.createElement('div');
-          div.className = "p-4 rounded-xl border border-border border-l-2 border-l-coral bg-panel text-xs space-y-1.5 shadow-sm";
+          div.className = "violation-card p-4 rounded-xl border border-border border-l-2 border-l-terracotta bg-panel text-xs space-y-1.5 shadow-sm";
           div.innerHTML = `
             <div class="flex items-center justify-between">
-              <span class="font-semibold text-coral-light text-xs tracking-tight">${d.type}</span>
+              <span class="font-semibold text-terracotta-light text-xs tracking-tight">${d.type}</span>
               <span class="font-semibold text-slate-200 tabular-nums">${d.overcharge > 0 ? '+$' + d.overcharge.toFixed(2) : 'Terms Conflict'}</span>
             </div>
             <p class="text-slate-300 leading-relaxed text-xs">${d.description}</p>
           `;
           violContainer.appendChild(div);
+        });
+
+        // GSAP Violation Cards Stagger
+        gsap.from('.violation-card', {
+          opacity: 0,
+          y: 10,
+          stagger: 0.08,
+          duration: 0.4,
+          ease: 'power2.out'
         });
       }
 
@@ -979,7 +1421,6 @@
 
       const thread = document.getElementById('copilotChatThread');
       
-      // Add user message
       const userBubble = document.createElement('div');
       userBubble.className = "p-2 rounded bg-blue-500/10 border border-blue-500/20 text-blue-200 text-[11px] self-end";
       userBubble.innerHTML = `<strong>You:</strong> ${msg}`;
@@ -987,7 +1428,6 @@
       input.value = '';
       thread.scrollTop = thread.scrollHeight;
 
-      // Add loading indicator
       const loadingBubble = document.createElement('div');
       loadingBubble.className = "text-slate-500 italic text-[10px] animate-pulse";
       loadingBubble.textContent = "Veritas Copilot analyzing contract clauses & recalculating numbers...";
@@ -1012,24 +1452,20 @@
         const data = await res.json();
         loadingBubble.remove();
 
-        // Add Copilot response
         const aiBubble = document.createElement('div');
         aiBubble.className = "p-2.5 rounded bg-subtle border border-border text-slate-200 text-[11px] space-y-1";
-        // Format markdown bold
         let formatted = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
         aiBubble.innerHTML = `<div class="font-bold text-brand text-[10px] uppercase">Veritas Copilot:</div><div>${formatted}</div>`;
         thread.appendChild(aiBubble);
         thread.scrollTop = thread.scrollHeight;
 
-        // If Copilot adjusted overcharge dynamically (e.g. rate compromise)
         if (data.adjusted_overcharge !== null && data.adjusted_overcharge !== undefined) {
           currentAuditData.report.total_overcharge = data.adjusted_overcharge;
-          document.getElementById('txtDiscrepancyDelta').textContent = `+$${data.adjusted_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-          document.getElementById('txtDiscrepancyDelta').className = "text-2xl font-extrabold tabular-nums text-amber-400";
+          animateNumericDelta('txtDiscrepancyDelta', data.adjusted_overcharge);
+          document.getElementById('txtDiscrepancyDelta').className = "text-2xl font-extrabold tabular-nums text-amber";
           showToast("Settlement Recalculated", `Adjusted overcharge delta to $${data.adjusted_overcharge.toFixed(2)} based on compromise rate.`, "info");
         }
 
-        // If Copilot revised the dispute notice
         if (data.revised_draft) {
           document.getElementById('disputeEmailBox').value = data.revised_draft;
           document.getElementById('hitlComposerSection').classList.remove('hidden');
@@ -1041,7 +1477,9 @@
       }
     }
 
-    // Commit Decision via API
+    // HITL Decision Dispatchers
+
+    // 1. Full Dispute / Rejection / Full Exception
     async function commitDecision(action) {
       if (!currentAuditData) return;
       const { report } = currentAuditData;
@@ -1052,9 +1490,71 @@
         action: action,
         disputed_amount: report.total_overcharge,
         dispute_email_content: document.getElementById('disputeEmailBox').value,
-        reviewer_notes: "Reviewed by Surya Prakash via Veritas AP Studio"
+        reviewer_notes: "Reviewed by Surya Prakash via Veritas AP Enterprise Studio"
       };
 
+      await submitHitlRequest(payload);
+    }
+
+    // 2. Partial Remittance & Credit Memo
+    async function commitPartialDecision() {
+      if (!currentAuditData) return;
+      const { report, invoice } = currentAuditData;
+      const approvedAmount = parseFloat(document.getElementById('inputPartialApproved').value) || report.total_expected;
+      const withheldAmount = Math.max(0, invoice.total_amount - approvedAmount);
+      const memo = document.getElementById('inputPartialMemo').value;
+
+      const payload = {
+        invoice_number: report.invoice_number,
+        vendor_name: report.vendor_name,
+        action: "PARTIAL_APPROVE",
+        disputed_amount: withheldAmount,
+        partial_approved_amount: approvedAmount,
+        dispute_email_content: memo,
+        reviewer_notes: `Partial payment authorized for $${approvedAmount.toFixed(2)}. Credit memo required for $${withheldAmount.toFixed(2)}.`
+      };
+
+      await submitHitlRequest(payload);
+    }
+
+    // 3. Conditional Line-Item Hold
+    async function commitConditionalDecision() {
+      if (!currentAuditData) return;
+      const { report } = currentAuditData;
+      const conditionType = document.getElementById('selectConditionType').value;
+      
+      const payload = {
+        invoice_number: report.invoice_number,
+        vendor_name: report.vendor_name,
+        action: "CONDITIONAL_DISPUTE",
+        disputed_amount: report.total_overcharge,
+        reviewer_notes: `Conditional Hold enforced under condition: ${conditionType}.`
+      };
+
+      await submitHitlRequest(payload);
+    }
+
+    // 4. Workflow Routing & Escalation
+    async function commitRoutingDecision() {
+      if (!currentAuditData) return;
+      const { report } = currentAuditData;
+      const target = document.getElementById('selectRoutingTarget').value;
+      const notes = document.getElementById('routeReasonNotes').value;
+
+      const payload = {
+        invoice_number: report.invoice_number,
+        vendor_name: report.vendor_name,
+        action: "ROUTE_WORKFLOW",
+        disputed_amount: report.total_overcharge,
+        routing_target: target,
+        reviewer_notes: `Escalated to ${target}. Rationale: ${notes || "Legal & threshold exception required."}`
+      };
+
+      await submitHitlRequest(payload);
+    }
+
+    // Base API Caller for HITL Decisions
+    async function submitHitlRequest(payload) {
       try {
         const res = await fetch('/api/hitl-decision', {
           method: 'POST',
@@ -1063,9 +1563,9 @@
         });
         const result = await res.json();
 
-        // Update telemetry
+        // Update Telemetry with GSAP
         totalSavingsBlocked = result.total_savings_to_date;
-        document.getElementById('telemetrySavings').textContent = `$${totalSavingsBlocked.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        animateNumericDelta('telemetrySavings', totalSavingsBlocked, '$', false);
         
         decisionsCount += 1;
         document.getElementById('footerDecisionCount').textContent = decisionsCount;

@@ -1,8 +1,10 @@
 import os
 import sys
 import shutil
-from typing import Optional, List
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+import uuid
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -168,10 +170,110 @@ def _persist_audit_to_db(db: Session, invoice: ParsedInvoice, report: AuditRepor
 class HITLDecisionRequest(BaseModel):
     invoice_number: str
     vendor_name: str
-    action: str  # "APPROVE_OVERCHARGE", "DISPUTE_AND_EMAIL", "REJECT"
+    action: str  # "APPROVE_OVERCHARGE", "DISPUTE_AND_EMAIL", "REJECT", "PARTIAL_APPROVE", "CONDITIONAL_DISPUTE", "ROUTE_WORKFLOW"
     disputed_amount: float
+    partial_approved_amount: Optional[float] = None
+    routing_target: Optional[str] = None  # e.g., "LEGAL", "PROCUREMENT", "VP_FINANCE"
     dispute_email_content: Optional[str] = None
     reviewer_notes: Optional[str] = None
+
+
+# In-Memory Task Queue for Batch Processing
+batch_tasks: Dict[str, Dict[str, Any]] = {}
+
+
+def _process_batch_task(batch_id: str, file_paths: List[str]):
+    from src.database.session import SessionLocal
+    db = SessionLocal()
+    task = batch_tasks.get(batch_id)
+    if not task:
+        db.close()
+        return
+
+    task["status"] = "PROCESSING"
+    results = []
+
+    try:
+        for idx, path in enumerate(file_paths):
+            try:
+                parsed_inv = extractor.extract_from_pdf(path)
+                contract = _get_contract_pydantic_from_db(db, parsed_inv.vendor_name)
+                report = engine_audit.audit_invoice(parsed_inv, contract)
+                audit_id = _persist_audit_to_db(db, parsed_inv, report, path)
+                results.append({
+                    "filename": os.path.basename(path),
+                    "status": "SUCCESS",
+                    "audit_id": audit_id,
+                    "invoice_number": parsed_inv.invoice_number,
+                    "compliance_status": report.status.value,
+                    "total_overcharge": report.total_overcharge,
+                })
+            except Exception as item_err:
+                results.append({
+                    "filename": os.path.basename(path),
+                    "status": "ERROR",
+                    "error": str(item_err),
+                })
+            task["completed_files"] = idx + 1
+            task["progress_percent"] = int(((idx + 1) / task["total_files"]) * 100)
+
+        task["status"] = "COMPLETED"
+        task["results"] = results
+    except Exception as batch_err:
+        task["status"] = "FAILED"
+        task["error"] = str(batch_err)
+    finally:
+        db.close()
+
+
+@app.post("/api/audit-batch")
+async def audit_batch_invoices(
+    background_tasks: BackgroundTasks,
+    files: List[UploadFile] = File(...),
+):
+    if not files:
+        raise HTTPException(status_code=400, detail="No files uploaded for batch processing.")
+
+    batch_id = str(uuid.uuid4())[:8]
+    saved_paths = []
+
+    for f in files:
+        if not f.filename.lower().endswith(".pdf"):
+            continue
+        save_path = os.path.join(UPLOADS_DIR, f"{batch_id}_{f.filename}")
+        with open(save_path, "wb") as buffer:
+            shutil.copyfileobj(f.file, buffer)
+        saved_paths.append(save_path)
+
+    if not saved_paths:
+        raise HTTPException(status_code=400, detail="No valid PDF documents identified in batch payload.")
+
+    batch_tasks[batch_id] = {
+        "batch_id": batch_id,
+        "status": "QUEUED",
+        "total_files": len(saved_paths),
+        "completed_files": 0,
+        "progress_percent": 0,
+        "results": [],
+        "created_at": datetime.now().isoformat(),
+    }
+
+    background_tasks.add_task(_process_batch_task, batch_id, saved_paths)
+
+    return {
+        "batch_id": batch_id,
+        "status": "QUEUED",
+        "total_files": len(saved_paths),
+        "poll_url": f"/api/tasks/{batch_id}",
+    }
+
+
+@app.get("/api/tasks/{task_id}")
+def get_task_status(task_id: str):
+    task = batch_tasks.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Batch task not found.")
+    return task
 
 
 @app.get("/api/contracts")
@@ -271,6 +373,23 @@ def record_hitl_decision(decision: HITLDecisionRequest, db: Session = Depends(ge
             f"Manual exception granted by reviewer for #{decision.invoice_number}. "
             f"Invoice marked approved for payment with audit tag."
         )
+    elif decision.action == "PARTIAL_APPROVE":
+        approved_amt = decision.partial_approved_amount or 0.0
+        status_message = (
+            f"Partial payment of ${approved_amt:,.2f} authorized for #{decision.invoice_number}. "
+            f"Overcharge of ${decision.disputed_amount:,.2f} placed on conditional AP hold pending credit note."
+        )
+    elif decision.action == "CONDITIONAL_DISPUTE":
+        status_message = (
+            f"Conditional dispute filed against specific line items on #{decision.invoice_number}. "
+            f"Disputed amount (${decision.disputed_amount:,.2f}) withheld pending vendor rate audit."
+        )
+    elif decision.action == "ROUTE_WORKFLOW":
+        target = decision.routing_target or "Legal Counsel"
+        status_message = (
+            f"Invoice #{decision.invoice_number} routed to {target} for compliance determination. "
+            f"Escalation notes attached."
+        )
     else:
         status_message = f"Invoice #{decision.invoice_number} rejected and returned to vendor."
 
@@ -288,7 +407,7 @@ def record_hitl_decision(decision: HITLDecisionRequest, db: Session = Depends(ge
     # Calculate total blocked savings from database
     total_savings = (
         db.query(HumanDecisionRecord)
-        .filter(HumanDecisionRecord.action.in_(["DISPUTE_AND_EMAIL", "REJECT"]))
+        .filter(HumanDecisionRecord.action.in_(["DISPUTE_AND_EMAIL", "REJECT", "PARTIAL_APPROVE", "CONDITIONAL_DISPUTE"]))
         .with_entities(HumanDecisionRecord.disputed_amount)
         .all()
     )
