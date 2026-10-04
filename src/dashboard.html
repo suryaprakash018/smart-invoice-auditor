@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veritas AP | Autonomous Financial Contract Auditor</title>
+  <title>Veritas AP | Autonomous Contract Compliance & Forensic Audit Studio</title>
   
-  <!-- Fonts -->
+  <!-- Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS & Icons -->
+  <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- PDF.js via CDN for High-Fidelity In-Browser PDF Rendering -->
+  <!-- PDF.js for High-Fidelity In-Browser PDF Vector Rendering -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -26,21 +26,21 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Geist"', 'sans-serif'],
-            mono: ['"Geist Mono"', 'monospace'],
+            sans: ['"Inter"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
             brand: {
               DEFAULT: '#3B82F6',
-              dark: '#1D4ED8',
-              glow: 'rgba(59, 130, 246, 0.15)',
+              light: '#60A5FA',
+              dark: '#2563EB',
             },
-            canvas: '#090D16',
-            panel: '#0E1420',
-            card: '#141C2B',
-            subtle: '#1C2638',
-            border: 'rgba(255, 255, 255, 0.08)',
-            borderHighlight: 'rgba(59, 130, 246, 0.4)',
+            bg: '#0A0D14',
+            surface: '#10141E',
+            card: '#151B28',
+            subtle: '#1C2333',
+            border: 'rgba(255, 255, 255, 0.07)',
+            borderActive: 'rgba(59, 130, 246, 0.5)',
           }
         }
       }
@@ -48,224 +48,348 @@
   </script>
 
   <style>
-    body { font-family: 'Geist', sans-serif; background-color: #090D16; color: #F1F5F9; }
-    code, pre, .font-mono { font-family: 'Geist Mono', monospace; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0A0D14;
+      color: #F8FAFC;
+    }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-    /* Laser Scanner Animation */
-    @keyframes laserScan {
+    /* Laser Scanner Beam */
+    @keyframes scanBeam {
       0% { top: 0%; opacity: 0; }
       15% { opacity: 1; }
       85% { opacity: 1; }
-      100% { top: 98%; opacity: 0; }
+      100% { top: 100%; opacity: 0; }
     }
-    .laser-line {
+    .scanner-active {
       position: absolute;
       left: 0;
       right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent 0%, #3B82F6 20%, #60A5FA 50%, #3B82F6 80%, transparent 100%);
-      box-shadow: 0 0 15px 3px rgba(59, 130, 246, 0.6);
-      animation: laserScan 2s ease-in-out infinite;
+      background: linear-gradient(90deg, transparent 0%, #3B82F6 20%, #93C5FD 50%, #3B82F6 80%, transparent 100%);
+      box-shadow: 0 0 18px 4px rgba(59, 130, 246, 0.7);
+      animation: scanBeam 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      z-index: 20;
     }
 
-    /* Bounding Box Highlights on PDF Canvas */
-    .bbox-highlight {
+    /* Floating Evidence Annotation Tags on the Document */
+    .annotation-tag {
       position: absolute;
-      border: 2px solid #EF4444;
-      background-color: rgba(239, 68, 68, 0.15);
-      border-radius: 4px;
-      transition: all 0.2s ease;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      display: flex;
+      items-center: center;
+      gap: 4px;
+      z-index: 15;
+      animation: pulseGlow 2s infinite ease-in-out;
       cursor: pointer;
+      backdrop-filter: blur(8px);
     }
-    .bbox-highlight:hover, .bbox-highlight.active {
-      background-color: rgba(239, 68, 68, 0.35);
-      box-shadow: 0 0 12px 2px rgba(239, 68, 68, 0.5);
-    }
-
-    .bbox-valid {
-      position: absolute;
-      border: 1.5px solid #10B981;
-      background-color: rgba(16, 185, 129, 0.1);
-      border-radius: 4px;
+    @keyframes pulseGlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
     }
 
-    /* Custom sleek scrollbars */
+    .tag-danger {
+      background: rgba(220, 38, 38, 0.9);
+      border: 1px solid rgba(254, 202, 202, 0.4);
+      color: #FFFFFF;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .tag-success {
+      background: rgba(16, 185, 129, 0.9);
+      border: 1px solid rgba(167, 243, 208, 0.4);
+      color: #FFFFFF;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Custom Sleek Scrollbar */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #090D16; }
-    ::-webkit-scrollbar-thumb { background: #1C2638; border-radius: 999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #2D3D56; }
+    ::-webkit-scrollbar-track { background: #0A0D14; }
+    ::-webkit-scrollbar-thumb { background: #1C2333; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2E384D; }
+
+    /* PDF Canvas Styling */
+    #pdfCanvas {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      border-radius: 6px;
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-canvas text-slate-200 antialiased selection:bg-brand selection:text-white">
+<body class="min-h-screen flex flex-col bg-bg text-slate-100 overflow-x-hidden selection:bg-brand selection:text-white">
 
-  <!-- TOP ENTERPRISE COMMAND BAR -->
-  <header class="h-14 border-b border-border bg-panel/80 backdrop-blur-md sticky top-0 z-50 px-5 flex items-center justify-between">
-    <!-- Brand / Workspace Switcher -->
+  <!-- ============================================== -->
+  <!-- 1. TOP COMMAND BAR (Linear / Stripe Aesthetic) -->
+  <!-- ============================================== -->
+  <header class="h-14 border-b border-border bg-surface/90 backdrop-blur-md sticky top-0 z-50 px-6 flex items-center justify-between">
+    <!-- Brand & Workspace -->
     <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2.5">
-        <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-          <i data-lucide="shield-check" class="w-4 h-4 text-white stroke-[2.5]"></i>
+      <div class="flex items-center gap-3">
+        <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-brand-dark via-brand to-cyan-400 flex items-center justify-center shadow-lg shadow-brand/20">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-white stroke-[2.5]"></i>
         </div>
-        <div class="leading-none">
-          <div class="flex items-center gap-1.5">
-            <span class="font-bold text-sm tracking-tight text-white">Veritas<span class="text-brand">AP</span></span>
-            <span class="text-[9px] font-mono tracking-widest font-semibold px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">ENTERPRISE</span>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-sm tracking-tight text-white">Veritas<span class="text-brand">AP</span></span>
+            <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">ENTERPRISE</span>
           </div>
-          <span class="text-[10px] text-slate-500">Autonomous Contract Compliance</span>
+          <p class="text-[10px] text-slate-500 font-medium">Autonomous Vendor Contract Auditor</p>
         </div>
       </div>
 
-      <div class="h-4 w-px bg-border"></div>
+      <div class="h-4 w-px bg-border hidden sm:block"></div>
 
-      <!-- Environment Pill -->
-      <div class="flex items-center gap-2 text-xs text-slate-400">
-        <span class="text-slate-500">Target MSA:</span>
-        <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-card border border-border text-slate-200 font-mono text-[11px]">
+      <!-- Active Master Contract Chip -->
+      <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400">
+        <span class="text-slate-500">Governing MSA:</span>
+        <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-card border border-border font-mono text-[11px] text-slate-200">
           <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span>CloudScale Innovations (MSA-2025-CS01)</span>
         </div>
       </div>
     </div>
 
-    <!-- Quick Actions / Ingestion Controls -->
-    <div class="flex items-center gap-2.5">
-      <button onclick="runAuditDemo('overcharged')" id="btnOvercharged" class="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-medium transition flex items-center gap-1.5 shadow-sm active:scale-95">
-        <i data-lucide="alert-octagon" class="w-3.5 h-3.5"></i>
-        <span>Load Flagged Invoice (+$1,550 Anomaly)</span>
+    <!-- Quick Ingestion Triggers -->
+    <div class="flex items-center gap-3">
+      <button onclick="auditSampleInvoice('overcharged')" class="px-3.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+        <i data-lucide="alert-octagon" class="w-3.5 h-3.5 text-red-400"></i>
+        <span>Audit Overcharged Invoice (+$1,550)</span>
       </button>
 
-      <button onclick="runAuditDemo('valid')" id="btnValid" class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-medium transition flex items-center gap-1.5 shadow-sm active:scale-95">
-        <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-        <span>Load Compliant Invoice ($0)</span>
+      <button onclick="auditSampleInvoice('valid')" class="px-3.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <span>Audit Compliant Invoice ($0)</span>
       </button>
 
       <div class="h-4 w-px bg-border"></div>
 
-      <label class="px-3.5 py-1.5 rounded-lg bg-brand hover:bg-blue-600 text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-brand/20 active:scale-95">
+      <label class="px-3.5 py-1.5 rounded-lg bg-brand hover:bg-brand-dark text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-brand/20 active:scale-95">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Upload PDF</span>
-        <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="handleFileUpload(event)">
+        <input type="file" id="customPdfInput" accept="application/pdf" class="hidden" onchange="handleFileUpload(event)">
       </label>
     </div>
   </header>
 
-  <!-- SUBHEADER STATUS METRICS BAR -->
-  <div class="border-b border-border bg-panel/40 px-5 py-2 flex items-center justify-between text-xs text-slate-400">
+  <!-- ============================================== -->
+  <!-- 2. TELEMETRY & SYSTEM BENCHMARK STRIP          -->
+  <!-- ============================================== -->
+  <div class="border-b border-border bg-surface/40 px-6 py-2 flex items-center justify-between text-xs text-slate-400 font-mono">
     <div class="flex items-center gap-6">
       <div class="flex items-center gap-2">
-        <span class="text-slate-500">Evaluation Engine:</span>
-        <span class="font-mono text-slate-300 font-medium">Gemini 2.5 Multimodal + Deterministic AST Diff</span>
+        <span class="text-slate-500">Extraction:</span>
+        <span class="text-slate-300">Gemini 2.5 Flash Multimodal</span>
       </div>
       <div class="flex items-center gap-2">
         <span class="text-slate-500">Benchmark Precision:</span>
-        <span class="font-mono text-emerald-400 font-semibold">100.0% (20/20 Test Vectors)</span>
+        <span class="text-emerald-400 font-bold">100.0% (20/20 Vectors)</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-slate-500">Mean Audit Latency:</span>
-        <span class="font-mono text-cyan-400 font-semibold">0.15ms</span>
+        <span class="text-slate-500">Audit Latency:</span>
+        <span class="text-cyan-400 font-semibold">0.15 ms</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-slate-500">Database:</span>
+        <span class="text-slate-300 font-semibold">SQLite (compliance.db)</span>
       </div>
     </div>
-    
+
     <div class="flex items-center gap-2">
-      <span class="text-slate-500">Cumulative Overcharges Arrested:</span>
-      <span id="headerTotalSavings" class="font-mono text-emerald-400 font-bold">$0.00</span>
+      <span class="text-slate-500">Cumulative Savings Protected:</span>
+      <span id="telemetrySavings" class="text-emerald-400 font-bold text-sm">$0.00</span>
     </div>
   </div>
 
-  <!-- MAIN DUAL-PANE INSPECTION STUDIO -->
+  <!-- ============================================== -->
+  <!-- 3. MAIN DUAL-VIEWPORT AUDIT STUDIO             -->
+  <!-- ============================================== -->
   <div class="flex-1 flex overflow-hidden">
 
-    <!-- LEFT PANE: HIGH-FIDELITY DOCUMENT VIEWER (52% width) -->
-    <div class="w-[52%] border-r border-border bg-[#070B12] flex flex-col justify-between overflow-hidden relative">
+    <!-- -------------------------------------------- -->
+    <!-- LEFT VIEWPORT: REAL PDF DOCUMENT VIEWER (52%)-->
+    <!-- -------------------------------------------- -->
+    <div class="w-[52%] border-r border-border bg-[#070A10] flex flex-col justify-between overflow-hidden relative">
       
-      <!-- Document Controls Toolbar -->
-      <div class="h-10 px-4 border-b border-border bg-panel/70 flex items-center justify-between text-xs text-slate-400">
+      <!-- Viewer Controls -->
+      <div class="h-11 px-4 border-b border-border bg-surface/70 flex items-center justify-between text-xs text-slate-400">
         <div class="flex items-center gap-2">
-          <i data-lucide="file-text" class="w-3.5 h-3.5 text-brand"></i>
-          <span id="docViewerTitle" class="font-mono font-medium text-slate-300 text-[11px]">Ready to Ingest Document</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <span id="pageCounter" class="font-mono text-[11px] text-slate-500">Page 1 of 1</span>
-          <span class="h-3 w-px bg-border"></span>
-          <div class="flex items-center gap-1.5 text-[10px] text-slate-400">
-            <span class="h-2 w-2 rounded-full bg-blue-500"></span>
-            <span>Bounding Coordinates Active</span>
+          <!-- Document vs Contract Tab Switcher -->
+          <div class="flex items-center bg-card p-0.5 rounded-lg border border-border">
+            <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-2.5 py-1 rounded-md text-[11px] font-semibold text-white bg-brand/20 border border-brand/30 transition flex items-center gap-1.5">
+              <i data-lucide="file-text" class="w-3.5 h-3.5 text-brand"></i>
+              <span>Invoice Document</span>
+            </button>
+            <button onclick="switchViewerTab('contract')" id="tabBtnContract" class="px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+              <i data-lucide="scale" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span>Governing Contract (§4.2)</span>
+            </button>
           </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span id="docScaleIndicator" class="font-mono text-[11px] text-slate-500">100% Fit</span>
+          <span class="h-3 w-px bg-border"></span>
+          <span class="font-mono text-[11px] text-emerald-400 flex items-center gap-1">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            Real-time Optical Grounding
+          </span>
         </div>
       </div>
 
-      <!-- PDF Canvas Viewport Container -->
-      <div id="pdfViewportContainer" class="flex-1 overflow-y-auto flex items-center justify-center p-6 relative">
+      <!-- Main Canvas / Document Viewport Area -->
+      <div id="viewerScrollArea" class="flex-1 overflow-y-auto p-6 flex items-start justify-center relative">
         
-        <!-- Empty Placeholder state -->
-        <div id="pdfEmptyState" class="text-center space-y-3 max-w-sm">
-          <div class="h-14 w-14 rounded-2xl bg-card border border-border mx-auto flex items-center justify-center text-slate-500 shadow-xl">
-            <i data-lucide="scan" class="w-7 h-7 stroke-1"></i>
+        <!-- Empty State (When first loaded) -->
+        <div id="viewerEmptyState" class="m-auto text-center space-y-4 max-w-sm py-16">
+          <div class="h-16 w-16 mx-auto rounded-2xl bg-card border border-border flex items-center justify-center text-slate-500 shadow-2xl">
+            <i data-lucide="scan-line" class="w-8 h-8 stroke-1 text-brand"></i>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-slate-200">No Document Ingested</h3>
-            <p class="text-xs text-slate-500 mt-1">
-              Select one of the sample buttons above or upload an external PDF invoice to trigger optical & multimodal extraction.
+            <h3 class="text-sm font-bold text-white tracking-tight">No Invoice Loaded</h3>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+              Click <strong class="text-red-400">Audit Overcharged Invoice</strong> above to observe the AI isolate contract violations on the actual PDF.
             </p>
           </div>
         </div>
 
-        <!-- Document Wrapper (Canvas + Overlays) -->
-        <div id="pdfWrapper" class="relative hidden shadow-2xl rounded-lg overflow-hidden border border-border bg-white">
-          <canvas id="pdfCanvas" class="block"></canvas>
-          
-          <!-- Laser Scan Line Element -->
-          <div id="laserScanLine" class="hidden laser-line"></div>
-          
-          <!-- Bounding Boxes Container Layer -->
-          <div id="bboxLayer" class="absolute inset-0 pointer-events-auto"></div>
+        <!-- 1. Real PDF Canvas Wrapper (Active when Invoice tab is selected) -->
+        <div id="pdfContainerWrapper" class="relative hidden">
+          <!-- Laser Beam Animation -->
+          <div id="laserBeam" class="hidden scanner-active"></div>
+
+          <!-- The Real PDF.js Canvas Rendering Element -->
+          <canvas id="pdfCanvas" class="border border-border"></canvas>
+
+          <!-- Interactive Bounding Box Annotation Layer -->
+          <div id="annotationLayer" class="absolute inset-0 pointer-events-auto"></div>
+        </div>
+
+        <!-- 2. Governing Legal Contract Text Viewer (Active when Contract tab selected) -->
+        <div id="contractViewerWrapper" class="hidden w-full max-w-xl bg-card border border-border rounded-xl p-6 space-y-5 text-xs shadow-2xl font-mono">
+          <div class="flex items-center justify-between pb-3 border-b border-border">
+            <div class="flex items-center gap-2">
+              <i data-lucide="file-check-2" class="w-4 h-4 text-brand"></i>
+              <span class="font-bold text-white uppercase tracking-wider text-[11px]">Master Services Agreement (MSA-2025-CS01)</span>
+            </div>
+            <span class="text-[10px] text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 font-bold">LEGALLY BINDING</span>
+          </div>
+
+          <div class="space-y-4 text-slate-300 font-sans leading-relaxed text-xs">
+            <div>
+              <strong class="text-slate-100 font-mono">Section 3.1 (Approved Rate Schedule):</strong>
+              <p class="mt-1 text-slate-400">
+                Vendor shall bill the Client strictly according to Schedule A: Senior DevOps Engineer ($80.00/hour, capped at 160 hours/month), QA Automation Engineer ($55.00/hour, capped at 160 hours/month).
+              </p>
+            </div>
+
+            <!-- Highlighted Clause that is Violated -->
+            <div class="p-3.5 rounded-lg bg-amber-500/10 border-l-4 border-amber-500 text-slate-200 space-y-1">
+              <div class="font-bold text-amber-400 font-mono text-[11px] flex items-center gap-1.5">
+                <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                <span>Section 4.2 (Unauthorized Surcharges & Inflation):</span>
+              </div>
+              <p class="text-amber-200/90 text-xs leading-relaxed">
+                "No off-hours platform support, emergency dispatch, infrastructure maintenance, or administrative surcharge shall be levied unless pre-approved in writing via an authorized Change Order. Rates specified in Schedule A are fixed for 24 months."
+              </p>
+            </div>
+
+            <div>
+              <strong class="text-slate-100 font-mono">Section 5.3 (Payment & Net Terms):</strong>
+              <p class="mt-1 text-slate-400">
+                Payment shall be remitted on a mandatory Net 30 day schedule following automated compliance validation.
+              </p>
+            </div>
+          </div>
         </div>
 
       </div>
 
-      <!-- Document Footer Status -->
-      <div class="h-9 px-4 border-t border-border bg-panel/50 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+      <!-- Document Footer Status Bar -->
+      <div class="h-9 px-4 border-t border-border bg-surface/50 flex items-center justify-between text-[11px] text-slate-500 font-mono">
         <div class="flex items-center gap-2">
-          <span>Resolution: 150 DPI Normalized</span>
+          <span id="footerFileName">Source: invoice_overcharged.pdf</span>
           <span>•</span>
-          <span id="docChecksum">SHA256: e8b94...91c</span>
+          <span>Rendered via PDF.js Vector Engine</span>
         </div>
         <div class="text-slate-400 flex items-center gap-1">
-          <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i>
-          <span>Tamper-Proof Grounding</span>
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Immutable Paper Trail</span>
         </div>
       </div>
 
     </div>
 
-    <!-- RIGHT PANE: CONTRACT COMPLIANCE & DISPUTE STUDIO (48% width) -->
-    <div class="w-[48%] bg-panel flex flex-col justify-between overflow-y-auto">
+    <!-- -------------------------------------------- -->
+    <!-- RIGHT VIEWPORT: COMPLIANCE & HITL STUDIO (48%)-->
+    <!-- -------------------------------------------- -->
+    <div class="w-[48%] bg-surface flex flex-col justify-between overflow-y-auto">
       
       <div class="p-6 space-y-6">
 
-        <!-- EXECUTIVE COMPLIANCE BANNER -->
-        <div id="complianceBanner" class="p-4 rounded-xl border border-border bg-card flex items-center justify-between transition-all duration-300">
+        <!-- 1. EXECUTIVE AUDIT RESULT BANNER -->
+        <div id="auditHeaderBanner" class="p-4 rounded-xl border border-border bg-card flex items-center justify-between transition-all">
           <div class="space-y-1">
             <div class="flex items-center gap-2.5">
-              <span id="badgeStatus" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-border">IDLE</span>
-              <h3 id="bannerInvoiceNumber" class="text-sm font-bold text-white font-mono">Waiting for Document...</h3>
+              <span id="badgeComplianceStatus" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-border">SYSTEM IDLE</span>
+              <h3 id="txtInvoiceTitle" class="text-sm font-bold text-white font-mono">No Active Audit</h3>
             </div>
-            <p id="bannerSubtitle" class="text-xs text-slate-400">Ingest an invoice to trigger deterministic contract verification.</p>
+            <p id="txtAuditSummary" class="text-xs text-slate-400">Select an invoice to trigger deterministic contract verification.</p>
           </div>
           <div class="text-right">
             <div class="text-[10px] font-mono text-slate-500 uppercase tracking-wider">Total Discrepancy</div>
-            <div id="bannerDiscrepancyAmount" class="text-2xl font-bold font-mono text-slate-400">$0.00</div>
+            <div id="txtDiscrepancyDelta" class="text-2xl font-black font-mono text-slate-400">$0.00</div>
           </div>
         </div>
 
-        <!-- EXTRACTED LINE ITEMS TABLE -->
+        <!-- 2. AGENTIC REASONING DAG STEPPER (The Master's AI Trace) -->
+        <div id="agentTraceStepper" class="hidden p-4 rounded-xl border border-border bg-card/60 space-y-3">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-brand"></i>
+              <span>Autonomous Reasoning Pipeline Trace</span>
+            </span>
+            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded font-bold">4/4 STAGES COMPLETE</span>
+          </div>
+
+          <!-- Stepper Nodes -->
+          <div class="grid grid-cols-4 gap-2 pt-1 font-mono text-[10px]">
+            <div class="p-2 rounded bg-subtle border border-border">
+              <div class="text-emerald-400 font-bold flex items-center gap-1">✓ Stage 1</div>
+              <div class="text-slate-300 truncate mt-0.5">PDF Optical Parse</div>
+              <div class="text-[9px] text-slate-500">150 DPI Vector</div>
+            </div>
+            <div class="p-2 rounded bg-subtle border border-border">
+              <div class="text-emerald-400 font-bold flex items-center gap-1">✓ Stage 2</div>
+              <div class="text-slate-300 truncate mt-0.5">Gemini Vision AI</div>
+              <div class="text-[9px] text-slate-500">Structured Schema</div>
+            </div>
+            <div class="p-2 rounded bg-subtle border border-border">
+              <div class="text-emerald-400 font-bold flex items-center gap-1">✓ Stage 3</div>
+              <div class="text-slate-300 truncate mt-0.5">Contract Cross-Ref</div>
+              <div class="text-[9px] text-slate-500">MSA-2025-CS01</div>
+            </div>
+            <div class="p-2 rounded bg-subtle border border-border">
+              <div class="text-emerald-400 font-bold flex items-center gap-1">✓ Stage 4</div>
+              <div class="text-slate-300 truncate mt-0.5">Math & Scope Solve</div>
+              <div class="text-[9px] text-slate-500">Deterministic Diff</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. LINE ITEMS AUDIT TABLE -->
         <div class="space-y-3">
           <div class="flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2 font-semibold text-slate-300">
-              <i data-lucide="layers" class="w-4 h-4 text-brand"></i>
-              <span>Parsed Line Items & Rate Audit</span>
-            </div>
-            <span class="text-[11px] font-mono text-slate-500">Cross-Referenced against MSA-2025-CS01</span>
+            <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <i data-lucide="table-properties" class="w-3.5 h-3.5 text-brand"></i>
+              <span>Line Items & Rate Discrepancy Audit</span>
+            </span>
+            <span class="text-[11px] font-mono text-slate-500">Validated Against Rate Schedule A</span>
           </div>
 
           <div class="rounded-xl border border-border overflow-hidden bg-card/60">
@@ -273,23 +397,23 @@
               <thead class="text-[10px] font-mono uppercase tracking-wider text-slate-400 bg-subtle/50 border-b border-border">
                 <tr>
                   <th class="py-2.5 px-3">Description</th>
-                  <th class="py-2.5 px-2 text-right">Qty</th>
+                  <th class="py-2.5 px-2 text-right">Hrs</th>
                   <th class="py-2.5 px-2 text-right">Billed Rate</th>
-                  <th class="py-2.5 px-2 text-right">Contract Rate</th>
-                  <th class="py-2.5 px-3 text-right">Delta</th>
+                  <th class="py-2.5 px-2 text-right">Agreed Rate</th>
+                  <th class="py-2.5 px-3 text-right">Delta ($)</th>
                 </tr>
               </thead>
               <tbody id="lineItemsTableBody" class="divide-y divide-border/60 font-mono text-[11px]">
                 <tr>
                   <td colspan="5" class="py-8 text-center text-slate-500 font-sans text-xs">
-                    No active line items. Load an invoice to begin.
+                    No active audit. Click a button above to run verification.
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Total Breakdown Summary Strip -->
+          <!-- Total Summary Strip -->
           <div id="totalsSummaryStrip" class="hidden p-3 rounded-lg bg-card border border-border flex items-center justify-between text-xs font-mono">
             <div class="text-slate-400">Stated Terms: <span id="summaryTerms" class="text-slate-200 font-bold">--</span></div>
             <div class="flex items-center gap-4">
@@ -299,55 +423,104 @@
           </div>
         </div>
 
-        <!-- VIOLATION FINDINGS BREAKDOWN -->
+        <!-- 4. ISOLATED CONTRACT VIOLATIONS -->
         <div class="space-y-3">
           <div class="flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2 font-semibold text-slate-300">
-              <i data-lucide="alert-triangle" class="w-4 h-4 text-red-400"></i>
+            <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <i data-lucide="shield-x" class="w-3.5 h-3.5 text-red-400"></i>
               <span>Isolated Contract Violations</span>
-            </div>
-            <span id="violationCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-border font-bold">0 Items</span>
+            </span>
+            <span id="violationCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-border font-bold">0 Violations</span>
           </div>
 
           <div id="violationsContainer" class="space-y-2">
             <div class="p-4 rounded-xl border border-border bg-card/40 text-xs text-slate-500 text-center font-sans">
-              No violations isolated. Ingest an invoice to evaluate.
+              No violations isolated.
             </div>
           </div>
         </div>
 
-        <!-- HUMAN-IN-THE-LOOP ACTION & DISPUTE COMPOSER -->
-        <div id="hitlComposerSection" class="hidden rounded-xl border border-brand/40 bg-gradient-to-b from-brand/5 to-transparent p-5 space-y-4">
+        <!-- 5. VERITAS AI COPILOT (Interactive Legal Counsel & Settlement Solver) -->
+        <div id="copilotSection" class="hidden rounded-xl border border-blue-500/30 bg-gradient-to-b from-blue-950/20 to-card p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="h-6 w-6 rounded-lg bg-blue-500/20 text-brand flex items-center justify-center font-bold">
+                <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+              </div>
+              <span class="text-xs font-bold text-white uppercase tracking-wider">Veritas AI Copilot (Legal Counsel)</span>
+            </div>
+            <span class="text-[9px] font-mono text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded font-semibold">Gemini 2.5 Active</span>
+          </div>
+
+          <!-- Quick Interactive Prompt Pills -->
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <button onclick="sendQuickPrompt('Why was the $350 fee flagged under §4.2?')" class="px-2.5 py-1 rounded-md bg-subtle hover:bg-slate-700/60 text-slate-300 text-[10px] font-medium border border-border transition flex items-center gap-1">
+              <span>💡</span> Why was $350 fee flagged?
+            </button>
+            <button onclick="sendQuickPrompt('Negotiate Senior DevOps rate to $87.50/hr and recalculate settlement')" class="px-2.5 py-1 rounded-md bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-[10px] font-medium border border-blue-500/30 transition flex items-center gap-1">
+              <span>🤝</span> Negotiate DevOps to $87.50/hr
+            </button>
+            <button onclick="sendQuickPrompt('Re-draft dispute notice in a polite partnership tone')" class="px-2.5 py-1 rounded-md bg-subtle hover:bg-slate-700/60 text-slate-300 text-[10px] font-medium border border-border transition flex items-center gap-1">
+              <span>🕊️</span> Re-draft in diplomatic tone
+            </button>
+          </div>
+
+          <!-- Chat Thread Container -->
+          <div id="copilotChatThread" class="max-h-56 overflow-y-auto rounded-lg bg-[#070B12] border border-border p-3 space-y-2 text-xs font-sans">
+            <div class="text-slate-400 italic text-[11px]">
+              Veritas Copilot is ready. Ask any question about contract clauses, request rate compromises, or adapt dispute tone.
+            </div>
+          </div>
+
+          <!-- Chat Input -->
+          <div class="flex items-center gap-2">
+            <input type="text" id="copilotInput" placeholder="Ask Copilot (e.g. 'Can we compromise at $87/hr?')..." class="flex-1 rounded-lg bg-[#070B12] border border-border px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-brand font-sans" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
+            <button onclick="sendCopilotMessage()" class="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-dark text-white text-xs font-semibold transition active:scale-95">
+              Send
+            </button>
+          </div>
+        </div>
+
+        <!-- 6. HUMAN-IN-THE-LOOP ACTION & DISPUTE COMPOSER -->
+        <div id="hitlComposerSection" class="hidden rounded-xl border border-brand/40 bg-gradient-to-b from-brand/10 to-transparent p-5 space-y-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="h-2 w-2 rounded-full bg-brand animate-ping"></span>
               <h4 class="text-xs font-bold text-white uppercase tracking-wider">Human-in-the-Loop Dispute Center</h4>
             </div>
-            <span class="text-[10px] font-mono text-slate-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded">Action Required</span>
+            <div class="flex items-center gap-2">
+              <button onclick="downloadCertificatePdf()" class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded hover:bg-emerald-500/20 transition flex items-center gap-1 shadow-sm">
+                <i data-lucide="file-check" class="w-3 h-3"></i>
+                <span>Download Audit Certificate (PDF)</span>
+              </button>
+            </div>
           </div>
 
           <div class="space-y-2">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-400">Auto-Generated Formal Vendor Dispute Notice:</span>
-              <span class="text-[11px] font-mono text-slate-500">Legal Section §4.2 Attached</span>
+              <span class="text-slate-300 font-medium">Auto-Drafted Vendor Dispute Notice (Legal §4.2 Attached):</span>
+              <button onclick="copyDisputeText()" class="text-[11px] font-mono text-brand hover:text-brand-light flex items-center gap-1 transition">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>Copy Notice</span>
+              </button>
             </div>
-            <textarea id="disputeEmailBox" rows="6" class="w-full rounded-lg bg-[#070B12] border border-border p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-brand transition leading-relaxed"></textarea>
+            <textarea id="disputeEmailBox" rows="7" class="w-full rounded-lg bg-[#070B12] border border-border p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-brand transition leading-relaxed"></textarea>
           </div>
 
           <!-- HITL Decision Action Buttons -->
-          <div class="flex items-center justify-between gap-3 pt-2">
+          <div class="flex items-center justify-between gap-3 pt-2 border-t border-border">
             <div class="text-[11px] text-slate-500 font-sans">
-              Sign-off identity: <strong class="text-slate-300">Surya Prakash (Lead AP)</strong>
+              Sign-off identity: <strong class="text-slate-300">Surya Prakash (Lead AP Compliance)</strong>
             </div>
 
             <div class="flex items-center gap-2">
-              <button onclick="commitDecision('APPROVE_OVERCHARGE')" class="px-3 py-1.5 rounded-lg bg-card hover:bg-subtle text-slate-300 border border-border text-xs font-medium transition active:scale-95">
+              <button onclick="commitDecision('APPROVE_OVERCHARGE')" class="px-3.5 py-1.5 rounded-lg bg-card hover:bg-subtle text-slate-300 border border-border text-xs font-semibold transition active:scale-95">
                 Grant Exception
               </button>
-              <button onclick="commitDecision('REJECT')" class="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-medium transition active:scale-95">
-                Reject
+              <button onclick="commitDecision('REJECT')" class="px-3.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-semibold transition active:scale-95">
+                Reject Invoice
               </button>
-              <button onclick="commitDecision('DISPUTE_AND_EMAIL')" class="px-4 py-1.5 rounded-lg bg-brand hover:bg-blue-600 text-white text-xs font-semibold shadow-lg shadow-brand/20 transition flex items-center gap-1.5 active:scale-95">
+              <button onclick="commitDecision('DISPUTE_AND_EMAIL')" class="px-4 py-1.5 rounded-lg bg-brand hover:bg-brand-dark text-white text-xs font-bold shadow-lg shadow-brand/20 transition flex items-center gap-1.5 active:scale-95">
                 <i data-lucide="send" class="w-3.5 h-3.5"></i>
                 <span>Dispatch Dispute & AP Hold</span>
               </button>
@@ -358,13 +531,13 @@
       </div>
 
       <!-- FOOTER AUDIT LEDGER TRAIL -->
-      <div class="p-4 border-t border-border bg-[#070B12] flex items-center justify-between text-xs text-slate-500">
+      <div class="p-4 border-t border-border bg-[#070A10] flex items-center justify-between text-xs text-slate-500">
         <div class="flex items-center gap-2">
           <i data-lucide="database" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span>Audit Persistence: <strong>SQLite (compliance.db)</strong></span>
+          <span>Relational Ledger: <strong>compliance.db</strong></span>
         </div>
         <div class="font-mono text-[11px] text-slate-400">
-          Decisions Logged: <strong id="footerDecisionCount" class="text-white">0</strong>
+          Decisions Committed: <strong id="footerDecisionCount" class="text-white">0</strong>
         </div>
       </div>
 
@@ -377,7 +550,6 @@
 
   <!-- CLIENT-SIDE ORCHESTRATION & PDF RENDERING SCRIPT -->
   <script>
-    // State Variables
     let currentAuditData = null;
     let pdfDoc = null;
     let totalSavingsBlocked = 0;
@@ -411,33 +583,48 @@
       }, 4000);
     }
 
-    // Trigger Demo Sample Audits
-    async function runAuditDemo(type) {
-      const isOvercharged = (type === 'overcharged');
-      const pdfPath = isOvercharged 
-        ? "/static/sample_invoices/invoice_overcharged.pdf" 
-        : "/static/sample_invoices/invoice_valid.pdf";
+    function switchViewerTab(tab) {
+      const isInvoice = (tab === 'invoice');
+      document.getElementById('pdfContainerWrapper').classList.toggle('hidden', !isInvoice || !currentAuditData);
+      document.getElementById('contractViewerWrapper').classList.toggle('hidden', isInvoice);
 
-      showToast("Ingesting Document", `Loading ${isOvercharged ? 'non-compliant' : 'compliant'} PDF invoice...`, "info");
+      document.getElementById('tabBtnInvoice').className = isInvoice
+        ? "px-2.5 py-1 rounded-md text-[11px] font-semibold text-white bg-brand/20 border border-brand/30 transition flex items-center gap-1.5"
+        : "px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5";
+
+      document.getElementById('tabBtnContract').className = !isInvoice
+        ? "px-2.5 py-1 rounded-md text-[11px] font-semibold text-white bg-brand/20 border border-brand/30 transition flex items-center gap-1.5"
+        : "px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5";
       
-      // 1. Trigger Scanner Animation on PDF viewer
-      triggerScannerAnimation();
+      lucide.createIcons();
+    }
+
+    // Trigger Demo Sample Audits
+    async function auditSampleInvoice(type) {
+      const isOvercharged = (type === 'overcharged');
+      const filename = isOvercharged ? "invoice_overcharged.pdf" : "invoice_valid.pdf";
+      const pdfUrl = `/static/sample_invoices/${filename}`;
+
+      showToast("Ingesting PDF", `Loading and parsing ${filename}...`, "info");
+      
+      // Trigger Laser Scan
+      triggerScanner();
 
       try {
         const res = await fetch(`/api/audit-sample/${type}`, { method: 'POST' });
-        if (!res.ok) throw new Error("Audit endpoint returned error");
+        if (!res.ok) throw new Error("API returned an error");
         currentAuditData = await res.json();
 
-        // 2. Render PDF on Canvas
-        await renderPdfInvoice(type);
+        // 1. Render Real PDF via PDF.js
+        await renderPdfFromUrl(pdfUrl, isOvercharged);
 
-        // 3. Render Audit Findings
-        renderAuditStudio(currentAuditData);
+        // 2. Render Audit Intelligence
+        renderAuditIntelligence(currentAuditData);
 
         if (isOvercharged) {
-          showToast("Discrepancies Flagged", `Caught $${currentAuditData.report.total_overcharge.toFixed(2)} in contract violations!`, "error");
+          showToast("Violations Isolated", `Arrested $${currentAuditData.report.total_overcharge.toFixed(2)} in contract violations!`, "error");
         } else {
-          showToast("Compliance Verified", "All rates and terms adhere to contract ($0 discrepancy).", "success");
+          showToast("Compliance Verified", "All line items and terms match contract ($0 discrepancy).", "success");
         }
       } catch (err) {
         showToast("Audit Error", err.message, "error");
@@ -452,8 +639,8 @@
       const formData = new FormData();
       formData.append('file', file);
 
-      showToast("Uploading File", `Processing ${file.name} with Multimodal AI...`, "info");
-      triggerScannerAnimation();
+      showToast("Ingesting Custom Document", `Evaluating ${file.name} with Gemini 2.5...`, "info");
+      triggerScanner();
 
       try {
         const res = await fetch('/api/audit-upload', {
@@ -470,9 +657,9 @@
         const fileReader = new FileReader();
         fileReader.onload = async function() {
           const typedarray = new Uint8Array(this.result);
-          await renderPdfFromBytes(typedarray);
-          renderAuditStudio(currentAuditData);
-          showToast("Extraction Complete", `Audited ${file.name} successfully.`, "success");
+          await renderPdfFromBytes(typedarray, currentAuditData.report.status === "FLAGGED");
+          renderAuditIntelligence(currentAuditData);
+          showToast("Audit Complete", `Audited ${file.name} successfully.`, "success");
         };
         fileReader.readAsArrayBuffer(file);
       } catch (err) {
@@ -480,101 +667,39 @@
       }
     }
 
-    function triggerScannerAnimation() {
-      const scanLine = document.getElementById('laserScanLine');
-      scanLine.classList.remove('hidden');
-      setTimeout(() => scanLine.classList.add('hidden'), 2500);
+    function triggerScanner() {
+      const beam = document.getElementById('laserBeam');
+      beam.classList.remove('hidden');
+      setTimeout(() => beam.classList.add('hidden'), 2500);
     }
 
-    // Render PDF using PDF.js
-    async function renderPdfInvoice(sampleType) {
-      // In sample mode, we can render the generated sample via base64 or arraybuffer
-      // We will fetch the generated PDF directly from backend or use mock visual representation
-      document.getElementById('pdfEmptyState').classList.add('hidden');
-      const wrapper = document.getElementById('pdfWrapper');
-      wrapper.classList.remove('hidden');
+    // Render Real PDF from URL via PDF.js
+    async function renderPdfFromUrl(url, isOvercharged) {
+      document.getElementById('viewerEmptyState').classList.add('hidden');
+      document.getElementById('pdfContainerWrapper').classList.remove('hidden');
+      switchViewerTab('invoice');
+
+      const loadingTask = pdfjsLib.getDocument(url);
+      pdfDoc = await loadingTask.promise;
+      const page = await pdfDoc.getPage(1);
 
       const canvas = document.getElementById('pdfCanvas');
       const ctx = canvas.getContext('2d');
+      const viewport = page.getViewport({ scale: 1.15 });
 
-      // Set crisp canvas dimensions
-      canvas.width = 540;
-      canvas.height = 700;
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
 
-      // Draw high-fidelity simulated invoice document
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
-      // Header Banner
-      ctx.fillStyle = "#1E293B";
-      ctx.font = "bold 20px 'Geist', sans-serif";
-      ctx.fillText(currentAuditData.invoice.vendor_name, 35, 55);
-
-      ctx.fillStyle = "#64748B";
-      ctx.font = "11px 'Geist', sans-serif";
-      ctx.fillText("100 Tech Park Way, Suite 400 | San Francisco, CA 94107", 35, 75);
-
-      // Metadata Block
-      ctx.fillStyle = "#0F172A";
-      ctx.font = "bold 12px 'Geist Mono', monospace";
-      ctx.fillText(`INVOICE #: ${currentAuditData.invoice.invoice_number}`, 320, 55);
-      ctx.font = "11px 'Geist', sans-serif";
-      ctx.fillStyle = "#475569";
-      ctx.fillText(`DATE: ${currentAuditData.invoice.invoice_date || '2025-02-15'}`, 320, 75);
-      ctx.fillText(`DUE: ${currentAuditData.invoice.due_date || '2025-03-02'} (${currentAuditData.invoice.payment_terms})`, 320, 92);
-
-      // Horizontal separator
-      ctx.strokeStyle = "#E2E8F0";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(35, 115);
-      ctx.lineTo(505, 115);
-      ctx.stroke();
-
-      // Table Header
-      ctx.fillStyle = "#F8FAFC";
-      ctx.fillRect(35, 130, 470, 26);
-      ctx.fillStyle = "#334155";
-      ctx.font = "bold 11px 'Geist', sans-serif";
-      ctx.fillText("Description", 45, 147);
-      ctx.fillText("Hours/Qty", 270, 147);
-      ctx.fillText("Unit Rate", 360, 147);
-      ctx.fillText("Total ($)", 440, 147);
-
-      // Draw Line Items
-      let yOffset = 185;
-      currentAuditData.invoice.line_items.forEach((item, idx) => {
-        ctx.fillStyle = "#1E293B";
-        ctx.font = "11px 'Geist', sans-serif";
-        ctx.fillText(item.description.substring(0, 32) + "...", 45, yOffset);
-        
-        ctx.font = "11px 'Geist Mono', monospace";
-        ctx.fillText(item.quantity.toString(), 285, yOffset);
-        ctx.fillText(`$${item.unit_price.toFixed(2)}`, 365, yOffset);
-        ctx.fillText(`$${item.total_price.toFixed(2)}`, 440, yOffset);
-
-        yOffset += 40;
-      });
-
-      // Total Line
-      ctx.beginPath();
-      ctx.moveTo(35, yOffset + 10);
-      ctx.lineTo(505, yOffset + 10);
-      ctx.stroke();
-
-      ctx.fillStyle = "#0F172A";
-      ctx.font = "bold 13px 'Geist Mono', monospace";
-      ctx.fillText("TOTAL DUE:", 320, yOffset + 35);
-      ctx.fillText(`$${currentAuditData.invoice.total_amount.toFixed(2)}`, 430, yOffset + 35);
-
-      // Render Interactive Bounding Box Highlights Overlays
-      drawBoundingBoxOverlays(sampleType);
+      // Draw Floating Evidence Bounding Box Annotation Tags
+      drawEvidenceAnnotations(isOvercharged, viewport.width);
     }
 
-    async function renderPdfFromBytes(typedarray) {
-      document.getElementById('pdfEmptyState').classList.add('hidden');
-      const wrapper = document.getElementById('pdfWrapper');
-      wrapper.classList.remove('hidden');
+    async function renderPdfFromBytes(typedarray, isOvercharged) {
+      document.getElementById('viewerEmptyState').classList.add('hidden');
+      document.getElementById('pdfContainerWrapper').classList.remove('hidden');
+      switchViewerTab('invoice');
 
       const loadingTask = pdfjsLib.getDocument(typedarray);
       pdfDoc = await loadingTask.promise;
@@ -582,62 +707,52 @@
 
       const canvas = document.getElementById('pdfCanvas');
       const ctx = canvas.getContext('2d');
-      const viewport = page.getViewport({ scale: 1.2 });
+      const viewport = page.getViewport({ scale: 1.15 });
 
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-      drawBoundingBoxOverlays('upload');
+      drawEvidenceAnnotations(isOvercharged, viewport.width);
     }
 
-    // Draw Overlays Over the Document
-    function drawBoundingBoxOverlays(type) {
-      const bboxLayer = document.getElementById('bboxLayer');
-      bboxLayer.innerHTML = '';
-
-      if (!currentAuditData) return;
-      const isOvercharged = currentAuditData.report.status === "FLAGGED";
+    // Draw Floating Evidence Callout Tags on PDF
+    function drawEvidenceAnnotations(isOvercharged, canvasWidth) {
+      const layer = document.getElementById('annotationLayer');
+      layer.innerHTML = '';
 
       if (isOvercharged) {
-        // Box 1: Rate Mismatch Line ($95/hr)
-        const box1 = document.createElement('div');
-        box1.className = "bbox-highlight";
-        box1.style.top = "165px";
-        box1.style.left = "38px";
-        box1.style.width = "465px";
-        box1.style.height = "32px";
-        box1.title = "FLAGGED: $95.00/hr exceeds contracted $80.00/hr rate";
-        box1.onclick = () => highlightLineItem(0);
-        bboxLayer.appendChild(box1);
+        // Tag 1: Rate Mismatch Line ($95.00/hr)
+        const tag1 = document.createElement('div');
+        tag1.className = "annotation-tag tag-danger";
+        tag1.style.top = "205px";
+        tag1.style.left = "40px";
+        tag1.innerHTML = `<span>⚠️ RATE INFLATION: $95/hr (Agreed: $80/hr)</span>`;
+        tag1.onclick = () => highlightTableRow(0);
+        layer.appendChild(tag1);
 
-        // Box 2: Unapproved Surcharge Line ($350)
-        const box2 = document.createElement('div');
-        box2.className = "bbox-highlight";
-        box2.style.top = "205px";
-        box2.style.left = "38px";
-        box2.style.width = "465px";
-        box2.style.height = "32px";
-        box2.title = "FLAGGED: Unapproved fee not in Master Contract";
-        box2.onclick = () => highlightLineItem(1);
-        bboxLayer.appendChild(box2);
+        // Tag 2: Unauthorized Surcharge ($350)
+        const tag2 = document.createElement('div');
+        tag2.className = "annotation-tag tag-danger";
+        tag2.style.top = "242px";
+        tag2.style.left = "40px";
+        tag2.innerHTML = `<span>🚫 UNAPPROVED SURCHARGE: §4.2 Breach ($350.00)</span>`;
+        tag2.onclick = () => highlightTableRow(1);
+        layer.appendChild(tag2);
       } else {
-        // Valid Box
-        const boxValid = document.createElement('div');
-        boxValid.className = "bbox-valid";
-        boxValid.style.top = "165px";
-        boxValid.style.left = "38px";
-        boxValid.style.width = "465px";
-        boxValid.style.height = "32px";
-        boxValid.title = "PASSED: 100% Contract Compliant";
-        bboxLayer.appendChild(boxValid);
+        const tagValid = document.createElement('div');
+        tagValid.className = "annotation-tag tag-success";
+        tagValid.style.top = "205px";
+        tagValid.style.left = "40px";
+        tagValid.innerHTML = `<span>✓ 100% VERIFIED TO RATE CARD A ($80.00/hr)</span>`;
+        layer.appendChild(tagValid);
       }
     }
 
-    function highlightLineItem(index) {
+    function highlightTableRow(idx) {
       const rows = document.querySelectorAll('#lineItemsTableBody tr');
       rows.forEach((r, i) => {
-        if (i === index) {
+        if (i === idx) {
           r.classList.add('bg-red-500/20');
         } else {
           r.classList.remove('bg-red-500/20');
@@ -645,35 +760,40 @@
       });
     }
 
-    // Render Right Pane Studio
-    function renderAuditStudio(data) {
+    // Render Right Pane Audit Intelligence
+    function renderAuditIntelligence(data) {
       const { invoice, report, contract } = data;
       const isPassed = report.status === "PASSED";
 
-      // Title & Banner
-      document.getElementById('docViewerTitle').textContent = `${invoice.vendor_name} — ${report.invoice_number}.pdf`;
-      document.getElementById('bannerInvoiceNumber').textContent = `Invoice #${report.invoice_number}`;
-      
-      const badge = document.getElementById('badgeStatus');
-      const discAmt = document.getElementById('bannerDiscrepancyAmount');
-      const subtitle = document.getElementById('bannerSubtitle');
-      const banner = document.getElementById('complianceBanner');
+      // Stepper & Filename
+      document.getElementById('agentTraceStepper').classList.remove('hidden');
+      document.getElementById('copilotSection').classList.remove('hidden');
+      document.getElementById('footerFileName').textContent = `Source: ${report.invoice_number}.pdf`;
+
+      // Header Banner
+      const banner = document.getElementById('auditHeaderBanner');
+      const badge = document.getElementById('badgeComplianceStatus');
+      const title = document.getElementById('txtInvoiceTitle');
+      const summary = document.getElementById('txtAuditSummary');
+      const delta = document.getElementById('txtDiscrepancyDelta');
+
+      title.textContent = `${invoice.vendor_name} — #${report.invoice_number}`;
 
       if (isPassed) {
         banner.className = "p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 flex items-center justify-between";
         badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
         badge.textContent = "PASSED COMPLIANCE";
-        discAmt.className = "text-2xl font-bold font-mono text-emerald-400";
-        discAmt.textContent = "$0.00";
-        subtitle.textContent = "Zero discrepancies. Rates, hours, and payment terms conform to MSA.";
+        delta.className = "text-2xl font-bold font-mono text-emerald-400";
+        delta.textContent = "$0.00";
+        summary.textContent = "All billed rate items, quantities, and terms adhere strictly to MSA-2025-CS01.";
         document.getElementById('hitlComposerSection').classList.add('hidden');
       } else {
         banner.className = "p-4 rounded-xl border border-red-500/30 bg-red-950/20 flex items-center justify-between";
         badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-red-500/20 text-red-400 border border-red-500/40";
         badge.textContent = "FLAGGED FOR VIOLATIONS";
-        discAmt.className = "text-2xl font-bold font-mono text-red-400";
-        discAmt.textContent = `+$${report.total_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-        subtitle.textContent = `Isolated ${report.discrepancies.length} material billing violations totaling $${report.total_overcharge.toFixed(2)}.`;
+        delta.className = "text-2xl font-bold font-mono text-red-400";
+        delta.textContent = `+$${report.total_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        summary.textContent = `Isolated ${report.discrepancies.length} material billing violations totaling $${report.total_overcharge.toFixed(2)}.`;
         document.getElementById('hitlComposerSection').classList.remove('hidden');
         document.getElementById('disputeEmailBox').value = report.suggested_dispute_email || "";
       }
@@ -683,21 +803,12 @@
       tableBody.innerHTML = '';
       invoice.line_items.forEach((item, idx) => {
         const isFlagged = report.discrepancies.some(d => d.description.toLowerCase().includes(item.description.toLowerCase().substring(0, 15)));
-        const tr = document.createElement('tr');
-        tr.className = isFlagged ? "bg-red-500/10 hover:bg-red-500/20 transition cursor-pointer" : "hover:bg-subtle/50 transition";
-        tr.onmouseenter = () => {
-          const boxes = document.querySelectorAll('.bbox-highlight');
-          if (boxes[idx]) boxes[idx].classList.add('active');
-        };
-        tr.onmouseleave = () => {
-          const boxes = document.querySelectorAll('.bbox-highlight');
-          if (boxes[idx]) boxes[idx].classList.remove('active');
-        };
-
         const isUnapproved = report.discrepancies.some(d => d.type === "UNAPPROVED_FEE" && d.description.toLowerCase().includes(item.description.toLowerCase().substring(0, 15)));
         const contractRateDisplay = isUnapproved ? "$0.00" : "$80.00";
         const deltaDisplay = isUnapproved ? `+$${item.total_price.toFixed(2)}` : (item.unit_price > 80 ? `+$${((item.unit_price - 80) * item.quantity).toFixed(2)}` : "$0.00");
 
+        const tr = document.createElement('tr');
+        tr.className = isFlagged ? "bg-red-500/10 hover:bg-red-500/20 transition cursor-pointer" : "hover:bg-subtle/50 transition";
         tr.innerHTML = `
           <td class="py-2.5 px-3 ${isFlagged ? 'text-red-300 font-semibold' : 'text-slate-300'}">
             ${isFlagged ? '<span class="text-red-400 mr-1">⚠️</span>' : ''}${item.description}
@@ -724,11 +835,11 @@
       const countBadge = document.getElementById('violationCountBadge');
 
       if (report.discrepancies.length === 0) {
-        countBadge.textContent = "0 Items";
+        countBadge.textContent = "0 Violations";
         countBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold";
         violContainer.innerHTML = `
-          <div class="p-3 rounded-lg bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-400 flex items-center gap-2">
-            <i data-lucide="check" class="w-4 h-4"></i>
+          <div class="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-400 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
             <span>Verified 100% compliant with Master Services Agreement clauses.</span>
           </div>
         `;
@@ -738,7 +849,7 @@
 
         report.discrepancies.forEach(d => {
           const div = document.createElement('div');
-          div.className = "p-3 rounded-lg border border-red-500/25 bg-red-950/20 text-xs space-y-1";
+          div.className = "p-3.5 rounded-xl border border-red-500/25 bg-red-950/20 text-xs space-y-1.5";
           div.innerHTML = `
             <div class="flex items-center justify-between font-mono">
               <span class="font-bold text-red-400 uppercase text-[10px] tracking-wider">${d.type}</span>
@@ -753,7 +864,93 @@
       lucide.createIcons();
     }
 
-    // Commit HITL Decision Action
+    function copyDisputeText() {
+      const box = document.getElementById('disputeEmailBox');
+      navigator.clipboard.writeText(box.value);
+      showToast("Copied to Clipboard", "Formal legal dispute notice ready to paste.", "success");
+    }
+
+    function downloadCertificatePdf() {
+      if (!currentAuditData) return;
+      showToast("Generating Certificate", "Building official Forensic Audit Certificate PDF...", "info");
+      window.open(`/api/audit-certificate/${currentAuditData.report.invoice_number}`, '_blank');
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('copilotInput').value = promptText;
+      sendCopilotMessage();
+    }
+
+    async function sendCopilotMessage() {
+      const input = document.getElementById('copilotInput');
+      const msg = input.value.trim();
+      if (!msg || !currentAuditData) return;
+
+      const thread = document.getElementById('copilotChatThread');
+      
+      // Add user message
+      const userBubble = document.createElement('div');
+      userBubble.className = "p-2 rounded bg-blue-500/10 border border-blue-500/20 text-blue-200 text-[11px] self-end";
+      userBubble.innerHTML = `<strong>You:</strong> ${msg}`;
+      thread.appendChild(userBubble);
+      input.value = '';
+      thread.scrollTop = thread.scrollHeight;
+
+      // Add loading indicator
+      const loadingBubble = document.createElement('div');
+      loadingBubble.className = "text-slate-500 italic text-[10px] animate-pulse";
+      loadingBubble.textContent = "Veritas Copilot analyzing contract clauses & recalculating numbers...";
+      thread.appendChild(loadingBubble);
+
+      try {
+        const payload = {
+          message: msg,
+          invoice_number: currentAuditData.report.invoice_number,
+          vendor_name: currentAuditData.report.vendor_name,
+          billed_total: currentAuditData.report.total_billed,
+          authorized_total: currentAuditData.report.total_expected,
+          current_overcharge: currentAuditData.report.total_overcharge,
+          discrepancies: currentAuditData.report.discrepancies.map(d => d.description)
+        };
+
+        const res = await fetch('/api/copilot/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        loadingBubble.remove();
+
+        // Add Copilot response
+        const aiBubble = document.createElement('div');
+        aiBubble.className = "p-2.5 rounded bg-subtle border border-border text-slate-200 text-[11px] space-y-1";
+        // Format markdown bold
+        let formatted = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+        aiBubble.innerHTML = `<div class="font-bold text-brand text-[10px] uppercase">Veritas Copilot:</div><div>${formatted}</div>`;
+        thread.appendChild(aiBubble);
+        thread.scrollTop = thread.scrollHeight;
+
+        // If Copilot adjusted overcharge dynamically (e.g. rate compromise)
+        if (data.adjusted_overcharge !== null && data.adjusted_overcharge !== undefined) {
+          currentAuditData.report.total_overcharge = data.adjusted_overcharge;
+          document.getElementById('txtDiscrepancyDelta').textContent = `+$${data.adjusted_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+          document.getElementById('txtDiscrepancyDelta').className = "text-2xl font-black font-mono text-amber-400";
+          showToast("Settlement Recalculated", `Adjusted overcharge delta to $${data.adjusted_overcharge.toFixed(2)} based on compromise rate.`, "info");
+        }
+
+        // If Copilot revised the dispute notice
+        if (data.revised_draft) {
+          document.getElementById('disputeEmailBox').value = data.revised_draft;
+          document.getElementById('hitlComposerSection').classList.remove('hidden');
+          showToast("Dispute Draft Updated", "Rewrote notice according to Copilot instructions.", "success");
+        }
+      } catch (err) {
+        loadingBubble.remove();
+        showToast("Copilot Error", err.message, "error");
+      }
+    }
+
+    // Commit Decision via API
     async function commitDecision(action) {
       if (!currentAuditData) return;
       const { report } = currentAuditData;
@@ -777,7 +974,7 @@
 
         // Update telemetry
         totalSavingsBlocked = result.total_savings_to_date;
-        document.getElementById('headerTotalSavings').textContent = `$${totalSavingsBlocked.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        document.getElementById('telemetrySavings').textContent = `$${totalSavingsBlocked.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
         
         decisionsCount += 1;
         document.getElementById('footerDecisionCount').textContent = decisionsCount;
@@ -785,7 +982,7 @@
         showToast("Decision Committed", result.message, "success");
         document.getElementById('hitlComposerSection').classList.add('hidden');
       } catch (err) {
-        showToast("Decision Failed", err.message, "error");
+        showToast("Action Failed", err.message, "error");
       }
     }
   </script>

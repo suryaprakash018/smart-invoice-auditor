@@ -349,6 +349,109 @@ def get_evals_benchmark(db: Session = Depends(get_db)):
     return results
 
 
+class CopilotChatRequest(BaseModel):
+    message: str
+    invoice_number: str
+    vendor_name: str
+    billed_total: float
+    authorized_total: float
+    current_overcharge: float
+    discrepancies: List[str] = []
+
+
+copilot_instance = None
+
+def get_copilot():
+    global copilot_instance
+    if copilot_instance is None:
+        from src.copilot import AuditCopilot
+        copilot_instance = AuditCopilot()
+    return copilot_instance
+
+
+@app.post("/api/copilot/chat")
+def copilot_chat(req: CopilotChatRequest, db: Session = Depends(get_db)):
+    contract = _get_contract_pydantic_from_db(db, req.vendor_name)
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found for vendor.")
+
+    # Synthetic invoice and report representations for copilot context
+    invoice = ParsedInvoice(
+        vendor_name=req.vendor_name,
+        invoice_number=req.invoice_number,
+        line_items=[],
+        subtotal=req.billed_total,
+        total_amount=req.billed_total,
+    )
+    report = AuditReport(
+        invoice_number=req.invoice_number,
+        vendor_name=req.vendor_name,
+        status=AuditStatus.FLAGGED if req.current_overcharge > 0 else AuditStatus.PASSED,
+        total_billed=req.billed_total,
+        total_expected=req.authorized_total,
+        total_overcharge=req.current_overcharge,
+        discrepancies=[],
+    )
+
+    copilot = get_copilot()
+    result = copilot.chat(req.message, invoice, contract, report)
+    return result
+
+
+@app.get("/api/audit-certificate/{invoice_number}")
+def download_audit_certificate(invoice_number: str, db: Session = Depends(get_db)):
+    from fastapi.responses import FileResponse
+    from src.certificate_generator import generate_audit_certificate
+
+    cert_dir = os.path.join(BASE_DIR, "data", "certificates")
+    os.makedirs(cert_dir, exist_ok=True)
+    out_pdf = os.path.join(cert_dir, f"certificate_{invoice_number}.pdf")
+
+    # Find audit record
+    audit_rec = (
+        db.query(AuditRunRecord)
+        .join(InvoiceRecord)
+        .filter(InvoiceRecord.invoice_number == invoice_number)
+        .order_by(AuditRunRecord.id.desc())
+        .first()
+    )
+
+    if not audit_rec:
+        raise HTTPException(status_code=404, detail="Audit run not found for this invoice.")
+
+    contract = _get_contract_pydantic_from_db(db, audit_rec.invoice.vendor.name)
+    invoice = ParsedInvoice(
+        vendor_name=audit_rec.invoice.vendor.name,
+        invoice_number=audit_rec.invoice.invoice_number,
+        invoice_date=audit_rec.invoice.invoice_date,
+        due_date=audit_rec.invoice.due_date,
+        payment_terms=audit_rec.invoice.payment_terms,
+        line_items=[],
+        subtotal=audit_rec.invoice.subtotal,
+        total_amount=audit_rec.invoice.total_amount,
+    )
+    report = AuditReport(
+        invoice_number=audit_rec.invoice.invoice_number,
+        vendor_name=audit_rec.invoice.vendor.name,
+        status=AuditStatus(audit_rec.status),
+        total_billed=audit_rec.total_billed,
+        total_expected=audit_rec.total_expected,
+        total_overcharge=audit_rec.total_overcharge,
+        discrepancies=[],
+    )
+
+    generate_audit_certificate(invoice, contract, report, out_pdf)
+    return FileResponse(out_pdf, media_type="application/pdf", filename=f"Veritas_Audit_Certificate_{invoice_number}.pdf")
+
+
+@app.post("/api/telegram/simulate")
+def simulate_telegram():
+    from src.telegram_bot import TelegramAuditBridge
+    sample_pdf = os.path.join(BASE_DIR, "data", "sample_invoices", "invoice_overcharged.pdf")
+    bridge = TelegramAuditBridge()
+    return bridge.process_incoming_pdf(sample_pdf)
+
+
 @app.get("/", response_class=HTMLResponse)
 def serve_dashboard():
     dashboard_file = os.path.join(BASE_DIR, "src", "dashboard.html")
