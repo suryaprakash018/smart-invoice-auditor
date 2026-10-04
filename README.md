@@ -1,6 +1,6 @@
 # 🛡️ Veritas AP: Production-Grade Autonomous Contract Compliance & HITL Auditor
 
-> **An enterprise AI system for deterministic vendor contract compliance, multimodal document parsing (Gemini 2.5), relational audit persistence (SQLAlchemy), and Human-in-the-Loop (HITL) dispute resolution.**
+> **An enterprise AI system for deterministic vendor contract compliance, multimodal document parsing (Gemini 2.0 Flash), relational audit persistence (SQLAlchemy), and Human-in-the-Loop (HITL) dispute resolution.**
 
 [![CI Pipeline](https://github.com/suryaprakash018/smart-invoice-auditor/actions/workflows/ci.yml/badge.svg)](https://github.com/suryaprakash018/smart-invoice-auditor/actions)
 [![Python 3.13+](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
@@ -17,7 +17,7 @@ In enterprise finance and accounts payable (AP), organizations spend millions of
 * **The Problem (Billing Leakage):** While Master Services Agreements (MSAs) stipulate precise rate cards, monthly caps, and strict payment terms (e.g. Net 30), vendors frequently issue invoices containing subtle rate creep ($80/hr → $95/hr), phantom surcharges, scope cap overruns, or unilateral payment term accelerations (Net 15).
 * **The Scale:** Studies show mid-to-large enterprises bleed **3% to 7% of annual vendor spend** to billing discrepancies that slip past manual human reviewers.
 * **The Engineering Challenge:** Pure generative AI is too non-deterministic for finance—an LLM hallucinating a $10,000 payment release or wrongful contract rejection carries severe financial and legal liabilities.
-* **The Veritas AP Architecture:** A hybrid architecture combining **multimodal document extraction (Gemini 2.5 Flash)** with **zero-hallucination deterministic contract verification** and a stateful **Human-in-the-Loop (HITL) review protocol**.
+* **The Veritas AP Architecture:** A hybrid architecture combining **multimodal document extraction (Gemini 2.0 Flash)** with **zero-hallucination deterministic contract verification** and a stateful **Human-in-the-Loop (HITL) review protocol**.
 
 ---
 

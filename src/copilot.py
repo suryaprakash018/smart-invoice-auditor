@@ -66,7 +66,7 @@ Provide a concise, professional response. If you recommend an updated dispute dr
 """
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=context_prompt,
             config={"system_instruction": system_instruction, "temperature": 0.2},
         )
