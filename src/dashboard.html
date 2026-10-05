@@ -289,29 +289,29 @@
   <!-- ============================================== -->
   <aside id="mainSidebar" class="w-64 border-r border-border bg-surface flex flex-col justify-between flex-shrink-0 z-40 select-none transition-all duration-300">
     
-    <!-- Top Brand & Navigation -->
-    <div class="p-4 space-y-6">
-      
-      <!-- Brand Header -->
-      <div class="flex items-center justify-between px-1">
-        <div class="flex items-center gap-2.5">
-          <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-brand-dark via-brand to-cyan-400 flex items-center justify-center shadow-lg shadow-brand/20">
-            <i data-lucide="shield-check" class="w-4 h-4 text-white stroke-[2.5]"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <span class="font-extrabold text-sm tracking-tight text-white">Veritas<span class="text-brand">AP</span></span>
-              <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-white/10 text-slate-300">v2.5</span>
-            </div>
-            <p class="text-[10px] text-slate-400">Enterprise Audit Engine</p>
-          </div>
+    <!-- Top Fixed Sidebar Header (56px / h-14 to match main header) -->
+    <div class="h-14 border-b border-border px-4 flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-brand-dark via-brand to-cyan-400 flex items-center justify-center shadow-lg shadow-brand/20 flex-shrink-0">
+          <i data-lucide="shield-check" class="w-4 h-4 text-white stroke-[2.5]"></i>
         </div>
-
-        <button onclick="toggleSidebar()" class="p-1 rounded-md text-slate-400 hover:text-white hover:bg-subtle transition" title="Toggle Sidebar Width">
-          <i id="sidebarToggleIcon" data-lucide="chevrons-left" class="w-4 h-4"></i>
-        </button>
+        <div class="sidebar-text truncate">
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-sm tracking-tight text-white">Veritas<span class="text-brand">AP</span></span>
+            <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-white/10 text-slate-300">v2.5</span>
+          </div>
+          <p class="text-[10px] text-slate-400 truncate">Enterprise Audit Engine</p>
+        </div>
       </div>
 
+      <button onclick="toggleSidebar()" class="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-subtle transition flex-shrink-0 ml-1" title="Toggle Sidebar Width">
+        <i id="sidebarToggleIcon" data-lucide="chevrons-left" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Scrollable Navigation Section -->
+    <div class="flex-1 overflow-y-auto p-3 space-y-5">
+      
       <!-- Navigation Section -->
       <nav class="space-y-1">
         <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-3 pb-1 sidebar-text">Workspaces</div>
@@ -454,28 +454,35 @@
   <main class="flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-bg relative">
     
     <!-- Top Contextual Action Header -->
-    <header class="h-14 border-b border-border bg-surface/90 backdrop-blur-md px-6 flex items-center justify-between flex-shrink-0 z-30">
+    <header class="h-14 border-b border-border bg-surface/90 backdrop-blur-md px-6 lg:px-8 flex items-center justify-between flex-shrink-0 z-30">
       
-      <!-- Breadcrumb & Active Contract Pill -->
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="flex items-center gap-2 text-xs text-slate-400">
-          <span>Workspace</span>
+      <!-- Breadcrumb & Active Contract Pill with Generous Clearance -->
+      <div class="flex items-center gap-4 min-w-0">
+        <div class="flex items-center gap-2 text-xs text-slate-400 flex-shrink-0">
+          <span class="hover:text-slate-200 transition">Workspace</span>
           <span class="text-slate-600">/</span>
           <span id="topBreadcrumbTitle" class="font-bold text-white tracking-tight">Audit Studio</span>
         </div>
 
-        <span class="h-3 w-px bg-border hidden sm:block"></span>
+        <span class="h-3 w-px bg-border hidden sm:block flex-shrink-0"></span>
 
         <!-- Active Governing Contract Indicator -->
-        <div id="topContractPill" class="hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-panel border border-border text-[11px] font-medium text-slate-300">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald animate-pulse"></span>
-          <span>MSA-2025-CS01 (CloudScale Innovations)</span>
+        <div id="topContractPill" class="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-panel border border-border text-[11px] font-medium text-slate-300 truncate">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald animate-pulse flex-shrink-0"></span>
+          <span class="truncate">MSA-2025-CS01 (CloudScale Innovations)</span>
         </div>
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2.5 flex-shrink-0">
         
+        <!-- Findings & Action Drawer Trigger Button -->
+        <button onclick="toggleAuditDrawer('audit')" id="btnHeaderAuditFindings" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition shadow-sm" title="View Audit Findings & Resolution Hub">
+          <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-brand"></i>
+          <span>Findings & Actions</span>
+          <span id="btnHeaderAuditBadge" class="hidden text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-terracotta text-white">0</span>
+        </button>
+
         <!-- Upload Invoice Button -->
         <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm">
           <i data-lucide="upload" class="w-3.5 h-3.5"></i>
@@ -484,7 +491,7 @@
         </label>
 
         <!-- Toggle Copilot Slide-Out Assistant -->
-        <button onclick="toggleCopilotDrawer()" id="btnToggleCopilot" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-medium flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Toggle Veritas AP AI Copilot Assistant">
+        <button onclick="toggleAuditDrawer('copilot')" id="btnToggleCopilot" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-medium flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Toggle Veritas AP AI Copilot Assistant">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand"></i>
           <span class="hidden sm:inline">Ask Copilot</span>
         </button>
@@ -495,285 +502,130 @@
     <div class="flex-1 overflow-hidden relative">
 
       <!-- ============================================== -->
-      <!-- VIEW 1: AUDIT STUDIO (Optical Canvas + HITL)   -->
+      <!-- VIEW 1: AUDIT STUDIO (Full-Width Optical Canvas) -->
       <!-- ============================================== -->
-      <div id="viewAuditStudio" class="h-full flex overflow-hidden">
+      <div id="viewAuditStudio" class="h-full w-full flex flex-col justify-between overflow-hidden relative">
         
-        <!-- Left: Optical Canvas Viewport (54%) -->
-        <div class="w-[54%] border-r border-border bg-bg flex flex-col justify-between overflow-hidden relative">
-          
-          <!-- Document Navigation Bar -->
-          <div class="h-11 px-5 border-b border-border bg-surface/80 flex items-center justify-between text-xs text-slate-400 flex-shrink-0">
-            <div class="flex items-center gap-3">
-              <!-- Document vs Contract Tab -->
-              <div class="flex items-center bg-panel p-0.5 rounded-lg border border-border">
-                <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-2.5 py-1 rounded-md text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5">
-                  <i data-lucide="file-text" class="w-3 h-3 text-brand"></i>
-                  <span>Invoice</span>
-                </button>
-                <button onclick="switchViewerTab('contract')" id="tabBtnContract" class="px-2.5 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5">
-                  <i data-lucide="scale" class="w-3 h-3"></i>
-                  <span>Contract (§4.2)</span>
-                </button>
-              </div>
-
-              <!-- Multi-Page Navigator -->
-              <div id="pageNavControls" class="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-panel border border-border">
-                <button id="prevPageBtn" onclick="changePdfPage(-1)" class="p-1 rounded hover:bg-subtle text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
-                  <i data-lucide="chevron-left" class="w-3 h-3"></i>
-                </button>
-                <span id="pageIndicator" class="text-[11px] font-semibold font-mono text-slate-300 px-1">Page 1 of 1</span>
-                <button id="nextPageBtn" onclick="changePdfPage(1)" class="p-1 rounded hover:bg-subtle text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
-                  <i data-lucide="chevron-right" class="w-3 h-3"></i>
-                </button>
-              </div>
+        <!-- Document Navigation Bar -->
+        <div class="h-12 px-6 border-b border-border bg-surface/80 flex items-center justify-between text-xs text-slate-400 flex-shrink-0 z-10">
+          <div class="flex items-center gap-3">
+            <!-- Document vs Contract Tab -->
+            <div class="flex items-center bg-panel p-0.5 rounded-lg border border-border">
+              <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-3 py-1 rounded-md text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-brand"></i>
+                <span>Invoice</span>
+              </button>
+              <button onclick="switchViewerTab('contract')" id="tabBtnContract" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5">
+                <i data-lucide="scale" class="w-3.5 h-3.5"></i>
+                <span>Contract (§4.2)</span>
+              </button>
             </div>
 
-            <!-- Optical Scale Status -->
-            <div class="flex items-center gap-3">
-              <span id="docScaleIndicator" class="text-xs text-slate-400 font-mono">115% Vector</span>
-              <span class="h-3 w-px bg-border"></span>
-              <span class="text-xs text-emerald font-medium flex items-center gap-1.5">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald animate-ping"></span>
-                Optical Grounding Active
-              </span>
+            <!-- Multi-Page Navigator -->
+            <div id="pageNavControls" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-panel border border-border">
+              <button id="prevPageBtn" onclick="changePdfPage(-1)" class="p-0.5 rounded hover:bg-subtle text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
+                <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+              </button>
+              <span id="pageIndicator" class="text-[11px] font-semibold font-mono text-slate-300 px-1.5">Page 1 of 1</span>
+              <button id="nextPageBtn" onclick="changePdfPage(1)" class="p-0.5 rounded hover:bg-subtle text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
             </div>
           </div>
 
-          <!-- Document Canvas Scroll Area -->
-          <div id="viewerScrollArea" class="flex-1 overflow-y-auto p-6 flex items-start justify-center relative">
-            
-            <!-- Empty State -->
-            <div id="viewerEmptyState" class="m-auto text-center space-y-4 max-w-sm py-20">
-              <div class="h-16 w-16 mx-auto rounded-2xl bg-panel border border-border flex items-center justify-center text-slate-400 shadow-xl">
-                <i data-lucide="scan-line" class="w-8 h-8 stroke-1 text-brand"></i>
-              </div>
-              <div>
-                <h3 class="text-sm font-bold text-white tracking-tight">No Document Loaded</h3>
-                <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Click a live test sample in the sidebar or upload your own PDF/Image invoice to begin autonomous contract verification.
-                </p>
-              </div>
-            </div>
+          <!-- Dynamic Center Findings Pill (Visible when invoice is audited) -->
+          <div id="viewerFindingsPill" class="hidden items-center gap-2 cursor-pointer px-3.5 py-1 rounded-full text-xs font-semibold transition hover:scale-105" onclick="toggleAuditDrawer('audit')"></div>
 
-            <!-- PDF / OCR Canvas Element -->
-            <div id="pdfContainerWrapper" class="relative hidden">
-              <div id="laserBeam" class="hidden scanner-active"></div>
-              <canvas id="pdfCanvas" class="border border-border/80 shadow-2xl"></canvas>
-              <div id="annotationLayer" class="absolute inset-0 pointer-events-auto"></div>
-            </div>
-
-            <!-- Governing Contract Text Viewer -->
-            <div id="contractViewerWrapper" class="hidden w-full max-w-xl bg-panel border border-border rounded-xl p-6 space-y-5 text-xs shadow-2xl">
-              <div class="flex items-center justify-between pb-3 border-b border-border">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="scale" class="w-4 h-4 text-brand"></i>
-                  <span class="font-bold text-white text-xs">Master Services Agreement (MSA-2025-CS01)</span>
-                </div>
-                <span class="text-[10px] text-emerald px-2 py-0.5 rounded-full bg-emerald-bg border border-emerald-border font-semibold">Binding Clause</span>
-              </div>
-              <div class="space-y-3 text-slate-300 leading-relaxed text-xs">
-                <div>
-                  <strong class="text-white font-semibold">Section 3.1 (Agreed Rate Schedule):</strong>
-                  <ul class="list-disc list-inside mt-1 space-y-0.5 text-slate-400 font-mono text-[11px]">
-                    <li>Senior DevOps Engineer: $80.00 / hour (Max 160 hrs/mo)</li>
-                    <li>QA Automation Engineer: $55.00 / hour (Max 160 hrs/mo)</li>
-                    <li>Cloud Solutions Architect: $120.00 / hour (Max 80 hrs/mo)</li>
-                  </ul>
-                </div>
-                <div>
-                  <strong class="text-white font-semibold">Section 4.2 (Surcharges & Off-Hours Work):</strong>
-                  <p class="text-slate-400 mt-0.5">
-                    "Any overtime, off-hours platform surcharges, weekend premiums, or travel fees must be approved in writing via an authorized Change Order prior to billing."
-                  </p>
-                </div>
-                <div>
-                  <strong class="text-white font-semibold">Section 5.3 (Payment Terms):</strong>
-                  <p class="text-slate-400 mt-0.5">Net 30 days from date of verified compliant invoice delivery.</p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Bottom Document Status Bar -->
-          <div class="h-9 px-5 border-t border-border bg-surface/80 flex items-center justify-between text-[11px] text-slate-400 flex-shrink-0">
-            <span id="footerFileName" class="truncate max-w-xs font-mono text-slate-300">Ready</span>
-            <div class="flex items-center gap-3">
-              <span>Engine Latency: <strong class="text-emerald font-mono">0.15ms</strong></span>
-              <span class="h-3 w-px bg-border"></span>
-              <span>Pydantic v2 Verified</span>
-            </div>
+          <!-- Optical Scale Status & Drawer Trigger -->
+          <div class="flex items-center gap-3">
+            <span id="docScaleIndicator" class="text-xs text-slate-400 font-mono">135% High-DPI Vector</span>
+            <span class="h-3 w-px bg-border"></span>
+            <span class="text-xs text-emerald font-medium flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald animate-ping"></span>
+              Optical Grounding Active
+            </span>
+            <span class="h-3 w-px bg-border"></span>
+            <button onclick="toggleAuditDrawer('audit')" class="btn-secondary px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-200 flex items-center gap-1.5 hover:text-white" title="Open Findings & Resolution Drawer">
+              <i data-lucide="panel-right-open" class="w-3.5 h-3.5 text-brand"></i>
+              <span>Review Panel</span>
+            </button>
           </div>
         </div>
 
-        <!-- Right: Compliance Studio & HITL Resolution Hub (46%) -->
-        <div class="w-[46%] bg-surface flex flex-col justify-between overflow-y-auto">
-          <div class="p-6 space-y-5">
-            
-            <!-- 1. Executive Result Banner -->
-            <div id="auditHeaderBanner" class="p-4 rounded-xl border border-border border-l-4 border-l-slate-700 bg-panel flex items-center justify-between shadow-md">
-              <div class="space-y-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span id="badgeComplianceStatus" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-subtle text-slate-400 border border-border">System Idle</span>
-                  <h3 id="txtInvoiceTitle" class="text-sm font-bold text-white tracking-tight">No Active Audit</h3>
-                  <span id="badgeVendorRiskTier" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition shadow-sm hover:scale-105 flex items-center gap-1" onclick="openVendorDossierFromActiveAudit()" title="Click to view full Supplier Risk Dossier"></span>
-                </div>
-                <p id="txtAuditSummary" class="text-xs text-slate-400 leading-relaxed">Select an invoice to verify contract terms.</p>
+        <!-- Document Canvas Scroll Area (Full Width, Centered, Breathable!) -->
+        <div id="viewerScrollArea" class="flex-1 overflow-y-auto p-8 flex items-start justify-center relative bg-bg">
+          
+          <!-- Empty State -->
+          <div id="viewerEmptyState" class="m-auto text-center space-y-4 max-w-md py-24">
+            <div class="h-16 w-16 mx-auto rounded-2xl bg-panel border border-border flex items-center justify-center text-slate-400 shadow-xl">
+              <i data-lucide="scan-line" class="w-8 h-8 stroke-1 text-brand"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white tracking-tight">No Document Loaded</h3>
+              <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                Click a live test sample in the sidebar or upload your own PDF/Image invoice to begin autonomous contract verification.
+              </p>
+            </div>
+            <div class="flex items-center justify-center gap-2 pt-2">
+              <button onclick="auditSampleInvoice('overcharged')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white">
+                Overcharged Sample
+              </button>
+              <button onclick="auditSampleInvoice('valid')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white">
+                Compliant Sample
+              </button>
+              <button onclick="auditSampleInvoice('scanned')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white">
+                Scanned Receipt
+              </button>
+            </div>
+          </div>
+
+          <!-- PDF / OCR Canvas Element -->
+          <div id="pdfContainerWrapper" class="relative hidden my-auto">
+            <div id="laserBeam" class="hidden scanner-active"></div>
+            <canvas id="pdfCanvas" class="border border-border/80 shadow-2xl rounded-lg"></canvas>
+            <div id="annotationLayer" class="absolute inset-0 pointer-events-auto"></div>
+          </div>
+
+          <!-- Governing Contract Text Viewer -->
+          <div id="contractViewerWrapper" class="hidden w-full max-w-2xl bg-panel border border-border rounded-2xl p-8 space-y-6 text-xs shadow-2xl my-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-border">
+              <div class="flex items-center gap-2">
+                <i data-lucide="scale" class="w-4 h-4 text-brand"></i>
+                <span class="font-bold text-white text-xs">Master Services Agreement (MSA-2025-CS01)</span>
               </div>
-              <div class="text-right flex-shrink-0">
-                <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Total Discrepancy</div>
-                <div id="txtDiscrepancyDelta" class="text-2xl font-extrabold text-slate-400 tabular-nums font-mono mt-0.5">$0.00</div>
+              <span class="text-[10px] text-emerald px-2 py-0.5 rounded-full bg-emerald-bg border border-emerald-border font-semibold">Binding Clause</span>
+            </div>
+            <div class="space-y-4 text-slate-300 leading-relaxed text-xs">
+              <div>
+                <strong class="text-white font-semibold">Section 3.1 (Agreed Rate Schedule):</strong>
+                <ul class="list-disc list-inside mt-1.5 space-y-1 text-slate-400 font-mono text-[11px]">
+                  <li>Senior DevOps Engineer: $80.00 / hour (Max 160 hrs/mo)</li>
+                  <li>QA Automation Engineer: $55.00 / hour (Max 160 hrs/mo)</li>
+                  <li>Cloud Solutions Architect: $120.00 / hour (Max 80 hrs/mo)</li>
+                </ul>
+              </div>
+              <div>
+                <strong class="text-white font-semibold">Section 4.2 (Surcharges & Off-Hours Work):</strong>
+                <p class="text-slate-400 mt-1">
+                  "Any overtime, off-hours platform surcharges, weekend premiums, or travel fees must be approved in writing via an authorized Change Order prior to billing."
+                </p>
+              </div>
+              <div>
+                <strong class="text-white font-semibold">Section 5.3 (Payment Terms):</strong>
+                <p class="text-slate-400 mt-1">Net 30 days from date of verified compliant invoice delivery.</p>
               </div>
             </div>
+          </div>
 
-            <!-- 2. Reasoning Stepper -->
-            <div id="agentTraceStepper" class="hidden p-3.5 rounded-xl border border-border bg-panel/80 space-y-2.5 shadow-sm">
-              <div class="flex items-center justify-between text-xs">
-                <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full bg-brand animate-pulse"></span>
-                  <span class="font-bold text-slate-200 text-xs">Autonomous Audit Reasoning Trace</span>
-                </div>
-                <span class="text-[9px] font-bold text-emerald bg-emerald-bg border border-emerald-border px-2 py-0.2 rounded-full">4/4 Complete</span>
-              </div>
-              <div class="grid grid-cols-4 gap-2 pt-0.5">
-                <div class="milestone-item flex items-center gap-1.5">
-                  <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
-                  <span class="text-[10px] text-slate-300 truncate">1. Optical Parse</span>
-                </div>
-                <div class="milestone-item flex items-center gap-1.5">
-                  <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
-                  <span class="text-[10px] text-slate-300 truncate">2. Neural Schema</span>
-                </div>
-                <div class="milestone-item flex items-center gap-1.5">
-                  <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
-                  <span class="text-[10px] text-slate-300 truncate">3. Contract Diff</span>
-                </div>
-                <div class="milestone-item flex items-center gap-1.5">
-                  <span class="h-1.5 w-1.5 rounded-full bg-brand animate-pulse"></span>
-                  <span class="text-[10px] text-cyan-400 font-bold truncate">4. Scope Solve</span>
-                </div>
-              </div>
-            </div>
+        </div>
 
-            <!-- 3. Line Items Table -->
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-white text-xs uppercase tracking-wider">Itemized Line-Item Audit</span>
-                <span class="text-[11px] text-slate-400">Click row to highlight coordinate frame</span>
-              </div>
-              <div class="rounded-xl border border-border bg-panel overflow-hidden shadow-sm">
-                <table class="w-full text-left text-xs">
-                  <thead>
-                    <tr class="border-b border-border bg-subtle/40 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                      <th class="py-2.5 px-3">Description</th>
-                      <th class="py-2.5 px-2 text-right">Units</th>
-                      <th class="py-2.5 px-2 text-right">Billed Rate</th>
-                      <th class="py-2.5 px-2 text-right">Contract Rate</th>
-                      <th class="py-2.5 px-3 text-right">Delta</th>
-                    </tr>
-                  </thead>
-                  <tbody id="lineItemsTableBody" class="divide-y divide-border/60">
-                    <tr>
-                      <td colspan="5" class="py-6 text-center text-slate-400">No active line items. Load an invoice above.</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- 4. Human-in-the-Loop Action Hub -->
-            <div id="hitlComposerSection" class="hidden space-y-3 pt-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-white text-xs uppercase tracking-wider">Human-in-the-Loop Resolution Hub</span>
-                <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand/20 text-brand-light font-semibold">SOX Segregation of Duties</span>
-              </div>
-
-              <!-- Segmented Tabs -->
-              <div class="grid grid-cols-4 gap-1 p-1 rounded-xl bg-panel border border-border text-xs">
-                <button onclick="switchHitlMode('dispute')" id="hitlTabDispute" class="tab-active py-1.5 px-2 rounded-lg text-[11px] font-semibold text-center transition">
-                  Full Dispute
-                </button>
-                <button onclick="switchHitlMode('partial')" id="hitlTabPartial" class="py-1.5 px-2 rounded-lg text-[11px] text-slate-400 hover:text-white transition">
-                  Partial Remit
-                </button>
-                <button onclick="switchHitlMode('conditional')" id="hitlTabConditional" class="py-1.5 px-2 rounded-lg text-[11px] text-slate-400 hover:text-white transition">
-                  Conditional Hold
-                </button>
-                <button onclick="switchHitlMode('route')" id="hitlTabRoute" class="py-1.5 px-2 rounded-lg text-[11px] text-slate-400 hover:text-white transition">
-                  Route Workflow
-                </button>
-              </div>
-
-              <!-- Dispute Email Panel -->
-              <div id="hitlPanelDispute" class="space-y-2">
-                <textarea id="disputeEmailBox" rows="5" class="w-full p-3 rounded-xl bg-bg border border-border text-xs text-slate-200 font-mono focus:outline-none focus:border-brand" placeholder="Automated legal notice..."></textarea>
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-slate-400">Directly dispatches RFC-822 notice to billing contact.</span>
-                  <button onclick="submitHitlDecision('DISPUTE_AND_EMAIL')" class="btn-primary px-4 py-2 rounded-lg text-xs font-bold text-white shadow-md flex items-center gap-1.5">
-                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
-                    <span>Authorize & Dispatch Legal Dispute</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Partial Approval Panel -->
-              <div id="hitlPanelPartial" class="hidden p-4 rounded-xl border border-border bg-panel space-y-3">
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label class="text-[11px] text-slate-400 font-medium">Authorized Remittance Amount ($)</label>
-                    <input type="number" step="0.01" id="inputPartialApproved" oninput="updatePartialMath()" class="w-full mt-1 p-2 rounded-lg bg-bg border border-border text-xs text-white font-mono">
-                  </div>
-                  <div>
-                    <label class="text-[11px] text-slate-400 font-medium">Escrow Withheld Overcharge</label>
-                    <div id="displayPartialWithheld" class="mt-1 p-2 rounded-lg bg-bg border border-border text-xs font-mono font-bold text-terracotta-light">$0.00</div>
-                  </div>
-                </div>
-                <button onclick="submitHitlDecision('PARTIAL_APPROVE')" class="w-full btn-primary py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                  <span id="btnPartialLabel">Authorize Partial Payment & Escrow Disputed Delta</span>
-                </button>
-              </div>
-
-              <!-- Conditional Hold Panel -->
-              <div id="hitlPanelConditional" class="hidden p-4 rounded-xl border border-border bg-panel space-y-3">
-                <div class="text-xs text-slate-300">Place payment on conditional hold pending supplier timesheet verification.</div>
-                <textarea id="conditionalNotesBox" rows="2" class="w-full p-2.5 rounded-lg bg-bg border border-border text-xs text-slate-200" placeholder="Specify conditions or missing deliverable sign-offs..."></textarea>
-                <button onclick="submitHitlDecision('CONDITIONAL_HOLD')" class="w-full btn-primary py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2">
-                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                  <span>Execute Conditional Hold & Escrow Delta</span>
-                </button>
-              </div>
-
-              <!-- Route Workflow Panel -->
-              <div id="hitlPanelRoute" class="hidden p-4 rounded-xl border border-border bg-panel space-y-3">
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label class="text-[11px] text-slate-400 font-medium">Escalation Destination</label>
-                    <select id="routeTargetSelect" class="w-full mt-1 p-2 rounded-lg bg-bg border border-border text-xs text-white">
-                      <option value="Legal Counsel">General Legal Counsel</option>
-                      <option value="Procurement Director">VP of Global Procurement</option>
-                      <option value="VP Finance">Corporate Controller / VP Finance</option>
-                      <option value="IT Department Head">Hiring Manager / Eng Director</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="text-[11px] text-slate-400 font-medium">Escalation Priority</label>
-                    <select id="routePrioritySelect" class="w-full mt-1 p-2 rounded-lg bg-bg border border-border text-xs text-white">
-                      <option value="High (24h SLA)">High (24-Hour SLA)</option>
-                      <option value="Critical (Stop-Work Risk)">Critical (Stop-Work Risk)</option>
-                      <option value="Routine">Routine Review</option>
-                    </select>
-                  </div>
-                </div>
-                <button onclick="submitHitlDecision('ROUTE_WORKFLOW')" class="w-full btn-primary py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2">
-                  <i data-lucide="git-pull-request" class="w-3.5 h-3.5"></i>
-                  <span>Route to Executive for Review</span>
-                </button>
-              </div>
-
-            </div>
-
+        <!-- Bottom Document Status Bar -->
+        <div class="h-9 px-6 border-t border-border bg-surface/80 flex items-center justify-between text-[11px] text-slate-400 flex-shrink-0">
+          <span id="footerFileName" class="truncate max-w-md font-mono text-slate-300">Ready</span>
+          <div class="flex items-center gap-3">
+            <span>Engine Latency: <strong class="text-emerald font-mono">0.15ms</strong></span>
+            <span class="h-3 w-px bg-border"></span>
+            <span>Pydantic v2 Verified</span>
           </div>
         </div>
 
@@ -1226,66 +1078,250 @@
     </div>
 
     <!-- ============================================== -->
-    <!-- 3. SLIDE-OUT VERITAS COPILOT ASSISTANT DRAWER  -->
+    <!-- 3. SLIDE-OUT AUDIT INTELLIGENCE & ACTION DRAWER -->
     <!-- ============================================== -->
-    <div id="copilotDrawer" class="hidden absolute top-14 bottom-0 right-0 w-96 bg-surface/95 border-l border-border backdrop-blur-xl shadow-2xl flex flex-col z-40 transition-all duration-300 font-sans">
+    <div id="auditRightDrawer" class="hidden absolute top-14 bottom-0 right-0 w-[520px] max-w-[95vw] bg-surface/98 backdrop-blur-2xl border-l border-border shadow-2xl flex flex-col z-40 font-sans transition-all duration-300">
       
-      <!-- Drawer Header -->
-      <div class="p-4 border-b border-border flex items-center justify-between bg-panel/50">
-        <div class="flex items-center gap-2">
-          <div class="h-6 w-6 rounded-md bg-gradient-to-tr from-brand to-cyan-400 flex items-center justify-center text-white">
-            <i data-lucide="bot" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <h3 class="text-xs font-bold text-white tracking-tight">Veritas AP Copilot</h3>
-            <p class="text-[9px] text-slate-400">Contract Clause & Settlement Assistant</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-1">
-          <button onclick="clearCopilotChat()" class="p-1 rounded text-slate-400 hover:text-white hover:bg-subtle transition" title="Clear Thread">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      <!-- Drawer Top Header: Segmented Tab Switcher & Close -->
+      <div class="p-3.5 border-b border-border bg-panel/60 flex items-center justify-between flex-shrink-0">
+        
+        <!-- Segmented Tab Switcher -->
+        <div class="flex items-center bg-surface p-0.5 rounded-xl border border-border">
+          <button onclick="switchDrawerTab('audit')" id="drawerTabBtnAudit" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5">
+            <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-brand"></i>
+            <span>Findings & Actions</span>
+            <span id="drawerAuditBadgeCount" class="hidden text-[9px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-terracotta text-white">0</span>
           </button>
-          <button onclick="toggleCopilotDrawer()" class="p-1 rounded text-slate-400 hover:text-white hover:bg-subtle transition" title="Close Drawer">
-            <i data-lucide="x" class="w-4 h-4"></i>
+          <button onclick="switchDrawerTab('copilot')" id="drawerTabBtnCopilot" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand"></i>
+            <span>Veritas Copilot</span>
           </button>
         </div>
-      </div>
 
-      <!-- Quick Prompt Chips -->
-      <div class="px-4 py-2 border-b border-border/80 bg-subtle/30 flex items-center gap-1.5 overflow-x-auto text-[10px]">
-        <button onclick="sendQuickPrompt('What are payment terms under §5.3?')" class="px-2 py-0.5 rounded-full bg-panel border border-border text-slate-300 hover:text-white hover:border-brand transition flex-shrink-0">
-          Payment Terms?
-        </button>
-        <button onclick="sendQuickPrompt('Can we compromise at $85/hr for Senior DevOps?')" class="px-2 py-0.5 rounded-full bg-panel border border-border text-slate-300 hover:text-white hover:border-brand transition flex-shrink-0">
-          Compromise $85/hr?
-        </button>
-        <button onclick="sendQuickPrompt('Draft formal dispute in strict legal tone')" class="px-2 py-0.5 rounded-full bg-panel border border-border text-slate-300 hover:text-white hover:border-brand transition flex-shrink-0">
-          Strict Legal Tone
+        <button onclick="closeAuditDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-subtle transition" title="Close Panel (Esc)">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- Chat Messages Scroll Area -->
-      <div id="copilotChatThread" class="flex-1 overflow-y-auto p-4 space-y-3 text-xs">
-        <div class="p-3 rounded-xl bg-subtle/40 border border-border text-slate-300 space-y-1">
-          <div class="font-bold text-white flex items-center gap-1 text-[11px]">
-            <i data-lucide="sparkles" class="w-3 h-3 text-brand"></i>
-            <span>Veritas AP Copilot Online</span>
+      <!-- TAB 1: AUDIT FINDINGS & HUMAN-IN-THE-LOOP ACTION HUB -->
+      <div id="drawerContentAudit" class="flex-1 overflow-y-auto p-5 space-y-5">
+        
+        <!-- 1. Executive Result Banner -->
+        <div id="auditHeaderBanner" class="p-4 rounded-xl border border-border border-l-4 border-l-slate-700 bg-panel flex items-center justify-between shadow-md">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="badgeComplianceStatus" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-subtle text-slate-400 border border-border">System Idle</span>
+              <h3 id="txtInvoiceTitle" class="text-xs font-bold text-white tracking-tight">No Active Audit</h3>
+              <span id="badgeVendorRiskTier" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition shadow-sm hover:scale-105 flex items-center gap-1" onclick="openVendorDossierFromActiveAudit()" title="Click to view full Supplier Risk Dossier"></span>
+            </div>
+            <p id="txtAuditSummary" class="text-xs text-slate-400 leading-relaxed">Select an invoice to verify contract terms.</p>
           </div>
-          <p class="text-[11px] leading-relaxed text-slate-400">
-            Ask any question regarding contract clauses, labor rates, or proposed settlement compromise math for the loaded invoice.
-          </p>
+          <div class="text-right flex-shrink-0 ml-2">
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Total Discrepancy</div>
+            <div id="txtDiscrepancyDelta" class="text-xl font-extrabold text-slate-400 tabular-nums font-mono mt-0.5">$0.00</div>
+          </div>
         </div>
+
+        <!-- 2. Reasoning Stepper -->
+        <div id="agentTraceStepper" class="hidden p-3.5 rounded-xl border border-border bg-panel/80 space-y-2.5 shadow-sm">
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-brand animate-pulse"></span>
+              <span class="font-bold text-slate-200 text-xs">Autonomous Audit Reasoning Trace</span>
+            </div>
+            <span class="text-[9px] font-bold text-emerald bg-emerald-bg border border-emerald-border px-2 py-0.2 rounded-full">4/4 Complete</span>
+          </div>
+          <div class="grid grid-cols-4 gap-2 pt-0.5">
+            <div class="milestone-item flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
+              <span class="text-[10px] text-slate-300 truncate">1. Optical Parse</span>
+            </div>
+            <div class="milestone-item flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
+              <span class="text-[10px] text-slate-300 truncate">2. Neural Schema</span>
+            </div>
+            <div class="milestone-item flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
+              <span class="text-[10px] text-slate-300 truncate">3. Contract Diff</span>
+            </div>
+            <div class="milestone-item flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-brand animate-pulse"></span>
+              <span class="text-[10px] text-cyan-400 font-bold truncate">4. Scope Solve</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Line Items Table -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-white text-xs uppercase tracking-wider">Itemized Line-Item Audit</span>
+            <span class="text-[10px] text-slate-400">Click row to highlight coordinate frame</span>
+          </div>
+          <div class="rounded-xl border border-border bg-panel overflow-hidden shadow-sm">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-border bg-subtle/40 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                  <th class="py-2.5 px-3">Description</th>
+                  <th class="py-2.5 px-2 text-right">Units</th>
+                  <th class="py-2.5 px-2 text-right">Billed</th>
+                  <th class="py-2.5 px-2 text-right">Contract</th>
+                  <th class="py-2.5 px-3 text-right">Delta</th>
+                </tr>
+              </thead>
+              <tbody id="lineItemsTableBody" class="divide-y divide-border/60">
+                <tr>
+                  <td colspan="5" class="py-6 text-center text-slate-400">No active line items. Load an invoice above.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. Human-in-the-Loop Action Hub -->
+        <div id="hitlComposerSection" class="hidden space-y-3 pt-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-white text-xs uppercase tracking-wider">Human-in-the-Loop Resolution Hub</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand/20 text-brand-light font-semibold">SOX Segregation</span>
+          </div>
+
+          <!-- Segmented Tabs -->
+          <div class="grid grid-cols-4 gap-1 p-1 rounded-xl bg-panel border border-border text-xs">
+            <button onclick="switchHitlMode('dispute')" id="hitlTabDispute" class="tab-active py-1.5 px-2 rounded-lg text-[11px] font-semibold text-center transition">
+              Full Dispute
+            </button>
+            <button onclick="switchHitlMode('partial')" id="hitlTabPartial" class="py-1.5 px-2 rounded-lg text-[11px] text-slate-400 hover:text-white transition">
+              Partial Remit
+            </button>
+            <button onclick="switchHitlMode('conditional')" id="hitlTabConditional" class="py-1.5 px-2 rounded-lg text-[11px] text-slate-400 hover:text-white transition">
+              Conditional Hold
+            </button>
+            <button onclick="switchHitlMode('route')" id="hitlTabRoute" class="py-1.5 px-2 rounded-lg text-[11px] text-slate-400 hover:text-white transition">
+              Route Workflow
+            </button>
+          </div>
+
+          <!-- Dispute Notice Summary Card (FIX 3: Email hidden behind Preview Email) -->
+          <div id="hitlPanelDispute" class="p-4 rounded-xl border border-border bg-panel space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full bg-terracotta animate-pulse"></span>
+                <span class="text-xs font-bold text-white">Dispute Notice Prepared</span>
+              </div>
+              <span class="text-[10px] text-terracotta-light font-mono font-semibold">§4.2 Violation</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Formal legal breach notice drafted citing contracted rate schedules and unauthorized surcharges.
+            </p>
+            <div class="flex items-center gap-2 pt-1">
+              <button onclick="openEmailPreviewModal()" class="flex-1 btn-secondary py-2 rounded-lg text-xs font-semibold text-slate-200 flex items-center justify-center gap-1.5 hover:text-white">
+                <i data-lucide="mail" class="w-3.5 h-3.5 text-brand"></i>
+                <span>Preview Email</span>
+              </button>
+              <button onclick="submitHitlDecision('DISPUTE_AND_EMAIL')" class="flex-1 btn-primary py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-sm">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <span>Authorize & Dispatch</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Partial Approval Panel -->
+          <div id="hitlPanelPartial" class="hidden p-4 rounded-xl border border-border bg-panel space-y-3">
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <label class="text-[11px] text-slate-400 font-medium">Authorized Remittance Amount ($)</label>
+                <input type="number" step="0.01" id="inputPartialApproved" oninput="updatePartialMath()" class="w-full mt-1 p-2 rounded-lg bg-bg border border-border text-xs text-white font-mono">
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-400 font-medium">Escrow Withheld Overcharge</label>
+                <div id="displayPartialWithheld" class="mt-1 p-2 rounded-lg bg-bg border border-border text-xs font-mono font-bold text-terracotta-light">$0.00</div>
+              </div>
+            </div>
+            <button onclick="submitHitlDecision('PARTIAL_APPROVE')" class="w-full btn-primary py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              <span id="btnPartialLabel">Authorize Partial Payment</span>
+            </button>
+          </div>
+
+          <!-- Conditional Hold Panel -->
+          <div id="hitlPanelConditional" class="hidden p-4 rounded-xl border border-border bg-panel space-y-3">
+            <div class="text-xs text-slate-300">Place payment on conditional hold pending supplier timesheet verification.</div>
+            <textarea id="conditionalNotesBox" rows="2" class="w-full p-2.5 rounded-lg bg-bg border border-border text-xs text-slate-200" placeholder="Specify conditions or missing deliverable sign-offs..."></textarea>
+            <button onclick="submitHitlDecision('CONDITIONAL_HOLD')" class="w-full btn-primary py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+              <span>Execute Conditional Hold & Escrow Delta</span>
+            </button>
+          </div>
+
+          <!-- Route Workflow Panel -->
+          <div id="hitlPanelRoute" class="hidden p-4 rounded-xl border border-border bg-panel space-y-3">
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <label class="text-[11px] text-slate-400 font-medium">Escalation Destination</label>
+                <select id="routeTargetSelect" class="w-full mt-1 p-2 rounded-lg bg-bg border border-border text-xs text-white">
+                  <option value="Legal Counsel">General Legal Counsel</option>
+                  <option value="Procurement Director">VP of Global Procurement</option>
+                  <option value="VP Finance">Corporate Controller / VP Finance</option>
+                  <option value="IT Department Head">Hiring Manager / Eng Director</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-400 font-medium">Escalation Priority</label>
+                <select id="routePrioritySelect" class="w-full mt-1 p-2 rounded-lg bg-bg border border-border text-xs text-white">
+                  <option value="High (24h SLA)">High (24-Hour SLA)</option>
+                  <option value="Critical (Stop-Work Risk)">Critical (Stop-Work Risk)</option>
+                  <option value="Routine">Routine Review</option>
+                </select>
+              </div>
+            </div>
+            <button onclick="submitHitlDecision('ROUTE_WORKFLOW')" class="w-full btn-primary py-2 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2">
+              <i data-lucide="git-pull-request" class="w-3.5 h-3.5"></i>
+              <span>Route to Executive for Review</span>
+            </button>
+          </div>
+
+        </div>
+
       </div>
 
-      <!-- Chat Input Area -->
-      <div class="p-3 border-t border-border bg-panel/50 space-y-2">
-        <div class="relative">
-          <textarea id="copilotInput" rows="2" placeholder="Ask about contract terms, rates, compromise..." class="w-full p-2.5 pr-8 rounded-lg bg-bg border border-border text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand resize-none"></textarea>
-          <button onclick="sendCopilotMessage()" class="absolute right-2.5 bottom-3.5 p-1 rounded bg-brand text-white hover:bg-brand-dark transition" title="Send Message">
-            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+      <!-- TAB 2: VERITAS COPILOT ASSISTANT -->
+      <div id="drawerContentCopilot" class="hidden flex-1 flex flex-col overflow-hidden">
+        
+        <!-- Quick Prompt Chips -->
+        <div class="px-4 py-2 border-b border-border/80 bg-subtle/30 flex items-center gap-1.5 overflow-x-auto text-[10px] flex-shrink-0">
+          <button onclick="sendQuickPrompt('What are payment terms under §5.3?')" class="px-2 py-0.5 rounded-full bg-panel border border-border text-slate-300 hover:text-white hover:border-brand transition flex-shrink-0">
+            Payment Terms?
+          </button>
+          <button onclick="sendQuickPrompt('Can we compromise at $85/hr for Senior DevOps?')" class="px-2 py-0.5 rounded-full bg-panel border border-border text-slate-300 hover:text-white hover:border-brand transition flex-shrink-0">
+            Compromise $85/hr?
+          </button>
+          <button onclick="sendQuickPrompt('Draft formal dispute in strict legal tone')" class="px-2 py-0.5 rounded-full bg-panel border border-border text-slate-300 hover:text-white hover:border-brand transition flex-shrink-0">
+            Strict Legal Tone
           </button>
         </div>
+
+        <!-- Chat Messages Scroll Area -->
+        <div id="copilotChatThread" class="flex-1 overflow-y-auto p-4 space-y-3 text-xs">
+          <div class="p-3 rounded-xl bg-subtle/40 border border-border text-slate-300 space-y-1">
+            <div class="font-bold text-white flex items-center gap-1 text-[11px]">
+              <i data-lucide="sparkles" class="w-3 h-3 text-brand"></i>
+              <span>Veritas AP Copilot Online</span>
+            </div>
+            <p class="text-[11px] leading-relaxed text-slate-400">
+              Ask any question regarding contract clauses, labor rates, or proposed settlement compromise math for the loaded invoice.
+            </p>
+          </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="p-3 border-t border-border bg-panel/50 space-y-2 flex-shrink-0">
+          <div class="relative">
+            <textarea id="copilotInput" rows="2" placeholder="Ask about contract terms, rates, compromise..." class="w-full p-2.5 pr-8 rounded-lg bg-bg border border-border text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand resize-none"></textarea>
+            <button onclick="sendCopilotMessage()" class="absolute right-2.5 bottom-3.5 p-1 rounded bg-brand text-white hover:bg-brand-dark transition" title="Send Message">
+              <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1293,9 +1329,68 @@
   </main>
 
   <!-- ============================================== -->
-  <!-- 4. MODALS (Supplier Dossier & API Key)         -->
+  <!-- 4. MODALS (Supplier Dossier, Email Preview, Key) -->
   <!-- ============================================== -->
   
+  <!-- Formal Dispute Email Preview Modal (Fix 3) -->
+  <div id="emailPreviewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4">
+    <div class="bg-panel border border-border rounded-2xl w-full max-w-xl flex flex-col shadow-2xl overflow-hidden font-sans">
+      
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-border bg-surface/90 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="h-8 w-8 rounded-lg bg-terracotta/20 border border-terracotta-border flex items-center justify-center text-terracotta-light">
+            <i data-lucide="mail-warning" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-white">Dispute Notice Preview</h3>
+            <p class="text-[10px] text-slate-400">Formal RFC-822 Contractual Non-Compliance Notice</p>
+          </div>
+        </div>
+        <button onclick="closeEmailPreviewModal()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-subtle transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3 text-[11px] p-3 rounded-xl bg-surface border border-border">
+          <div>
+            <span class="text-slate-400 font-medium">To (Vendor Billing):</span>
+            <div id="emailPreviewRecipient" class="font-mono font-semibold text-white mt-0.5">billing@cloudscale.io</div>
+          </div>
+          <div>
+            <span class="text-slate-400 font-medium">CC (Internal Audit):</span>
+            <div class="font-mono text-slate-300 mt-0.5">ap-disputes@veritas.internal</div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Formal Notice Body</label>
+            <button onclick="copyDisputeEmail()" class="text-[11px] text-brand-light hover:text-white flex items-center gap-1">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+              <span>Copy Text</span>
+            </button>
+          </div>
+          <textarea id="disputeEmailBox" rows="9" class="w-full p-3 rounded-xl bg-bg border border-border text-xs text-slate-200 font-mono leading-relaxed focus:outline-none focus:border-brand" placeholder="Automated legal notice..."></textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-border bg-surface/90 flex items-center justify-between">
+        <button onclick="closeEmailPreviewModal()" class="btn-secondary px-4 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white">
+          Close Preview
+        </button>
+        <button onclick="dispatchDisputeFromModal()" class="btn-primary px-4 py-2 rounded-lg text-xs font-bold text-white shadow-md flex items-center gap-1.5">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>
+          <span>Authorize & Dispatch Email</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Individual Vendor Risk Dossier Modal -->
   <div id="vendorDossierModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop p-4 overflow-y-auto">
     <div class="bg-panel border border-border rounded-2xl w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden font-sans">
@@ -1574,26 +1669,112 @@
       lucide.createIcons();
     }
 
-    // Toggle Copilot Slide-Out Assistant Drawer
-    function toggleCopilotDrawer() {
-      const drawer = document.getElementById('copilotDrawer');
+    // Slide-Out Audit Intelligence & Action Drawer (Fix 2)
+    let currentDrawerTab = 'audit';
+
+    function toggleAuditDrawer(tab = null) {
+      const drawer = document.getElementById('auditRightDrawer');
+      if (!drawer) return;
       const isHidden = drawer.classList.contains('hidden');
+
+      if (tab) {
+        switchDrawerTab(tab);
+      }
+
       if (isHidden) {
         drawer.classList.remove('hidden');
-        gsap.from(drawer, { x: 380, opacity: 0, duration: 0.25, ease: 'power2.out' });
-      } else {
-        gsap.to(drawer, {
-          x: 380,
-          opacity: 0,
-          duration: 0.2,
-          ease: 'power2.in',
-          onComplete: () => {
-            drawer.classList.add('hidden');
-            gsap.set(drawer, { x: 0, opacity: 1 });
-          }
-        });
+        gsap.fromTo(drawer, { x: 520, opacity: 0.6 }, { x: 0, opacity: 1, duration: 0.25, ease: 'power2.out' });
+      } else if (!tab || (tab && tab === currentDrawerTab)) {
+        closeAuditDrawer();
       }
     }
+
+    function closeAuditDrawer() {
+      const drawer = document.getElementById('auditRightDrawer');
+      if (!drawer || drawer.classList.contains('hidden')) return;
+      gsap.to(drawer, {
+        x: 520,
+        opacity: 0,
+        duration: 0.2,
+        ease: 'power2.in',
+        onComplete: () => {
+          drawer.classList.add('hidden');
+          gsap.set(drawer, { x: 0, opacity: 1 });
+        }
+      });
+    }
+
+    function switchDrawerTab(tabName) {
+      currentDrawerTab = tabName;
+      const isAudit = (tabName === 'audit');
+      const btnAudit = document.getElementById('drawerTabBtnAudit');
+      const btnCopilot = document.getElementById('drawerTabBtnCopilot');
+      const contentAudit = document.getElementById('drawerContentAudit');
+      const contentCopilot = document.getElementById('drawerContentCopilot');
+
+      if (btnAudit) {
+        btnAudit.className = isAudit
+          ? "px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5"
+          : "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5";
+      }
+      if (btnCopilot) {
+        btnCopilot.className = !isAudit
+          ? "px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5"
+          : "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5";
+      }
+      if (contentAudit) contentAudit.classList.toggle('hidden', !isAudit);
+      if (contentCopilot) contentCopilot.classList.toggle('hidden', isAudit);
+      lucide.createIcons();
+    }
+
+    function toggleCopilotDrawer() {
+      toggleAuditDrawer('copilot');
+    }
+
+    // Formal Dispute Email Modal Preview (Fix 3)
+    function openEmailPreviewModal() {
+      const modal = document.getElementById('emailPreviewModal');
+      if (!modal) return;
+      if (currentAuditData && currentAuditData.invoice) {
+        const vendor = currentAuditData.invoice.vendor_name || "";
+        const slug = vendor.toLowerCase().replace(/[^a-z0-9]/g, '');
+        document.getElementById('emailPreviewRecipient').textContent = `billing@${slug || 'cloudscale'}.io`;
+      }
+      modal.classList.remove('hidden');
+      document.getElementById('disputeEmailBox').focus();
+    }
+
+    function closeEmailPreviewModal() {
+      const modal = document.getElementById('emailPreviewModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyDisputeEmail() {
+      const box = document.getElementById('disputeEmailBox');
+      if (!box) return;
+      navigator.clipboard.writeText(box.value).then(() => {
+        showToast("Copied to Clipboard", "Formal dispute notice body copied to clipboard.", "success");
+      }).catch(() => {
+        box.select();
+        document.execCommand('copy');
+        showToast("Copied to Clipboard", "Notice copied to clipboard.", "success");
+      });
+    }
+
+    function dispatchDisputeFromModal() {
+      closeEmailPreviewModal();
+      submitHitlDecision('DISPUTE_AND_EMAIL');
+    }
+
+    // Global Esc hotkey
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAuditDrawer();
+        closeEmailPreviewModal();
+        closeVendorDossierModal();
+        closeApiKeyModal();
+      }
+    });
 
     // Theme Switcher
     function toggleTheme() {
@@ -1839,10 +2020,13 @@
         img.src = imgSrc;
       });
 
-      const targetWidth = 640;
+      const scrollArea = document.getElementById('viewerScrollArea');
+      const availWidth = (scrollArea && scrollArea.clientWidth > 400 ? scrollArea.clientWidth - 100 : 850);
+      const targetWidth = Math.min(950, Math.max(680, availWidth));
       const scale = targetWidth / (img.naturalWidth || 800);
       canvas.width = targetWidth;
       canvas.height = (img.naturalHeight || 1000) * scale;
+      document.getElementById('docScaleIndicator').textContent = "100% Optical OCR";
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -1867,10 +2051,16 @@
       const page = await pdfDoc.getPage(currentPage);
       const canvas = document.getElementById('pdfCanvas');
       const ctx = canvas.getContext('2d');
-      const viewport = page.getViewport({ scale: 1.15 });
+      
+      const scrollArea = document.getElementById('viewerScrollArea');
+      const availWidth = (scrollArea && scrollArea.clientWidth > 400 ? scrollArea.clientWidth - 100 : 850);
+      const unscaledViewport = page.getViewport({ scale: 1.0 });
+      const targetScale = Math.min(1.5, Math.max(1.15, availWidth / unscaledViewport.width));
+      const viewport = page.getViewport({ scale: targetScale });
 
       canvas.width = viewport.width;
       canvas.height = viewport.height;
+      document.getElementById('docScaleIndicator').textContent = `${Math.round(targetScale * 100)}% High-DPI Vector`;
 
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
       drawEvidenceAnnotations(isCurrentOvercharged, viewport.width, currentPage);
@@ -2049,9 +2239,35 @@
           <td class="py-3 px-2 text-right tabular-nums text-slate-400 font-mono">${contractRateDisplay}</td>
           <td class="py-3 px-3 text-right tabular-nums font-mono ${isFlagged ? 'text-terracotta-light font-bold' : 'text-emerald font-medium'}">${deltaDisplay}</td>
         `;
-        tr.onclick = () => highlightTableRow(idx);
         tableBody.appendChild(tr);
       });
+
+      // Update Toolbar Findings Pill & Header/Drawer Badges (Fix 1 & 2)
+      const findingsPill = document.getElementById('viewerFindingsPill');
+      if (findingsPill) {
+        if (isPassed) {
+          findingsPill.className = "flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-emerald-bg text-emerald border border-emerald-border cursor-pointer hover:bg-emerald-bg/80 transition shadow-sm";
+          findingsPill.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald"></span><span>✓ 100% Compliant ($0.00) — View Details →</span>`;
+        } else {
+          findingsPill.className = "flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-terracotta-bg text-terracotta-light border border-terracotta-border cursor-pointer hover:bg-terracotta-bg/80 transition shadow-sm";
+          findingsPill.innerHTML = `<span class="h-2 w-2 rounded-full bg-terracotta animate-pulse"></span><span>⚠️ ${report.discrepancies.length} Violations (+$${report.total_overcharge.toFixed(2)}) — Review Findings →</span>`;
+        }
+        findingsPill.classList.remove('hidden');
+      }
+
+      const headerBadge = document.getElementById('btnHeaderAuditBadge');
+      const drawerBadge = document.getElementById('drawerAuditBadgeCount');
+      if (headerBadge) {
+        headerBadge.textContent = report.discrepancies.length;
+        headerBadge.classList.toggle('hidden', isPassed);
+      }
+      if (drawerBadge) {
+        drawerBadge.textContent = report.discrepancies.length;
+        drawerBadge.classList.toggle('hidden', isPassed);
+      }
+
+      // Smoothly slide open the review drawer so reviewer sees details
+      toggleAuditDrawer('audit');
     }
 
     // HITL Modes
