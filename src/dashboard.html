@@ -401,6 +401,18 @@
         <span id="ledgerBadgeCount" class="text-[10px] px-1.5 py-0.5 rounded-full bg-brand/20 text-brand-light font-mono font-semibold">0</span>
       </button>
 
+      <!-- Enterprise ERP Export Button -->
+      <button onclick="openErpExportModal()" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Export Accounting Journal to SAP S/4HANA, NetSuite, or QuickBooks">
+        <i data-lucide="share-2" class="w-3.5 h-3.5 text-emerald"></i>
+        <span>Export ERP</span>
+      </button>
+
+      <!-- Outbound Webhooks Button -->
+      <button onclick="openWebhooksModal()" class="btn-secondary px-2.5 py-1.5 rounded-lg text-slate-200 text-xs flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Outbound Financial Webhooks (Slack/Teams/JSON)">
+        <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span class="hidden xl:inline">Webhooks</span>
+      </button>
+
       <!-- Single Upload Trigger -->
       <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs cursor-pointer flex items-center gap-1.5">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
@@ -981,7 +993,11 @@
               <span id="hitlSignOffBadge" class="text-[9px] px-1.5 py-0.5 rounded-full bg-brand/20 text-brand-light font-semibold">AP_REVIEWER</span>
             </div>
 
-            <div id="executiveOverrideContainer">
+            <div id="executiveOverrideContainer" class="flex items-center gap-3">
+              <button onclick="openErpExportModal()" class="text-xs text-emerald hover:text-emerald-light transition flex items-center gap-1 font-medium" title="Generate ERP Journal Entry for this invoice">
+                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                <span>Export to ERP</span>
+              </button>
               <button id="btnExecutiveOverride" onclick="handleExecutiveOverrideClick()" class="text-xs text-slate-400 hover:text-slate-200 transition underline underline-offset-2 flex items-center gap-1.5">
                 <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
                 <span id="btnExecutiveOverrideText">Grant Executive Override (Requires VP Clearance)</span>
@@ -1239,6 +1255,222 @@
       <div class="flex items-center justify-end gap-2 pt-2 border-t border-border">
         <button onclick="clearCopilotKey()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs text-rose-400 hover:text-rose-300">Clear Key</button>
         <button onclick="saveCopilotKey()" class="btn-primary px-4 py-1.5 rounded-lg text-xs text-white">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 5. ENTERPRISE ERP EXPORT MODAL                 -->
+  <!-- ============================================== -->
+  <div id="erpExportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-panel border border-border rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden font-sans">
+      
+      <!-- Modal Header -->
+      <div class="p-5 sm:p-6 border-b border-border bg-surface/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald to-teal-400 flex items-center justify-center shadow-lg shadow-emerald/20">
+            <i data-lucide="share-2" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-extrabold text-white tracking-tight">Enterprise ERP & Accounting Sync</h2>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-bg text-emerald border border-emerald-border">Balanced General Ledger</span>
+            </div>
+            <p class="text-xs text-slate-400">Export audit clearance and vendor credit memos to SAP S/4HANA, NetSuite, or QuickBooks</p>
+          </div>
+        </div>
+
+        <button onclick="closeErpExportModal()" class="btn-secondary p-2 rounded-lg text-slate-400 hover:text-white transition" title="Close Modal">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-5 flex-1">
+        
+        <!-- ERP System Selector Tabs -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-surface p-2 rounded-xl border border-border">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button id="erpTabSap" onclick="switchErpSystem('SAP')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald text-white shadow-sm transition flex items-center gap-1.5">
+              <span>SAP S/4HANA (FI-AP)</span>
+            </button>
+            <button id="erpTabNetSuite" onclick="switchErpSystem('NETSUITE')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+              <span>Oracle NetSuite</span>
+            </button>
+            <button id="erpTabQuickBooks" onclick="switchErpSystem('QUICKBOOKS')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+              <span>QuickBooks Online</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-[11px] text-slate-400 font-medium">Format:</span>
+            <div class="flex items-center bg-bg p-0.5 rounded-lg border border-border">
+              <button id="erpFmtCsv" onclick="switchErpFormat('csv')" class="px-2.5 py-1 rounded text-[11px] font-bold bg-subtle text-white">CSV</button>
+              <button id="erpFmtJson" onclick="switchErpFormat('json')" class="px-2.5 py-1 rounded text-[11px] font-bold text-slate-400 hover:text-white">JSON</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary KPI Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="p-3.5 rounded-xl border border-border bg-surface">
+            <div class="text-[11px] text-slate-400 font-medium">Target ERP</div>
+            <div id="erpSummarySystem" class="text-sm font-bold text-white mt-1">SAP S/4HANA</div>
+            <div class="text-[10px] text-slate-500">Document Type: KR</div>
+          </div>
+
+          <div class="p-3.5 rounded-xl border border-border bg-surface">
+            <div class="text-[11px] text-slate-400 font-medium">Authorized Payable</div>
+            <div id="erpSummaryAuthorized" class="text-sm font-bold text-emerald font-mono mt-1">$9,400.00</div>
+            <div class="text-[10px] text-emerald font-medium">Posting Key 31 (Vendor Credit)</div>
+          </div>
+
+          <div class="p-3.5 rounded-xl border border-border bg-surface">
+            <div class="text-[11px] text-slate-400 font-medium">Disputed Escrow Withheld</div>
+            <div id="erpSummaryDisputed" class="text-sm font-bold text-terracotta-light font-mono mt-1">$1,550.00</div>
+            <div class="text-[10px] text-terracotta-light font-medium">Credit Memo / Special G/L</div>
+          </div>
+
+          <div class="p-3.5 rounded-xl border border-border bg-surface">
+            <div class="text-[11px] text-slate-400 font-medium">Gross Billed Expense</div>
+            <div id="erpSummaryGross" class="text-sm font-bold text-white font-mono mt-1">$10,950.00</div>
+            <div class="text-[10px] text-cyan-400 font-semibold">Balanced Double-Entry ✓</div>
+          </div>
+        </div>
+
+        <!-- Code Block Preview -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-400 font-medium flex items-center gap-1.5">
+              <i data-lucide="file-code" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span id="erpPreviewFilename">SAP_S4HANA_FI_INV-2025-094.csv</span>
+            </span>
+            <button onclick="copyErpPayload()" class="text-slate-400 hover:text-white transition flex items-center gap-1 text-[11px]">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+              <span>Copy Content</span>
+            </button>
+          </div>
+          <div class="relative rounded-xl border border-border bg-[#0B0D11] p-4 max-h-64 overflow-auto">
+            <pre><code id="erpExportCode" class="font-mono text-xs text-slate-300 leading-relaxed">Loading ERP Export...</code></pre>
+          </div>
+        </div>
+
+        <!-- Recent Export Records -->
+        <div class="space-y-2 pt-1">
+          <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Recent ERP Journal Batches</div>
+          <div id="erpHistoryList" class="space-y-1 text-xs text-slate-300 max-h-28 overflow-y-auto">
+            <div class="p-2 rounded bg-surface border border-border text-[11px] text-slate-400">No previous exports recorded in this session.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-border bg-surface/80 flex items-center justify-between">
+        <div class="text-[11px] text-slate-400">
+          Ready for direct import into ERP General Ledger or enterprise iPaaS (MuleSoft, Boomi, Workato).
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="closeErpExportModal()" class="btn-secondary px-4 py-2 rounded-lg text-xs font-semibold text-slate-300">Close</button>
+          <button onclick="downloadErpBatchFile()" class="btn-emerald px-4 py-2 rounded-lg text-xs font-bold text-white shadow-lg flex items-center gap-2">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Download ERP Batch File</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 6. OUTBOUND WEBHOOKS & EVENT BUS MODAL         -->
+  <!-- ============================================== -->
+  <div id="webhooksModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-panel border border-border rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden font-sans">
+      
+      <!-- Modal Header -->
+      <div class="p-5 sm:p-6 border-b border-border bg-surface/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-400/20">
+            <i data-lucide="bell-ring" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-extrabold text-white tracking-tight">Outbound Financial Webhooks & Event Bus</h2>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-400/20 text-cyan-400 border border-cyan-400/30">HMAC-SHA256 Signed</span>
+            </div>
+            <p class="text-xs text-slate-400">Real-time financial dispatch for Slack, Microsoft Teams, and Financial iPaaS pipelines</p>
+          </div>
+        </div>
+
+        <button onclick="closeWebhooksModal()" class="btn-secondary p-2 rounded-lg text-slate-400 hover:text-white transition" title="Close Modal">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-5 flex-1">
+        
+        <!-- Trigger Dispatch Section -->
+        <div class="p-4 rounded-xl border border-border bg-surface space-y-3">
+          <div class="text-xs font-bold text-white">Dispatch Live Webhook Notification</div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="space-y-1">
+              <label class="text-[11px] text-slate-400 font-medium">Event Type</label>
+              <select id="webhookEventTypeSelect" class="w-full p-2 rounded-lg bg-bg border border-border text-xs text-white focus:outline-none focus:border-brand">
+                <option value="invoice.audit.flagged">invoice.audit.flagged (Discrepancy Detected)</option>
+                <option value="hitl.decision.dispute_dispatched">hitl.decision.dispute_dispatched (Dispute Sent)</option>
+                <option value="hitl.decision.executive_override">hitl.decision.executive_override (VP Override)</option>
+                <option value="hitl.decision.partial_remittance">hitl.decision.partial_remittance (Partial Remit)</option>
+              </select>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+              <label class="text-[11px] text-slate-400 font-medium">Target Webhook URL (Slack / Teams / iPaaS)</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="webhookTargetUrlInput" placeholder="https://hooks.slack.com/services/..." value="https://hooks.slack.com/services/SIMULATED/FINANCE/ALERTS" class="flex-1 p-2 rounded-lg bg-bg border border-border text-xs text-white font-mono focus:outline-none focus:border-brand">
+                <button onclick="dispatchLiveWebhookTest()" class="btn-primary px-3.5 py-2 rounded-lg text-xs font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
+                  <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                  <span>Test Dispatch</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Payload Preview Tabs (Slack Block Kit / Teams Adaptive Card / Raw JSON) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 bg-surface p-1 rounded-lg border border-border">
+              <button id="wbTabSlack" onclick="switchWebhookView('slack')" class="px-3 py-1 rounded text-xs font-bold bg-brand/20 text-brand-light border border-brand/30">Slack Block Kit</button>
+              <button id="wbTabTeams" onclick="switchWebhookView('teams')" class="px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white">MS Teams Card</button>
+              <button id="wbTabRaw" onclick="switchWebhookView('raw')" class="px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white">Raw JSON & Signature</button>
+            </div>
+
+            <div id="webhookSignatureBadge" class="text-[10px] text-slate-400 font-mono flex items-center gap-1">
+              <span>Signature:</span>
+              <span class="text-emerald font-semibold">sha256=verified</span>
+            </div>
+          </div>
+
+          <div class="relative rounded-xl border border-border bg-[#0B0D11] p-4 max-h-64 overflow-auto">
+            <pre><code id="webhookPreviewCode" class="font-mono text-xs text-slate-300 leading-relaxed">Loading Webhook Preview...</code></pre>
+          </div>
+        </div>
+
+        <!-- Recent Webhook Event Logs -->
+        <div class="space-y-2 pt-1">
+          <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Outbound Webhook Delivery Log</div>
+          <div id="webhookHistoryList" class="space-y-1.5 text-xs text-slate-300 max-h-36 overflow-y-auto">
+            <div class="p-2 rounded bg-surface border border-border text-[11px] text-slate-400">Loading delivery history...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-border bg-surface/80 flex items-center justify-between">
+        <div class="text-[11px] text-slate-400">
+          HMAC-SHA256 headers: <code class="text-cyan-400 font-mono">X-Veritas-Signature</code> and <code class="text-cyan-400 font-mono">X-Veritas-Event</code>
+        </div>
+        <button onclick="closeWebhooksModal()" class="btn-secondary px-4 py-2 rounded-lg text-xs font-semibold text-slate-300">Close</button>
       </div>
     </div>
   </div>
@@ -2546,6 +2778,233 @@
       } catch (err) {
         showToast("Compliance Guard", err.message, "error");
       }
+    }
+
+    // ==========================================
+    // ENTERPRISE ERP EXPORT & WEBHOOK DISPATCHER
+    // ==========================================
+    let currentErpSystem = 'SAP';
+    let currentErpFormat = 'csv';
+    let latestErpExportData = null;
+    let latestWebhookData = null;
+    let currentWebhookView = 'slack';
+
+    async function openErpExportModal() {
+      const invNum = (currentAuditData && currentAuditData.invoice && currentAuditData.invoice.invoice_number) 
+        ? currentAuditData.invoice.invoice_number 
+        : 'INV-2025-094';
+      
+      document.getElementById('erpExportModal').classList.remove('hidden');
+      await fetchErpExport(invNum);
+      await loadErpHistory();
+    }
+
+    function closeErpExportModal() {
+      document.getElementById('erpExportModal').classList.add('hidden');
+    }
+
+    function switchErpSystem(system) {
+      currentErpSystem = system;
+      ['SAP', 'NETSUITE', 'QUICKBOOKS'].forEach(s => {
+        const btn = document.getElementById('erpTab' + (s === 'SAP' ? 'Sap' : s === 'NETSUITE' ? 'NetSuite' : 'QuickBooks'));
+        if (btn) {
+          if (s === system) {
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald text-white shadow-sm transition flex items-center gap-1.5';
+          } else {
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5';
+          }
+        }
+      });
+      const invNum = (currentAuditData && currentAuditData.invoice && currentAuditData.invoice.invoice_number) 
+        ? currentAuditData.invoice.invoice_number 
+        : 'INV-2025-094';
+      fetchErpExport(invNum);
+    }
+
+    function switchErpFormat(fmt) {
+      currentErpFormat = fmt;
+      const csvBtn = document.getElementById('erpFmtCsv');
+      const jsonBtn = document.getElementById('erpFmtJson');
+      if (fmt === 'csv') {
+        csvBtn.className = 'px-2.5 py-1 rounded text-[11px] font-bold bg-subtle text-white';
+        jsonBtn.className = 'px-2.5 py-1 rounded text-[11px] font-bold text-slate-400 hover:text-white';
+      } else {
+        jsonBtn.className = 'px-2.5 py-1 rounded text-[11px] font-bold bg-subtle text-white';
+        csvBtn.className = 'px-2.5 py-1 rounded text-[11px] font-bold text-slate-400 hover:text-white';
+      }
+      const invNum = (currentAuditData && currentAuditData.invoice && currentAuditData.invoice.invoice_number) 
+        ? currentAuditData.invoice.invoice_number 
+        : 'INV-2025-094';
+      fetchErpExport(invNum);
+    }
+
+    async function fetchErpExport(invoiceNumber) {
+      try {
+        const res = await fetch('/api/erp/export', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            invoice_number: invoiceNumber,
+            erp_system: currentErpSystem,
+            format: currentErpFormat,
+            reviewer_id: currentUser.full_name
+          })
+        });
+        if (!res.ok) throw new Error("Could not generate ERP export.");
+        const data = await res.json();
+        latestErpExportData = data;
+
+        document.getElementById('erpSummarySystem').textContent = data.erp_system;
+        document.getElementById('erpSummaryAuthorized').textContent = '$' + Number(data.summary.authorized_payable || data.summary.net_payable || data.summary.credit_ap || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('erpSummaryDisputed').textContent = '$' + Number(data.summary.disputed_escrow || data.summary.credit_memo_amount || data.summary.credit_escrow || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('erpSummaryGross').textContent = '$' + Number(data.summary.gross_billed || data.summary.debit_expense || (data.summary.authorized_payable + data.summary.disputed_escrow) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('erpPreviewFilename').textContent = data.filename;
+        document.getElementById('erpExportCode').textContent = data.content;
+      } catch (err) {
+        document.getElementById('erpExportCode').textContent = "Error: " + err.message;
+      }
+    }
+
+    async function loadErpHistory() {
+      try {
+        const res = await fetch('/api/erp/history');
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = document.getElementById('erpHistoryList');
+        if (data.exports && data.exports.length > 0) {
+          list.innerHTML = data.exports.slice(0, 5).map(e => `
+            <div class="p-2 rounded bg-surface border border-border flex items-center justify-between text-[11px]">
+              <div>
+                <strong class="text-white">${e.filename}</strong>
+                <span class="text-slate-500 ml-2">by ${e.exported_by}</span>
+              </div>
+              <span class="text-[10px] text-emerald font-mono">${e.created_at}</span>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
+    }
+
+    function copyErpPayload() {
+      if (!latestErpExportData || !latestErpExportData.content) return;
+      navigator.clipboard.writeText(latestErpExportData.content);
+      showToast("Copied to Clipboard", "ERP batch payload copied successfully.", "success");
+    }
+
+    function downloadErpBatchFile() {
+      if (!latestErpExportData || !latestErpExportData.content) return;
+      const mime = currentErpFormat === 'json' ? 'application/json' : 'text/csv';
+      const blob = new Blob([latestErpExportData.content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = latestErpExportData.filename || 'export.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("File Downloaded", `Saved ${latestErpExportData.filename}`, "success");
+    }
+
+    // ==========================================
+    // OUTBOUND FINANCIAL WEBHOOKS
+    // ==========================================
+    async function openWebhooksModal() {
+      document.getElementById('webhooksModal').classList.remove('hidden');
+      await dispatchLiveWebhookTest(true);
+      await loadWebhookHistory();
+    }
+
+    function closeWebhooksModal() {
+      document.getElementById('webhooksModal').classList.add('hidden');
+    }
+
+    function switchWebhookView(view) {
+      currentWebhookView = view;
+      ['slack', 'teams', 'raw'].forEach(v => {
+        const btn = document.getElementById('wbTab' + (v === 'slack' ? 'Slack' : v === 'teams' ? 'Teams' : 'Raw'));
+        if (btn) {
+          if (v === view) {
+            btn.className = 'px-3 py-1 rounded text-xs font-bold bg-brand/20 text-brand-light border border-brand/30';
+          } else {
+            btn.className = 'px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white';
+          }
+        }
+      });
+      renderWebhookPreview();
+    }
+
+    function renderWebhookPreview() {
+      if (!latestWebhookData) return;
+      const codeEl = document.getElementById('webhookPreviewCode');
+      if (currentWebhookView === 'slack') {
+        codeEl.textContent = JSON.stringify(latestWebhookData.slack_preview, null, 2);
+      } else if (currentWebhookView === 'teams') {
+        codeEl.textContent = JSON.stringify(latestWebhookData.teams_preview, null, 2);
+      } else {
+        codeEl.textContent = JSON.stringify({
+          signature: latestWebhookData.signature,
+          event_id: latestWebhookData.event_id,
+          event_type: latestWebhookData.event_type,
+          status_code: latestWebhookData.status_code,
+          payload: latestWebhookData.payload
+        }, null, 2);
+      }
+    }
+
+    async function dispatchLiveWebhookTest(silent = false) {
+      const invNum = (currentAuditData && currentAuditData.invoice && currentAuditData.invoice.invoice_number) 
+        ? currentAuditData.invoice.invoice_number 
+        : 'INV-2025-094';
+      const eventType = document.getElementById('webhookEventTypeSelect').value;
+      const targetUrl = document.getElementById('webhookTargetUrlInput').value;
+
+      try {
+        const res = await fetch('/api/webhooks/dispatch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_type: eventType,
+            invoice_number: invNum,
+            target_url: targetUrl,
+            simulate: true
+          })
+        });
+        if (!res.ok) throw new Error("Webhook dispatch failed.");
+        const data = await res.json();
+        latestWebhookData = data;
+        renderWebhookPreview();
+        await loadWebhookHistory();
+
+        if (!silent) {
+          showToast("Webhook Dispatched", `Sent ${eventType} (HMAC: ${data.signature.slice(0, 16)}...)`, "success");
+        }
+      } catch (err) {
+        showToast("Webhook Error", err.message, "error");
+      }
+    }
+
+    async function loadWebhookHistory() {
+      try {
+        const res = await fetch('/api/webhooks/history');
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = document.getElementById('webhookHistoryList');
+        if (data.webhooks && data.webhooks.length > 0) {
+          list.innerHTML = data.webhooks.slice(0, 6).map(w => `
+            <div class="p-2 rounded bg-surface border border-border flex items-center justify-between text-[11px]">
+              <div>
+                <span class="font-bold text-white">${w.event_type}</span>
+                <span class="text-slate-500 font-mono ml-2">${w.signature.slice(0, 20)}...</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-1.5 py-0.5 rounded text-[10px] ${w.success ? 'bg-emerald/20 text-emerald' : 'bg-rose-500/20 text-rose-400'} font-semibold">HTTP ${w.status_code}</span>
+                <span class="text-[10px] text-slate-500">${w.created_at}</span>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {}
     }
   </script>
 </body>

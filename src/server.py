@@ -2,10 +2,11 @@ import os
 import sys
 import shutil
 import uuid
+import json
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, BackgroundTasks, Header
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func, or_
@@ -37,7 +38,11 @@ from src.database.models import (
     AuditDiscrepancyRecord,
     HumanDecisionRecord,
     UserRecord,
+    ERPExportRecord,
+    WebhookEventRecord,
 )
+from src.integrations.erp_exporter import generate_erp_export
+from src.integrations.webhook_dispatcher import dispatch_webhook
 from src.extractor import InvoiceExtractor
 from src.audit_engine import ContractAuditEngine
 from src.evals.evaluator import ComplianceEvaluator
@@ -183,6 +188,20 @@ class HITLDecisionRequest(BaseModel):
     reviewer_notes: Optional[str] = None
     reviewer_id: Optional[str] = "Surya Prakash"
     reviewer_role: Optional[str] = "AP_REVIEWER"
+
+
+class ERPExportRequest(BaseModel):
+    invoice_number: str
+    erp_system: str = "SAP"  # "SAP", "NETSUITE", "QUICKBOOKS"
+    format: str = "csv"  # "csv", "json"
+    reviewer_id: Optional[str] = "Surya Prakash"
+
+
+class WebhookDispatchRequest(BaseModel):
+    event_type: str = "invoice.audit.flagged"
+    invoice_number: str
+    target_url: Optional[str] = None
+    simulate: bool = True
 
 
 @app.get("/api/auth/users")
@@ -495,6 +514,44 @@ def record_hitl_decision(
         .all()
     )
     total_blocked = sum(s[0] for s in total_savings)
+    # Auto-dispatch outbound financial webhook
+    event_type_map = {
+        "DISPUTE_AND_EMAIL": "hitl.decision.dispute_dispatched",
+        "APPROVE_OVERCHARGE": "hitl.decision.executive_override",
+        "PARTIAL_APPROVE": "hitl.decision.partial_remittance",
+        "CONDITIONAL_DISPUTE": "hitl.decision.conditional_dispute",
+        "ROUTE_WORKFLOW": "hitl.decision.workflow_routed",
+    }
+    evt_type = event_type_map.get(decision.action, "hitl.decision.committed")
+    webhook_res = dispatch_webhook(
+        event_type=evt_type,
+        event_data={
+            "invoice_number": decision.invoice_number,
+            "vendor_name": decision.vendor_name,
+            "action": decision.action,
+            "disputed_amount": decision.disputed_amount,
+            "gross_amount": audit_run.total_billed if audit_run else 0.0,
+            "reviewer_name": active_name,
+            "reviewer_role": active_role,
+            "notes": decision.reviewer_notes or status_message,
+        },
+        simulate=True
+    )
+    try:
+        wb_rec = WebhookEventRecord(
+            event_id=webhook_res["event_id"],
+            event_type=evt_type,
+            target_url=webhook_res["target_url"],
+            signature=webhook_res["signature"],
+            payload_json=json.dumps(webhook_res["payload"]),
+            status_code=webhook_res["status_code"],
+            success=webhook_res["success"],
+            simulated=webhook_res["simulated"],
+        )
+        db.add(wb_rec)
+        db.commit()
+    except Exception:
+        pass
 
     return {
         "status": "SUCCESS",
@@ -502,6 +559,7 @@ def record_hitl_decision(
         "reviewer": active_name,
         "reviewer_role": active_role,
         "total_savings_to_date": total_blocked,
+        "webhook_event": webhook_res,
     }
 
 
@@ -864,6 +922,179 @@ def simulate_telegram():
     sample_pdf = os.path.join(BASE_DIR, "data", "sample_invoices", "invoice_overcharged.pdf")
     bridge = TelegramAuditBridge()
     return bridge.process_incoming_pdf(sample_pdf)
+
+
+@app.post("/api/erp/export")
+def export_erp_journal(
+    req: ERPExportRequest,
+    db: Session = Depends(get_db),
+):
+    audit_rec = (
+        db.query(AuditRunRecord)
+        .join(InvoiceRecord)
+        .filter(InvoiceRecord.invoice_number == req.invoice_number)
+        .order_by(AuditRunRecord.id.desc())
+        .first()
+    )
+    if not audit_rec:
+        raise HTTPException(status_code=404, detail="Invoice or audit run not found.")
+
+    invoice_rec = audit_rec.invoice
+    latest_decision = (
+        db.query(HumanDecisionRecord)
+        .filter(HumanDecisionRecord.audit_run_id == audit_rec.id)
+        .order_by(HumanDecisionRecord.id.desc())
+        .first()
+    )
+
+    invoice_data = {
+        "invoice_number": invoice_rec.invoice_number,
+        "vendor_name": invoice_rec.vendor.name if invoice_rec.vendor else "ACME Corporation",
+        "invoice_date": invoice_rec.invoice_date or "2025-02-01",
+        "due_date": invoice_rec.due_date or "2025-03-03",
+        "payment_terms": invoice_rec.payment_terms or "Net 30",
+        "currency": invoice_rec.currency or "USD",
+        "total_amount": invoice_rec.total_amount,
+    }
+
+    audit_data = {
+        "status": audit_rec.status,
+        "total_billed": audit_rec.total_billed,
+        "total_expected": audit_rec.total_expected,
+        "total_overcharge": audit_rec.total_overcharge,
+        "discrepancies": [
+            {
+                "type": d.discrepancy_type,
+                "description": d.description,
+                "overcharge": d.overcharge_amount,
+            }
+            for d in audit_rec.discrepancies
+        ],
+    }
+
+    decision_data = None
+    if latest_decision:
+        decision_data = {
+            "action": latest_decision.action,
+            "disputed_amount": latest_decision.disputed_amount,
+            "reviewer_id": latest_decision.reviewer_id,
+            "reviewer_role": latest_decision.reviewer_role,
+        }
+
+    export_result = generate_erp_export(
+        invoice_data=invoice_data,
+        audit_data=audit_data,
+        decision_data=decision_data,
+        erp_system=req.erp_system,
+        format_type=req.format,
+    )
+
+    # Save export log to database
+    export_rec = ERPExportRecord(
+        invoice_id=invoice_rec.id,
+        erp_system=export_result["erp_system"],
+        export_format=export_result["format"],
+        filename=export_result["filename"],
+        exported_by=req.reviewer_id or "Surya Prakash",
+    )
+    db.add(export_rec)
+    db.commit()
+
+    return export_result
+
+
+@app.get("/api/erp/history")
+def get_erp_export_history(db: Session = Depends(get_db)):
+    records = db.query(ERPExportRecord).order_by(ERPExportRecord.id.desc()).limit(20).all()
+    return {
+        "exports": [
+            {
+                "id": r.id,
+                "invoice_number": r.invoice.invoice_number if r.invoice else "UNKNOWN",
+                "erp_system": r.erp_system,
+                "export_format": r.export_format,
+                "filename": r.filename,
+                "exported_by": r.exported_by,
+                "created_at": r.created_at.strftime("%Y-%m-%d %H:%M:%S") if r.created_at else "",
+            }
+            for r in records
+        ]
+    }
+
+
+@app.post("/api/webhooks/dispatch")
+def test_dispatch_webhook(
+    req: WebhookDispatchRequest,
+    db: Session = Depends(get_db),
+):
+    audit_rec = (
+        db.query(AuditRunRecord)
+        .join(InvoiceRecord)
+        .filter(InvoiceRecord.invoice_number == req.invoice_number)
+        .order_by(AuditRunRecord.id.desc())
+        .first()
+    )
+
+    gross = audit_rec.total_billed if audit_rec else 10950.0
+    disputed = audit_rec.total_overcharge if audit_rec else 1550.0
+    vendor_name = (
+        audit_rec.invoice.vendor.name
+        if audit_rec and audit_rec.invoice and audit_rec.invoice.vendor
+        else "ACME Corporation"
+    )
+
+    event_data = {
+        "invoice_number": req.invoice_number,
+        "vendor_name": vendor_name,
+        "gross_amount": gross,
+        "disputed_amount": disputed,
+        "reviewer_name": "Surya Prakash",
+        "reviewer_role": "Accounts Payable Specialist",
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+    result = dispatch_webhook(
+        event_type=req.event_type,
+        event_data=event_data,
+        target_url=req.target_url,
+        simulate=req.simulate,
+    )
+
+    wb_rec = WebhookEventRecord(
+        event_id=result["event_id"],
+        event_type=req.event_type,
+        target_url=result["target_url"],
+        signature=result["signature"],
+        payload_json=json.dumps(result["payload"]),
+        status_code=result["status_code"],
+        success=result["success"],
+        simulated=result["simulated"],
+    )
+    db.add(wb_rec)
+    db.commit()
+
+    return result
+
+
+@app.get("/api/webhooks/history")
+def get_webhook_history(db: Session = Depends(get_db)):
+    events = db.query(WebhookEventRecord).order_by(WebhookEventRecord.id.desc()).limit(20).all()
+    return {
+        "webhooks": [
+            {
+                "id": e.id,
+                "event_id": e.event_id,
+                "event_type": e.event_type,
+                "target_url": e.target_url,
+                "signature": e.signature,
+                "status_code": e.status_code,
+                "success": e.success,
+                "simulated": e.simulated,
+                "created_at": e.created_at.strftime("%Y-%m-%d %H:%M:%S") if e.created_at else "",
+            }
+            for e in events
+        ]
+    }
 
 
 @app.get("/", response_class=HTMLResponse)

@@ -8,6 +8,7 @@ from sqlalchemy import (
     ForeignKey,
     Text,
     Enum as SqlEnum,
+    Boolean,
 )
 from sqlalchemy.orm import relationship
 
@@ -149,5 +150,34 @@ class UserRecord(Base):
     role = Column(String(64), nullable=False)  # AP_REVIEWER, FINANCE_VP, AUDITOR_READONLY
     title = Column(String(255), nullable=False)
     avatar_color = Column(String(32), default="brand", nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class ERPExportRecord(Base):
+    __tablename__ = "erp_exports"
+
+    id = Column(Integer, primary_key=True, index=True)
+    invoice_id = Column(Integer, ForeignKey("invoices.id"), nullable=False)
+    erp_system = Column(String(64), nullable=False)  # SAP, NETSUITE, QUICKBOOKS
+    export_format = Column(String(32), default="CSV", nullable=False)  # CSV, JSON
+    filename = Column(String(255), nullable=False)
+    exported_by = Column(String(128), default="Surya Prakash", nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+    invoice = relationship("InvoiceRecord")
+
+
+class WebhookEventRecord(Base):
+    __tablename__ = "webhook_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(String(64), unique=True, index=True, nullable=False)
+    event_type = Column(String(128), nullable=False)
+    target_url = Column(String(512), nullable=False)
+    signature = Column(String(128), nullable=False)
+    payload_json = Column(Text, nullable=False)
+    status_code = Column(Integer, default=200, nullable=False)
+    success = Column(Boolean, default=True, nullable=False)
+    simulated = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

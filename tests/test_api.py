@@ -1,3 +1,4 @@
+import json
 import pytest
 from fastapi.testclient import TestClient
 from src.server import app
@@ -362,6 +363,106 @@ def test_rbac_readonly_auditor_blocked_from_decision():
     response = client.post("/api/hitl-decision", json=payload)
     assert response.status_code == 403
     assert "Forensic Auditor persona is strictly read-only" in response.json()["detail"]
+
+
+def test_erp_export_sap_s4hana():
+    # Ensure sample invoice is audited first
+    client.post("/api/audit-sample/overcharged")
+
+    payload = {
+        "invoice_number": "INV-2025-094",
+        "erp_system": "SAP",
+        "format": "csv",
+        "reviewer_id": "Surya Prakash",
+    }
+    response = client.post("/api/erp/export", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["erp_system"] == "SAP S/4HANA"
+    assert "SAP_S4HANA_FI_INV-2025-094" in data["filename"]
+    assert "KR" in data["content"]
+    assert "600100" in data["content"]  # Expense account
+    assert "31" in data["content"]      # Vendor AP credit key
+    assert data["summary"]["is_balanced"] is True
+
+
+def test_erp_export_netsuite_json():
+    client.post("/api/audit-sample/overcharged")
+
+    payload = {
+        "invoice_number": "INV-2025-094",
+        "erp_system": "NETSUITE",
+        "format": "json",
+        "reviewer_id": "Surya Prakash",
+    }
+    response = client.post("/api/erp/export", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["erp_system"] == "Oracle NetSuite"
+    parsed_json = json.loads(data["content"])
+    assert parsed_json["recordType"] == "vendorBill"
+    assert parsed_json["tranId"] == "INV-2025-094"
+    assert "creditMemoReference" in parsed_json
+
+
+def test_erp_export_quickbooks_csv():
+    client.post("/api/audit-sample/overcharged")
+
+    payload = {
+        "invoice_number": "INV-2025-094",
+        "erp_system": "QUICKBOOKS",
+        "format": "csv",
+        "reviewer_id": "Elena Rostova",
+    }
+    response = client.post("/api/erp/export", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["erp_system"] == "QuickBooks Online"
+    assert "Accounts Payable" in data["content"]
+    assert "Contractor Expenses" in data["content"]
+    assert data["summary"]["is_balanced"] is True
+
+
+def test_erp_export_history():
+    response = client.get("/api/erp/history")
+    assert response.status_code == 200
+    data = response.json()
+    assert "exports" in data
+    assert len(data["exports"]) > 0
+    first = data["exports"][0]
+    assert "invoice_number" in first
+    assert "erp_system" in first
+    assert "filename" in first
+
+
+def test_webhook_dispatch_and_signatures():
+    client.post("/api/audit-sample/overcharged")
+
+    payload = {
+        "event_type": "hitl.decision.dispute_dispatched",
+        "invoice_number": "INV-2025-094",
+        "simulate": True,
+    }
+    response = client.post("/api/webhooks/dispatch", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["signature"].startswith("sha256=")
+    assert "slack_preview" in data
+    assert "blocks" in data["slack_preview"]
+    assert "teams_preview" in data
+    assert "attachments" in data["teams_preview"]
+
+    # Verify history
+    history_res = client.get("/api/webhooks/history")
+    assert history_res.status_code == 200
+    h_data = history_res.json()
+    assert "webhooks" in h_data
+    assert len(h_data["webhooks"]) > 0
+
 
 
 
