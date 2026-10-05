@@ -498,8 +498,11 @@
       </div>
     </header>
 
-    <!-- Content Workspace Views (Instantaneous SPA View Switching) -->
-    <div class="flex-1 overflow-hidden relative">
+    <!-- Main Workspace Flex Row (Center Views + Side-by-Side Right Drawer) -->
+    <div class="flex-1 flex flex-row min-w-0 h-full overflow-hidden relative">
+
+      <!-- Center Views Container (Dynamically resizes when Right Drawer opens/closes) -->
+      <div id="centerViewsContainer" class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
 
       <!-- ============================================== -->
       <!-- VIEW 1: AUDIT STUDIO (Full-Width Optical Canvas) -->
@@ -1077,10 +1080,10 @@
 
     </div>
 
-    <!-- ============================================== -->
-    <!-- 3. SLIDE-OUT AUDIT INTELLIGENCE & ACTION DRAWER -->
-    <!-- ============================================== -->
-    <div id="auditRightDrawer" class="hidden absolute top-14 bottom-0 right-0 w-[520px] max-w-[95vw] bg-surface/98 backdrop-blur-2xl border-l border-border shadow-2xl flex flex-col z-40 font-sans transition-all duration-300">
+      <!-- ============================================== -->
+      <!-- 3. SIDE-BY-SIDE AUDIT INTELLIGENCE & COPILOT   -->
+      <!-- ============================================== -->
+      <aside id="auditRightDrawer" class="hidden w-[460px] xl:w-[480px] h-full border-l border-border bg-surface flex flex-col flex-shrink-0 transition-all duration-200">
       
       <!-- Drawer Top Header: Segmented Tab Switcher & Close -->
       <div class="p-3.5 border-b border-border bg-panel/60 flex items-center justify-between flex-shrink-0">
@@ -1324,6 +1327,8 @@
 
       </div>
 
+      </aside>
+
     </div>
 
   </main>
@@ -1534,6 +1539,7 @@
     let totalPages = 1;
     let currentPdfUrl = null;
     let currentPdfBytes = null;
+    let currentLoadedImageSrc = null;
     let isCurrentOvercharged = false;
     let totalSavingsBlocked = 0;
     let currentHitlMode = 'dispute';
@@ -1669,7 +1675,7 @@
       lucide.createIcons();
     }
 
-    // Slide-Out Audit Intelligence & Action Drawer (Fix 2)
+    // Side-by-Side Audit Intelligence & Action Drawer
     let currentDrawerTab = 'audit';
 
     function toggleAuditDrawer(tab = null) {
@@ -1683,7 +1689,13 @@
 
       if (isHidden) {
         drawer.classList.remove('hidden');
-        gsap.fromTo(drawer, { x: 520, opacity: 0.6 }, { x: 0, opacity: 1, duration: 0.25, ease: 'power2.out' });
+        // Trigger center canvas resize to fit new width perfectly
+        setTimeout(() => {
+          if (pdfDoc) renderCurrentPage();
+          else if (currentAuditData && currentLoadedImageSrc) {
+            renderImageOnCanvas(currentLoadedImageSrc, isCurrentOvercharged);
+          }
+        }, 30);
       } else if (!tab || (tab && tab === currentDrawerTab)) {
         closeAuditDrawer();
       }
@@ -1692,16 +1704,14 @@
     function closeAuditDrawer() {
       const drawer = document.getElementById('auditRightDrawer');
       if (!drawer || drawer.classList.contains('hidden')) return;
-      gsap.to(drawer, {
-        x: 520,
-        opacity: 0,
-        duration: 0.2,
-        ease: 'power2.in',
-        onComplete: () => {
-          drawer.classList.add('hidden');
-          gsap.set(drawer, { x: 0, opacity: 1 });
+      drawer.classList.add('hidden');
+      // Trigger center canvas resize to expand to full width
+      setTimeout(() => {
+        if (pdfDoc) renderCurrentPage();
+        else if (currentAuditData && currentLoadedImageSrc) {
+          renderImageOnCanvas(currentLoadedImageSrc, isCurrentOvercharged);
         }
-      });
+      }, 30);
     }
 
     function switchDrawerTab(tabName) {
@@ -1774,6 +1784,18 @@
         closeVendorDossierModal();
         closeApiKeyModal();
       }
+    });
+
+    // Dynamic responsive canvas scaling on window resize
+    let resizeDebounceTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeDebounceTimer);
+      resizeDebounceTimer = setTimeout(() => {
+        if (pdfDoc) renderCurrentPage();
+        else if (currentAuditData && currentLoadedImageSrc) {
+          renderImageOnCanvas(currentLoadedImageSrc, isCurrentOvercharged);
+        }
+      }, 120);
     });
 
     // Theme Switcher
@@ -2009,6 +2031,7 @@
       currentPage = 1;
       totalPages = 1;
       isCurrentOvercharged = isOvercharged;
+      currentLoadedImageSrc = imgSrc;
 
       const canvas = document.getElementById('pdfCanvas');
       const ctx = canvas.getContext('2d');
