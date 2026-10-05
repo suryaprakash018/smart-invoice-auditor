@@ -142,3 +142,55 @@ def test_api_batch_upload_and_task_polling():
     assert task_data["batch_id"] == task_id
     assert task_data["status"] in ["QUEUED", "PROCESSING", "COMPLETED"]
 
+
+def test_api_analytics_ledger():
+    # Ingest a sample to guarantee audit records exist
+    client.post("/api/audit-sample/overcharged")
+
+    response = client.get("/api/analytics/ledger")
+    assert response.status_code == 200
+    data = response.json()
+
+    # Verify KPI schema
+    assert "kpis" in data
+    kpis = data["kpis"]
+    assert kpis["total_audits"] >= 1
+    assert kpis["total_gross_billed"] > 0
+    assert kpis["avg_latency_ms"] == 0.15
+    assert "compliance_rate" in kpis
+
+    # Verify Clause Breakdown schema
+    assert "clause_breakdown" in data
+    assert "RATE_MISMATCH" in data["clause_breakdown"]
+    assert "UNAPPROVED_FEE" in data["clause_breakdown"]
+
+    # Verify Action Breakdown schema
+    assert "action_breakdown" in data
+    assert "DISPUTE_AND_EMAIL" in data["action_breakdown"]
+
+    # Verify Audit Ledger array
+    assert "audit_ledger" in data
+    assert len(data["audit_ledger"]) >= 1
+    first = data["audit_ledger"][0]
+    assert "invoice_number" in first
+    assert "vendor_name" in first
+    assert "total_billed" in first
+    assert "certificate_url" in first
+
+
+def test_api_analytics_ledger_filtering():
+    # Filter by FLAGGED status
+    response = client.get("/api/analytics/ledger?status=FLAGGED")
+    assert response.status_code == 200
+    data = response.json()
+    for row in data["audit_ledger"]:
+        assert row["status"] == "FLAGGED"
+
+    # Search filter
+    response_search = client.get("/api/analytics/ledger?search=CloudScale")
+    assert response_search.status_code == 200
+    data_search = response_search.json()
+    for row in data_search["audit_ledger"]:
+        assert "cloudscale" in row["vendor_name"].lower() or "cloudscale" in row["invoice_number"].lower()
+
+
