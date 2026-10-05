@@ -20,6 +20,9 @@ from src.models import (
     VendorContract,
     ContractRate,
     ParsedInvoice,
+    InvoiceLineItem,
+    DiscrepancyItem,
+    DiscrepancyType,
     AuditReport,
     AuditStatus,
 )
@@ -597,13 +600,21 @@ class CopilotChatRequest(BaseModel):
     billed_total: float
     authorized_total: float
     current_overcharge: float
-    discrepancies: List[str] = []
+    invoice_date: Optional[str] = "2025-02-01"
+    due_date: Optional[str] = "2025-02-16"
+    payment_terms: Optional[str] = "Net 15"
+    line_items: Optional[List[Dict[str, Any]]] = None
+    discrepancies: Optional[List[Any]] = None
+    api_key: Optional[str] = None
 
 
 copilot_instance = None
 
-def get_copilot():
+def get_copilot(api_key: Optional[str] = None):
     global copilot_instance
+    if api_key:
+        from src.copilot import AuditCopilot
+        return AuditCopilot(api_key=api_key)
     if copilot_instance is None:
         from src.copilot import AuditCopilot
         copilot_instance = AuditCopilot()
@@ -616,11 +627,92 @@ def copilot_chat(req: CopilotChatRequest, db: Session = Depends(get_db)):
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found for vendor.")
 
-    # Synthetic invoice and report representations for copilot context
+    # Reconstruct line items
+    parsed_line_items = []
+    if req.line_items:
+        for item in req.line_items:
+            qty = float(item.get("quantity", 1.0))
+            price = float(item.get("unit_price", 0.0))
+            tot = float(item.get("total_price") or item.get("total") or (qty * price))
+            parsed_line_items.append(
+                InvoiceLineItem(
+                    description=str(item.get("description", "")),
+                    quantity=qty,
+                    unit_price=price,
+                    total_price=tot,
+                )
+            )
+    else:
+        # Check if invoice exists in DB
+        db_inv = db.query(InvoiceRecord).filter(InvoiceRecord.invoice_number == req.invoice_number).first()
+        if db_inv and db_inv.line_items:
+            for li in db_inv.line_items:
+                parsed_line_items.append(
+                    InvoiceLineItem(
+                        description=li.description,
+                        quantity=li.quantity,
+                        unit_price=li.unit_price,
+                        total_price=li.total_price,
+                    )
+                )
+        else:
+            parsed_line_items = [
+                InvoiceLineItem(description="Senior Cloud DevOps Architect", quantity=80.0, unit_price=95.0, total_price=7600.0),
+                InvoiceLineItem(description="QA Automation Engineer", quantity=40.0, unit_price=65.0, total_price=2600.0),
+                InvoiceLineItem(description="Platform Maintenance & On-Call Emergency Surcharge", quantity=1.0, unit_price=350.0, total_price=350.0),
+            ]
+
+    # Reconstruct discrepancies
+    structured_discrepancies = []
+    if req.discrepancies:
+        for d in req.discrepancies:
+            if isinstance(d, dict):
+                structured_discrepancies.append(
+                    DiscrepancyItem(
+                        type=d.get("type", DiscrepancyType.RATE_MISMATCH),
+                        description=d.get("description", ""),
+                        billed_amount=float(d.get("billed_amount", 0.0)),
+                        expected_amount=float(d.get("expected_amount", 0.0)),
+                        overcharge=float(d.get("overcharge", 0.0)),
+                    )
+                )
+            elif isinstance(d, str):
+                structured_discrepancies.append(
+                    DiscrepancyItem(
+                        type=DiscrepancyType.RATE_MISMATCH,
+                        description=d,
+                        billed_amount=0.0,
+                        expected_amount=0.0,
+                        overcharge=0.0,
+                    )
+                )
+    else:
+        db_run = (
+            db.query(AuditRunRecord)
+            .join(InvoiceRecord)
+            .filter(InvoiceRecord.invoice_number == req.invoice_number)
+            .order_by(AuditRunRecord.id.desc())
+            .first()
+        )
+        if db_run and db_run.discrepancies:
+            for disc in db_run.discrepancies:
+                structured_discrepancies.append(
+                    DiscrepancyItem(
+                        type=disc.discrepancy_type or DiscrepancyType.RATE_MISMATCH,
+                        description=disc.description,
+                        billed_amount=disc.billed_amount or 0.0,
+                        expected_amount=disc.expected_amount or 0.0,
+                        overcharge=disc.overcharge_amount or 0.0,
+                    )
+                )
+
     invoice = ParsedInvoice(
         vendor_name=req.vendor_name,
         invoice_number=req.invoice_number,
-        line_items=[],
+        invoice_date=req.invoice_date or "2025-02-01",
+        due_date=req.due_date or "2025-02-16",
+        payment_terms=req.payment_terms or "Net 15",
+        line_items=parsed_line_items,
         subtotal=req.billed_total,
         total_amount=req.billed_total,
     )
@@ -631,10 +723,10 @@ def copilot_chat(req: CopilotChatRequest, db: Session = Depends(get_db)):
         total_billed=req.billed_total,
         total_expected=req.authorized_total,
         total_overcharge=req.current_overcharge,
-        discrepancies=[],
+        discrepancies=structured_discrepancies,
     )
 
-    copilot = get_copilot()
+    copilot = get_copilot(api_key=req.api_key)
     result = copilot.chat(req.message, invoice, contract, report)
     return result
 

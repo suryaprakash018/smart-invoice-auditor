@@ -708,36 +708,64 @@
               <div class="h-6 w-6 rounded-lg bg-brand/20 text-brand flex items-center justify-center font-bold">
                 <i data-lucide="bot" class="w-3.5 h-3.5"></i>
               </div>
-              <span class="text-xs font-bold text-white tracking-tight">Veritas AI Copilot (Legal Counsel)</span>
+              <div class="flex items-center flex-wrap gap-2">
+                <span class="text-xs font-bold text-white tracking-tight">Veritas AI Copilot (Legal Counsel & Policy Solver)</span>
+                <span id="copilotEngineBadge" class="text-[9px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">Deterministic Legal Engine</span>
+              </div>
             </div>
-            <span class="text-[10px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 rounded-full">Neural Legal Engine Active</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="openCopilotKeyModal()" class="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-subtle transition flex items-center gap-1 text-[11px]" title="Gemini LLM Key Configuration">
+                <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline text-[10px]">API Key</span>
+              </button>
+              <button onclick="clearCopilotChat()" class="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-subtle transition" title="Clear Chat Thread">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
           </div>
 
           <!-- Quick Interactive Prompt Pills -->
-          <div class="flex flex-wrap gap-2 pt-1">
-            <button onclick="sendQuickPrompt('Why was the $350 fee flagged under §4.2?')" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-300 text-[11px] font-medium flex items-center gap-1.5">
-              <span>💡</span> Why was $350 fee flagged?
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <button onclick="sendQuickPrompt('Why was the $350 fee flagged under §4.2?')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-slate-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>💡</span> Why was $350 fee flagged? (§4.2)
             </button>
-            <button onclick="sendQuickPrompt('Negotiate Senior DevOps rate to $87.50/hr and recalculate settlement')" class="btn-secondary px-3 py-1.5 rounded-lg text-blue-300 text-[11px] font-medium flex items-center gap-1.5">
-              <span>🤝</span> Negotiate DevOps to $87.50/hr
+            <button onclick="sendQuickPrompt('Can we compromise Senior DevOps rate at $85/hr?')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-blue-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>🤝</span> Settle DevOps at $85/hr
             </button>
-            <button onclick="sendQuickPrompt('Re-draft dispute notice in a polite partnership tone')" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-300 text-[11px] font-medium flex items-center gap-1.5">
-              <span>🕊️</span> Re-draft in diplomatic tone
+            <button onclick="sendQuickPrompt('What are the payment terms and due dates under §5.3?')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-amber-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>📜</span> Payment Terms & Due Date (§5.3)
+            </button>
+            <button onclick="sendQuickPrompt('Explain Section 3.1 & Schedule A labor rates for DevOps and QA')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-purple-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>⚖️</span> Labor Rates & Schedule A (§3.1)
+            </button>
+            <button onclick="sendQuickPrompt('Summarize all discrepancies and overcharge math')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-emerald-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>📋</span> Summarize Discrepancies
+            </button>
+            <button onclick="sendQuickPrompt('What actions should I take in the Action Hub to resolve this?')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-slate-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>⚡</span> What actions can I take?
+            </button>
+            <button onclick="sendQuickPrompt('Draft dispute notice in a strict legal demand notice tone')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-rose-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>⚖️</span> Strict Legal Demand Tone
+            </button>
+            <button onclick="sendQuickPrompt('Re-draft dispute notice in a polite partnership tone')" class="btn-secondary px-2.5 py-1.5 rounded-lg text-slate-300 text-[11px] font-medium flex items-center gap-1.5 hover:border-brand transition">
+              <span>🕊️</span> Diplomatic Tone
             </button>
           </div>
 
           <!-- Chat Thread Container -->
-          <div id="copilotChatThread" class="max-h-52 overflow-y-auto rounded-lg bg-bg border border-border p-3.5 space-y-2.5 text-xs font-sans">
-            <div class="text-slate-400 italic text-[11px]">
-              Veritas Copilot is ready. Ask any question about contract clauses, request rate compromises, or adapt dispute tone.
+          <div id="copilotChatThread" class="max-h-64 overflow-y-auto rounded-lg bg-bg border border-border p-3.5 space-y-3 text-xs font-sans">
+            <div class="text-slate-400 italic text-[11px] flex items-center gap-1.5">
+              <i data-lucide="bot" class="w-3.5 h-3.5 text-brand"></i>
+              <span>Veritas AP Copilot initialized. Ask about contract clauses (§3.1, §4.2, §5.3), propose rate compromises ($85/hr), or adapt tone.</span>
             </div>
           </div>
 
           <!-- Chat Input -->
           <div class="flex items-center gap-2">
-            <input type="text" id="copilotInput" placeholder="Ask Copilot (e.g. 'Can we compromise at $87/hr?')..." class="flex-1 rounded-lg bg-bg border border-border px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand font-sans" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
-            <button onclick="sendCopilotMessage()" class="btn-primary px-4 py-2 rounded-lg text-white text-xs">
-              Send
+            <input type="text" id="copilotInput" placeholder="Ask Copilot (e.g. 'Can we compromise at $85/hr?' or 'Explain §5.3 terms')..." class="flex-1 rounded-lg bg-bg border border-border px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand font-sans" onkeydown="if(event.key==='Enter') sendCopilotMessage()">
+            <button onclick="sendCopilotMessage()" class="btn-primary px-4 py-2 rounded-lg text-white text-xs flex items-center gap-1.5">
+              <i data-lucide="send" class="w-3 h-3"></i>
+              <span>Send</span>
             </button>
           </div>
         </div>
@@ -1111,6 +1139,52 @@
     </div>
   </div>
 
+  <!-- COPILOT API KEY SETTINGS MODAL -->
+  <div id="copilotKeyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+    <div class="bg-panel border border-border rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-border pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="h-8 w-8 rounded-lg bg-brand/20 text-brand flex items-center justify-center">
+            <i data-lucide="key" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white tracking-tight">Gemini LLM Key Configuration</h3>
+            <p class="text-[11px] text-slate-400">Veritas Neural AP Copilot Engine</p>
+          </div>
+        </div>
+        <button onclick="closeCopilotKeyModal()" class="text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <p class="text-slate-300 text-[11px] leading-relaxed">
+          Veritas AP runs an intelligent <strong>deterministic legal engine</strong> by default with zero latency and no external API requirement. If you prefer live reasoning via <strong>Gemini 2.0 Flash</strong>, enter your Google Gemini API key below:
+        </p>
+
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-medium text-slate-400">Google Gemini API Key</label>
+          <div class="relative">
+            <input type="password" id="inputGeminiApiKey" placeholder="AIzaSy..." class="w-full pl-3 pr-10 py-2 rounded-lg bg-bg border border-border text-xs text-white focus:outline-none focus:border-brand font-mono">
+            <button type="button" onclick="toggleKeyVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
+              <i data-lucide="eye" id="eyeIcon" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="keyStatusBadge" class="text-[10px] text-slate-400 flex items-center gap-1.5 pt-1">
+          <span class="h-1.5 w-1.5 rounded-full bg-blue-400"></span>
+          <span>Engine Status: High-Performance Deterministic Legal Counsel Active</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-border">
+        <button onclick="clearCopilotKey()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs text-rose-400 hover:text-rose-300">Clear Key</button>
+        <button onclick="saveCopilotKey()" class="btn-primary px-4 py-1.5 rounded-lg text-xs text-white">Save Key</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastRoot" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
@@ -1134,6 +1208,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       const savedTheme = localStorage.getItem('veritas_theme') || 'dark';
       updateThemeUI(savedTheme);
+      updateKeyStatusDisplay(localStorage.getItem('veritas_gemini_key') || '');
       lucide.createIcons();
 
       // Pre-fetch count badge for header
@@ -1950,6 +2025,115 @@
       window.open(`/api/audit-certificate/${currentAuditData.report.invoice_number}`, '_blank');
     }
 
+    function formatCopilotMarkdown(text) {
+      if (!text) return '';
+      let html = text;
+      // Bold: **text**
+      html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
+      // Blockquotes: > text
+      html = html.replace(/^>\s*(.*?)$/gm, '<blockquote class="border-l-2 border-brand/60 pl-2.5 py-1 my-1.5 text-slate-300 italic text-[11px] bg-brand/5 rounded-r">$1</blockquote>');
+      // Bullet lists: • or -
+      html = html.replace(/^[•\-\*]\s*(.*?)$/gm, '<div class="flex items-start gap-1.5 my-0.5 ml-1"><span class="text-brand font-bold">•</span><span class="flex-1">$1</span></div>');
+      // Numbered lists: 1. 2.
+      html = html.replace(/^(\d+)\.\s*(.*?)$/gm, '<div class="flex items-start gap-1.5 my-0.5 ml-1"><span class="text-cyan-400 font-bold font-mono">$1.</span><span class="flex-1">$2</span></div>');
+      // Paragraph line breaks
+      html = html.replace(/\n\n/g, '<div class="h-1.5"></div>');
+      html = html.replace(/\n/g, '<br/>');
+      return html;
+    }
+
+    function applyCopilotSettlement(authorizedAmt, overchargeAmt) {
+      if (!currentAuditData) return;
+      document.getElementById('hitlComposerSection').classList.remove('hidden');
+      switchHitlMode('partial');
+      const input = document.getElementById('inputPartialApproved');
+      if (input) {
+        input.value = parseFloat(authorizedAmt).toFixed(2);
+        updatePartialMath();
+      }
+      document.getElementById('hitlComposerSection').scrollIntoView({ behavior: 'smooth' });
+      showToast("Settlement Applied", `Populated Partial Remittance with $${parseFloat(authorizedAmt).toLocaleString(undefined, {minimumFractionDigits: 2})}`, "success");
+    }
+
+    function viewCopilotDraft() {
+      document.getElementById('hitlComposerSection').classList.remove('hidden');
+      switchHitlMode('dispute');
+      document.getElementById('disputeEmailBox').scrollIntoView({ behavior: 'smooth' });
+      showToast("Draft Focused", "Dispute draft ready for review and dispatch.", "info");
+    }
+
+    function openCopilotKeyModal() {
+      const modal = document.getElementById('copilotKeyModal');
+      const input = document.getElementById('inputGeminiApiKey');
+      const saved = localStorage.getItem('veritas_gemini_key') || '';
+      input.value = saved;
+      updateKeyStatusDisplay(saved);
+      modal.classList.remove('hidden');
+    }
+
+    function closeCopilotKeyModal() {
+      document.getElementById('copilotKeyModal').classList.add('hidden');
+    }
+
+    function toggleKeyVisibility() {
+      const input = document.getElementById('inputGeminiApiKey');
+      input.type = (input.type === 'password') ? 'text' : 'password';
+    }
+
+    function saveCopilotKey() {
+      const key = document.getElementById('inputGeminiApiKey').value.trim();
+      if (key) {
+        localStorage.setItem('veritas_gemini_key', key);
+        showToast("API Key Saved", "Veritas Copilot will now utilize Google Gemini 2.0 Flash.", "success");
+      } else {
+        localStorage.removeItem('veritas_gemini_key');
+        showToast("API Key Cleared", "Veritas Copilot reverted to local deterministic engine.", "info");
+      }
+      updateKeyStatusDisplay(key);
+      closeCopilotKeyModal();
+    }
+
+    function clearCopilotKey() {
+      localStorage.removeItem('veritas_gemini_key');
+      document.getElementById('inputGeminiApiKey').value = '';
+      updateKeyStatusDisplay('');
+      showToast("API Key Removed", "Reverted to deterministic legal engine.", "info");
+      closeCopilotKeyModal();
+    }
+
+    function updateKeyStatusDisplay(key) {
+      const badge = document.getElementById('copilotEngineBadge');
+      const statusBadge = document.getElementById('keyStatusBadge');
+      if (key) {
+        if (badge) {
+          badge.textContent = "Gemini 2.0 Flash Active";
+          badge.className = "text-[9px] font-semibold text-emerald bg-emerald-bg border border-emerald-border px-2 py-0.5 rounded-full";
+        }
+        if (statusBadge) {
+          statusBadge.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-emerald"></span><span>Engine Status: Gemini 2.0 Flash LLM Active</span>`;
+        }
+      } else {
+        if (badge) {
+          badge.textContent = "Deterministic Legal Engine";
+          badge.className = "text-[9px] font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full";
+        }
+        if (statusBadge) {
+          statusBadge.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-blue-400"></span><span>Engine Status: High-Performance Deterministic Legal Counsel Active</span>`;
+        }
+      }
+    }
+
+    function clearCopilotChat() {
+      const thread = document.getElementById('copilotChatThread');
+      thread.innerHTML = `
+        <div class="text-slate-400 italic text-[11px] flex items-center gap-1.5">
+          <i data-lucide="bot" class="w-3.5 h-3.5 text-brand"></i>
+          <span>Veritas AP Copilot thread cleared. Ask any contract or settlement question.</span>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
     function sendQuickPrompt(promptText) {
       document.getElementById('copilotInput').value = promptText;
       sendCopilotMessage();
@@ -1963,18 +2147,22 @@
       const thread = document.getElementById('copilotChatThread');
       
       const userBubble = document.createElement('div');
-      userBubble.className = "p-2 rounded bg-blue-500/10 border border-blue-500/20 text-blue-200 text-[11px] self-end";
-      userBubble.innerHTML = `<strong>You:</strong> ${msg}`;
+      userBubble.className = "p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-200 text-[11px] self-end space-y-0.5";
+      userBubble.innerHTML = `<div class="font-bold text-[10px] text-blue-400 uppercase tracking-wider">You:</div><div>${msg.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
       thread.appendChild(userBubble);
       input.value = '';
       thread.scrollTop = thread.scrollHeight;
 
       const loadingBubble = document.createElement('div');
-      loadingBubble.className = "text-slate-500 italic text-[10px] animate-pulse";
-      loadingBubble.textContent = "Veritas Copilot analyzing contract clauses & recalculating numbers...";
+      loadingBubble.className = "text-slate-400 italic text-[11px] animate-pulse flex items-center gap-1.5 p-2";
+      loadingBubble.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-brand"></i><span>Veritas Copilot analyzing contract clauses & recalculating numbers...</span>`;
       thread.appendChild(loadingBubble);
+      lucide.createIcons();
+      thread.scrollTop = thread.scrollHeight;
 
       try {
+        const savedApiKey = localStorage.getItem('veritas_gemini_key') || null;
+
         const payload = {
           message: msg,
           invoice_number: currentAuditData.report.invoice_number,
@@ -1982,7 +2170,18 @@
           billed_total: currentAuditData.report.total_billed,
           authorized_total: currentAuditData.report.total_expected,
           current_overcharge: currentAuditData.report.total_overcharge,
-          discrepancies: currentAuditData.report.discrepancies.map(d => d.description)
+          invoice_date: currentAuditData.invoice.invoice_date || "2025-02-01",
+          due_date: currentAuditData.invoice.due_date || "2025-02-16",
+          payment_terms: currentAuditData.invoice.payment_terms || "Net 15",
+          line_items: currentAuditData.invoice.line_items || [],
+          discrepancies: (currentAuditData.report.discrepancies || []).map(d => ({
+            type: d.type,
+            description: d.description,
+            billed_amount: d.billed_amount || 0,
+            expected_amount: d.expected_amount || 0,
+            overcharge: d.overcharge || 0
+          })),
+          api_key: savedApiKey
         };
 
         const res = await fetch('/api/copilot/chat', {
@@ -1994,10 +2193,51 @@
         loadingBubble.remove();
 
         const aiBubble = document.createElement('div');
-        aiBubble.className = "p-2.5 rounded bg-subtle border border-border text-slate-200 text-[11px] space-y-1";
-        let formatted = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
-        aiBubble.innerHTML = `<div class="font-bold text-brand text-[10px] uppercase">Veritas Copilot:</div><div>${formatted}</div>`;
+        aiBubble.className = "p-3 rounded-lg bg-surface border border-border text-slate-200 text-[11px] space-y-2 shadow-sm";
+        let formattedText = formatCopilotMarkdown(data.reply);
+
+        let actionButtonsHtml = '';
+        if (data.adjusted_overcharge !== null && data.adjusted_overcharge !== undefined) {
+          const authorizedRemit = Math.max(0, currentAuditData.report.total_billed - data.adjusted_overcharge);
+          actionButtonsHtml = `
+            <div class="pt-2 flex flex-wrap gap-2 border-t border-border/60 mt-2">
+              <button onclick="applyCopilotSettlement(${authorizedRemit}, ${data.adjusted_overcharge})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-bg text-emerald border border-emerald-border hover:bg-emerald/20 text-[11px] font-bold shadow-sm transition">
+                <i data-lucide="check-circle" class="w-3 h-3"></i>
+                <span>Apply to Action Hub (Remit $${authorizedRemit.toLocaleString(undefined, {minimumFractionDigits: 2})})</span>
+              </button>
+              <button onclick="viewCopilotDraft()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/20 text-brand border border-brand/40 hover:bg-brand/30 text-[11px] font-semibold transition">
+                <i data-lucide="file-text" class="w-3 h-3"></i>
+                <span>View Draft in Composer</span>
+              </button>
+            </div>
+          `;
+        } else if (data.revised_draft) {
+          actionButtonsHtml = `
+            <div class="pt-2 flex flex-wrap gap-2 border-t border-border/60 mt-2">
+              <button onclick="viewCopilotDraft()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/20 text-brand border border-brand/40 hover:bg-brand/30 text-[11px] font-semibold transition">
+                <i data-lucide="file-text" class="w-3 h-3"></i>
+                <span>View Draft in Composer</span>
+              </button>
+            </div>
+          `;
+        }
+
+        aiBubble.innerHTML = `
+          <div class="flex items-center justify-between pb-1 border-b border-border/40">
+            <div class="flex items-center gap-1.5">
+              <div class="h-4 w-4 rounded-full bg-brand/20 text-brand flex items-center justify-center font-bold text-[9px]">
+                <i data-lucide="bot" class="w-2.5 h-2.5"></i>
+              </div>
+              <span class="font-bold text-brand text-[10px] uppercase tracking-wider">Veritas AP Copilot</span>
+            </div>
+            <span class="text-[9px] text-slate-500 font-mono">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          </div>
+          <div class="leading-relaxed text-slate-200">${formattedText}</div>
+          ${actionButtonsHtml}
+        `;
+
         thread.appendChild(aiBubble);
+        lucide.createIcons();
         thread.scrollTop = thread.scrollHeight;
 
         if (data.adjusted_overcharge !== null && data.adjusted_overcharge !== undefined) {

@@ -194,3 +194,95 @@ def test_api_analytics_ledger_filtering():
         assert "cloudscale" in row["vendor_name"].lower() or "cloudscale" in row["invoice_number"].lower()
 
 
+def test_api_copilot_payment_terms_qa():
+    payload = {
+        "message": "What are the payment terms under §5.3?",
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "billed_total": 10550.0,
+        "authorized_total": 9000.0,
+        "current_overcharge": 1550.0,
+    }
+    response = client.post("/api/copilot/chat", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "reply" in data
+    reply = data["reply"]
+    assert "Section 5.3" in reply
+    assert "Net 30" in reply
+    assert "Net 15" in reply
+
+
+def test_api_copilot_dynamic_rate_compromise():
+    payload = {
+        "message": "Can we compromise at $85/hr for Senior DevOps?",
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "billed_total": 10550.0,
+        "authorized_total": 9000.0,
+        "current_overcharge": 1550.0,
+    }
+    response = client.post("/api/copilot/chat", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    # At $85/hr: billed is $95/hr, so deduction is (95 - 85) * 80 = $800 + $350 fee = $1,150.00
+    assert data["adjusted_overcharge"] == 1150.0
+    assert data["revised_draft"] is not None
+    assert "$85.00/hr" in data["revised_draft"]
+    assert "1,150.00" in data["revised_draft"]
+    assert "$85.00/hr" in data["reply"]
+
+
+def test_api_copilot_labor_rates_qa():
+    payload = {
+        "message": "What is the Senior DevOps rate under Section 3.1 & Schedule A?",
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "billed_total": 10550.0,
+        "authorized_total": 9000.0,
+        "current_overcharge": 1550.0,
+    }
+    response = client.post("/api/copilot/chat", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "Section 3.1" in data["reply"]
+    assert "$80.00/hr" in data["reply"]
+    assert "$95.00/hr" in data["reply"]
+    assert "1,200.00" in data["reply"]
+
+
+def test_api_copilot_action_guidance():
+    payload = {
+        "message": "What should I do to resolve this invoice?",
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "billed_total": 10550.0,
+        "authorized_total": 9000.0,
+        "current_overcharge": 1550.0,
+    }
+    response = client.post("/api/copilot/chat", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "Full Legal Dispute" in data["reply"]
+    assert "Partial Remittance" in data["reply"]
+    assert "Conditional AP Hold" in data["reply"]
+
+
+def test_api_copilot_strict_legal_tone():
+    payload = {
+        "message": "Draft this in a strict legal demand notice tone",
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "billed_total": 10550.0,
+        "authorized_total": 9000.0,
+        "current_overcharge": 1550.0,
+    }
+    response = client.post("/api/copilot/chat", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["revised_draft"] is not None
+    assert "FORMAL NOTICE OF DISCREPANCY & AUDIT HOLD" in data["revised_draft"]
+    assert "PAYMENT HOLD" in data["revised_draft"]
+
+
+
