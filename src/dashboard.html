@@ -418,6 +418,12 @@
         <span class="hidden xl:inline">Webhooks</span>
       </button>
 
+      <!-- Supplier Risk Matrix Trigger -->
+      <button onclick="openVendorRiskMatrixModal()" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Supplier Risk Intelligence & Behavioral Reliability Index">
+        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber"></i>
+        <span>Supplier Risk</span>
+      </button>
+
       <!-- Single Upload Trigger -->
       <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs cursor-pointer flex items-center gap-1.5">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
@@ -650,9 +656,10 @@
         <!-- 1. EXECUTIVE AUDIT RESULT BANNER -->
         <div id="auditHeaderBanner" class="p-5 rounded-xl border border-border border-l-4 border-l-slate-700 bg-panel flex items-center justify-between transition-all shadow-md">
           <div class="space-y-1">
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-2.5 flex-wrap">
               <span id="badgeComplianceStatus" class="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide bg-subtle text-slate-400 border border-border">System Idle</span>
               <h3 id="txtInvoiceTitle" class="text-sm font-bold text-white tracking-tight">No Active Audit</h3>
+              <span id="badgeVendorRiskTier" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition shadow-sm hover:scale-105 flex items-center gap-1" onclick="openVendorDossierFromActiveAudit()" title="Click to inspect full Supplier Risk Dossier"></span>
             </div>
             <p id="txtAuditSummary" class="text-xs text-slate-400 leading-relaxed mt-1">Select an invoice or upload to trigger deterministic contract verification.</p>
           </div>
@@ -1480,6 +1487,269 @@
     </div>
   </div>
 
+  <!-- ============================================== -->
+  <!-- 7. SUPPLIER RISK INTELLIGENCE & VRI MODAL      -->
+  <!-- ============================================== -->
+  <div id="vendorRiskMatrixModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-panel border border-border rounded-2xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden font-sans">
+      
+      <!-- Modal Header -->
+      <div class="p-5 sm:p-6 border-b border-border bg-surface/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-amber-500 to-red-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <i data-lucide="shield-alert" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-extrabold text-white tracking-tight">Supplier Risk Intelligence & Reliability Matrix</h2>
+              <span id="riskMatrixTotalVendorsBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-light border border-amber-500/30">3 Active Suppliers</span>
+            </div>
+            <p class="text-xs text-slate-400">Behavioral risk scoring (0-100 VRI), price-creep velocity tracking, and governance tiers</p>
+          </div>
+        </div>
+
+        <button onclick="closeVendorRiskMatrixModal()" class="btn-secondary p-2 rounded-lg text-slate-400 hover:text-white transition" title="Close Modal">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-1">
+        
+        <!-- Top Executive KPI Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="p-4 rounded-xl border border-border bg-surface space-y-1">
+            <div class="text-[11px] font-medium text-slate-400">Fleet Average VRI</div>
+            <div class="flex items-baseline gap-1.5">
+              <span id="kpiFleetVri" class="text-2xl font-extrabold text-white font-mono tabular-nums">--</span>
+              <span class="text-xs text-slate-500">/ 100</span>
+            </div>
+            <div class="text-[10px] text-slate-400">Composite trust baseline</div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-border bg-surface space-y-1">
+            <div class="text-[11px] font-medium text-slate-400">High-Risk Watchlist</div>
+            <div class="flex items-baseline gap-1.5">
+              <span id="kpiHighRiskCount" class="text-2xl font-extrabold text-terracotta-light font-mono tabular-nums">--</span>
+              <span class="text-xs text-slate-500">suppliers</span>
+            </div>
+            <div class="text-[10px] text-terracotta-light">Forensic hold / dual sign-off</div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-border bg-surface space-y-1">
+            <div class="text-[11px] font-medium text-slate-400">STP Processing Eligible</div>
+            <div class="flex items-baseline gap-1.5">
+              <span id="kpiStpPct" class="text-2xl font-extrabold text-emerald font-mono tabular-nums">--%</span>
+            </div>
+            <div class="text-[10px] text-emerald">Tier 1 Straight-Through</div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-border bg-surface space-y-1">
+            <div class="text-[11px] font-medium text-slate-400">Capital at Risk</div>
+            <div class="flex items-baseline gap-1.5">
+              <span id="kpiCapitalAtRisk" class="text-2xl font-extrabold text-amber-light font-mono tabular-nums">$0.00</span>
+            </div>
+            <div class="text-[10px] text-slate-400">Identified overcharges & fees</div>
+          </div>
+        </div>
+
+        <!-- Supplier Comparative Matrix Table -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-bold text-white uppercase tracking-wider">Comparative Supplier Risk Taxonomy</div>
+            <div class="text-[11px] text-slate-400">Sorted by risk severity (Lowest VRI first)</div>
+          </div>
+
+          <div class="rounded-xl border border-border bg-surface overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-border bg-subtle/50 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
+                    <th class="py-3 px-4">Supplier & Contract</th>
+                    <th class="py-3 px-4">Reliability Index (VRI)</th>
+                    <th class="py-3 px-3 text-center">Governance Tier</th>
+                    <th class="py-3 px-3 text-center">Pass Rate</th>
+                    <th class="py-3 px-3 text-right">Price Creep</th>
+                    <th class="py-3 px-3 text-right">Overcharge Arrested</th>
+                    <th class="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="vendorRiskTableBody" class="divide-y divide-border/60">
+                  <tr>
+                    <td colspan="7" class="py-8 text-center text-slate-400">Loading supplier risk profiles...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Governance Policy Explainer -->
+        <div class="p-4 rounded-xl border border-border/80 bg-surface/60 grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+          <div class="p-2.5 rounded-lg border border-emerald-border/40 bg-emerald-bg/20 space-y-1">
+            <div class="font-bold text-emerald text-[11px] flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-emerald"></span>
+              <span>Tier 1 (VRI 90-100)</span>
+            </div>
+            <div class="text-[10px] text-slate-300">Low Risk Partner. Automated Straight-Through Processing (STP).</div>
+          </div>
+          <div class="p-2.5 rounded-lg border border-brand/40 bg-brand/10 space-y-1">
+            <div class="font-bold text-brand-light text-[11px] flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-brand"></span>
+              <span>Tier 2 (VRI 70-89)</span>
+            </div>
+            <div class="text-[10px] text-slate-300">Moderate Risk. Standard AP Review. Sample 20% itemized line items.</div>
+          </div>
+          <div class="p-2.5 rounded-lg border border-amber-border/40 bg-amber-bg/20 space-y-1">
+            <div class="font-bold text-amber-light text-[11px] flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-amber"></span>
+              <span>Tier 3 (VRI 50-69)</span>
+            </div>
+            <div class="text-[10px] text-slate-300">Elevated Watchlist. Mandatory Dual Sign-off. 100% Rate Card verification.</div>
+          </div>
+          <div class="p-2.5 rounded-lg border border-terracotta-border/40 bg-terracotta-bg/20 space-y-1">
+            <div class="font-bold text-terracotta-light text-[11px] flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-terracotta"></span>
+              <span>Tier 4 (VRI &lt; 50)</span>
+            </div>
+            <div class="text-[10px] text-slate-300">Critical Forensic Hold. Immediate payment hold. Formal breach notice (§4.2).</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-border bg-surface/80 flex items-center justify-between">
+        <div class="text-[11px] text-slate-400">
+          Evaluated continuously via deterministic rate diffing & historical AP ledger audits.
+        </div>
+        <button onclick="closeVendorRiskMatrixModal()" class="btn-secondary px-4 py-2 rounded-lg text-xs font-semibold text-slate-300">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 8. INDIVIDUAL VENDOR RISK DOSSIER MODAL        -->
+  <!-- ============================================== -->
+  <div id="vendorDossierModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-panel border border-border rounded-2xl w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden font-sans">
+      
+      <!-- Dossier Header -->
+      <div class="p-5 border-b border-border bg-surface/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="dossierAvatar" class="h-10 w-10 rounded-xl bg-surface border border-border flex items-center justify-center font-bold text-brand text-sm shadow-sm">
+            VD
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="dossierVendorName" class="text-sm font-extrabold text-white tracking-tight">Supplier Name</h2>
+              <span id="dossierTierBadge" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border">Tier 4</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+              <span id="dossierTaxId" class="font-mono">US-EIN-000000000</span>
+              <span class="h-2 w-px bg-border"></span>
+              <span id="dossierContractRef">MSA-2025-CS01</span>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="closeVendorDossierModal()" class="btn-secondary p-1.5 rounded-lg text-slate-400 hover:text-white transition" title="Close Dossier">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Dossier Body -->
+      <div class="p-6 overflow-y-auto space-y-5 flex-1">
+        
+        <!-- Score & Governance Recommendation Card -->
+        <div id="dossierRecommendationBanner" class="p-4 rounded-xl border bg-surface space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] uppercase tracking-wider font-bold text-slate-400">Procurement Action Directive</span>
+            <span id="dossierVriBigScore" class="text-lg font-mono font-extrabold tabular-nums">VRI: 42.0 / 100</span>
+          </div>
+          <p id="dossierGovernanceText" class="text-xs leading-relaxed text-slate-200">Recommendation text...</p>
+        </div>
+
+        <!-- 4 Behavioral Risk Vectors -->
+        <div class="space-y-3">
+          <div class="text-[11px] font-bold text-white uppercase tracking-wider">Behavioral Risk Vector Breakdown</div>
+          
+          <div class="space-y-2.5 text-xs">
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300 font-medium">Rate Integrity (Agreed Hourly Scale)</span>
+                <span id="dossierFactorRate" class="font-mono font-semibold text-slate-200">100%</span>
+              </div>
+              <div class="h-2 w-full bg-bg rounded-full overflow-hidden border border-border/60">
+                <div id="dossierBarRate" class="h-full bg-brand rounded-full transition-all duration-500" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300 font-medium">Clause Adherence (§4.2 Unauthorized Fees & Surcharges)</span>
+                <span id="dossierFactorClause" class="font-mono font-semibold text-slate-200">100%</span>
+              </div>
+              <div class="h-2 w-full bg-bg rounded-full overflow-hidden border border-border/60">
+                <div id="dossierBarClause" class="h-full bg-emerald rounded-full transition-all duration-500" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300 font-medium">Billing Accuracy (Invoice Calculation & Overcharge Leakage)</span>
+                <span id="dossierFactorBilling" class="font-mono font-semibold text-slate-200">100%</span>
+              </div>
+              <div class="h-2 w-full bg-bg rounded-full overflow-hidden border border-border/60">
+                <div id="dossierBarBilling" class="h-full bg-cyan-400 rounded-full transition-all duration-500" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300 font-medium">Dispute Friction (Escalation & Resolution Latency)</span>
+                <span id="dossierFactorDispute" class="font-mono font-semibold text-slate-200">100%</span>
+              </div>
+              <div class="h-2 w-full bg-bg rounded-full overflow-hidden border border-border/60">
+                <div id="dossierBarDispute" class="h-full bg-amber rounded-full transition-all duration-500" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics Snapshot Grid -->
+        <div class="grid grid-cols-3 gap-2.5 text-xs">
+          <div class="p-3 rounded-lg border border-border bg-surface text-center">
+            <div class="text-[10px] text-slate-400">Price Creep Velocity</div>
+            <div id="dossierPriceCreep" class="text-sm font-bold font-mono text-terracotta-light mt-0.5">+0.0%</div>
+          </div>
+          <div class="p-3 rounded-lg border border-border bg-surface text-center">
+            <div class="text-[10px] text-slate-400">Total Invoices Audited</div>
+            <div id="dossierInvoicesCount" class="text-sm font-bold font-mono text-white mt-0.5">0</div>
+          </div>
+          <div class="p-3 rounded-lg border border-border bg-surface text-center">
+            <div class="text-[10px] text-slate-400">Overcharge Arrested</div>
+            <div id="dossierOverchargeTotal" class="text-sm font-bold font-mono text-emerald mt-0.5">$0.00</div>
+          </div>
+        </div>
+
+        <!-- Recent Audits List -->
+        <div class="space-y-2">
+          <div class="text-[11px] font-bold text-white uppercase tracking-wider">Recent Audited Invoices</div>
+          <div id="dossierRecentAuditsList" class="space-y-1 max-h-32 overflow-y-auto text-xs">
+            <div class="p-2 rounded bg-surface border border-border text-[11px] text-slate-400">No invoices audited yet.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dossier Footer -->
+      <div class="p-4 border-t border-border bg-surface/80 flex items-center justify-end">
+        <button onclick="closeVendorDossierModal()" class="btn-secondary px-4 py-2 rounded-lg text-xs font-semibold text-slate-300">Close Dossier</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastRoot" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
@@ -2261,6 +2531,32 @@
       const delta = document.getElementById('txtDiscrepancyDelta');
 
       title.textContent = `${invoice.vendor_name} — #${report.invoice_number}`;
+
+      // Live Vendor Risk Badge
+      const vendorBadge = document.getElementById('badgeVendorRiskTier');
+      if (vendorBadge && invoice.vendor_name) {
+        fetch(`/api/vendors/by-name/${encodeURIComponent(invoice.vendor_name)}/risk-profile`)
+          .then(r => r.ok ? r.json() : null)
+          .then(prof => {
+            if (prof) {
+              vendorBadge.classList.remove('hidden');
+              const tierClass = {
+                'emerald': 'bg-emerald-bg text-emerald border-emerald-border',
+                'brand': 'bg-brand/20 text-brand-light border-brand/30',
+                'amber': 'bg-amber-bg text-amber-light border-amber-border',
+                'terracotta': 'bg-terracotta-bg text-terracotta-light border-terracotta-border',
+              }[prof.badge_color] || 'bg-subtle text-slate-300 border-border';
+
+              const icon = prof.stp_eligible ? '🛡️' : (prof.badge_color === 'terracotta' ? '⚠️' : '📊');
+              vendorBadge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition shadow-sm hover:scale-105 flex items-center gap-1 border ${tierClass}`;
+              vendorBadge.innerHTML = `<span>${icon}</span><span>${prof.tier_name.split(':')[0]} (VRI: ${prof.vri_score.toFixed(1)})</span>`;
+              vendorBadge.setAttribute('data-vendor-id', prof.vendor_id);
+            } else {
+              vendorBadge.classList.add('hidden');
+            }
+          })
+          .catch(() => vendorBadge.classList.add('hidden'));
+      }
 
       if (isPassed) {
         banner.className = "p-5 rounded-xl border border-border border-l-4 border-l-emerald bg-panel flex items-center justify-between transition-all shadow-md";
@@ -3075,6 +3371,196 @@
           `).join('');
         }
       } catch (e) {}
+    }
+
+    // ==========================================
+    // SUPPLIER RISK INTELLIGENCE & VRI MATRIX
+    // ==========================================
+    async function openVendorRiskMatrixModal() {
+      document.getElementById('vendorRiskMatrixModal').classList.remove('hidden');
+      await loadVendorRiskMatrixData();
+    }
+
+    function closeVendorRiskMatrixModal() {
+      document.getElementById('vendorRiskMatrixModal').classList.add('hidden');
+    }
+
+    async function loadVendorRiskMatrixData() {
+      try {
+        const res = await fetch('/api/vendors/risk-matrix');
+        if (!res.ok) throw new Error("Failed to load supplier risk matrix");
+        const data = await res.json();
+
+        // Update KPIs
+        const kpis = data.kpis;
+        document.getElementById('kpiFleetVri').textContent = kpis.fleet_average_vri.toFixed(1);
+        document.getElementById('kpiHighRiskCount').textContent = kpis.high_risk_vendors_count;
+        document.getElementById('kpiStpPct').textContent = `${kpis.stp_eligibility_pct.toFixed(0)}%`;
+        document.getElementById('kpiCapitalAtRisk').textContent = `$${kpis.total_capital_at_risk.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        document.getElementById('riskMatrixTotalVendorsBadge').textContent = `${kpis.total_vendors} Active Suppliers`;
+
+        // Render Table
+        const tbody = document.getElementById('vendorRiskTableBody');
+        tbody.innerHTML = data.vendors.map(v => {
+          const tierTheme = {
+            'emerald': { bg: 'bg-emerald-bg text-emerald border-emerald-border', bar: 'bg-emerald' },
+            'brand': { bg: 'bg-brand/20 text-brand-light border-brand/30', bar: 'bg-brand' },
+            'amber': { bg: 'bg-amber-bg text-amber-light border-amber-border', bar: 'bg-amber' },
+            'terracotta': { bg: 'bg-terracotta-bg text-terracotta-light border-terracotta-border', bar: 'bg-terracotta' }
+          }[v.badge_color] || { bg: 'bg-subtle text-slate-300 border-border', bar: 'bg-slate-400' };
+
+          const creepDisplay = v.price_creep_velocity_pct > 0
+            ? `<span class="px-1.5 py-0.5 rounded bg-terracotta-bg text-terracotta-light font-mono font-bold text-[10px]">+${v.price_creep_velocity_pct}%</span>`
+            : `<span class="text-slate-400 font-mono text-[10px]">0.0%</span>`;
+
+          const overchargeDisplay = v.total_overcharge > 0
+            ? `<span class="text-terracotta-light font-mono font-semibold">$${v.total_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>`
+            : `<span class="text-emerald font-mono">$0.00</span>`;
+
+          return `
+            <tr class="hover:bg-subtle/40 transition-colors">
+              <td class="py-3.5 px-4">
+                <div class="font-bold text-white text-xs">${v.vendor_name}</div>
+                <div class="text-[10px] text-slate-400 font-mono flex items-center gap-1.5 mt-0.5">
+                  <span>${v.contract_ref}</span>
+                  <span class="h-1.5 w-px bg-border"></span>
+                  <span>${v.tax_identifier}</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-4">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-extrabold text-sm text-white">${v.vri_score.toFixed(1)}</span>
+                  <div class="w-20 h-1.5 bg-bg rounded-full overflow-hidden border border-border/60">
+                    <div class="h-full ${tierTheme.bar} rounded-full" style="width: ${v.vri_score}%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${tierTheme.bg}">
+                  ${v.tier_name.split(':')[0]}
+                </span>
+              </td>
+              <td class="py-3.5 px-3 text-center tabular-nums font-mono text-slate-300">
+                ${v.pass_rate.toFixed(0)}% <span class="text-[10px] text-slate-500">(${v.passed_invoices}/${v.total_invoices_audited})</span>
+              </td>
+              <td class="py-3.5 px-3 text-right">
+                ${creepDisplay}
+              </td>
+              <td class="py-3.5 px-3 text-right tabular-nums">
+                ${overchargeDisplay}
+              </td>
+              <td class="py-3.5 px-4 text-right">
+                <button onclick="openVendorDossierModal(${v.vendor_id})" class="btn-secondary px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-200 hover:text-white transition flex items-center gap-1 ml-auto">
+                  <i data-lucide="file-search" class="w-3 h-3 text-brand"></i>
+                  <span>Dossier</span>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        showToast("Error", err.message, "error");
+      }
+    }
+
+    async function openVendorDossierModal(vendorId) {
+      try {
+        const res = await fetch(`/api/vendors/${vendorId}/risk-profile`);
+        if (!res.ok) throw new Error("Could not load vendor risk dossier");
+        const profile = await res.json();
+        renderVendorDossier(profile);
+        document.getElementById('vendorDossierModal').classList.remove('hidden');
+      } catch (err) {
+        showToast("Dossier Error", err.message, "error");
+      }
+    }
+
+    function openVendorDossierFromActiveAudit() {
+      const vendorBadge = document.getElementById('badgeVendorRiskTier');
+      const vendorId = vendorBadge ? vendorBadge.getAttribute('data-vendor-id') : null;
+      if (vendorId) {
+        openVendorDossierModal(parseInt(vendorId));
+      } else if (currentAuditData && currentAuditData.invoice) {
+        fetch(`/api/vendors/by-name/${encodeURIComponent(currentAuditData.invoice.vendor_name)}/risk-profile`)
+          .then(r => r.json())
+          .then(prof => {
+            renderVendorDossier(prof);
+            document.getElementById('vendorDossierModal').classList.remove('hidden');
+          })
+          .catch(() => {});
+      }
+    }
+
+    function closeVendorDossierModal() {
+      document.getElementById('vendorDossierModal').classList.add('hidden');
+    }
+
+    function renderVendorDossier(profile) {
+      // Header info
+      document.getElementById('dossierVendorName').textContent = profile.vendor_name;
+      document.getElementById('dossierTaxId').textContent = profile.tax_identifier;
+      document.getElementById('dossierContractRef').textContent = `${profile.contract_ref} (${profile.payment_terms || 'Net 30'})`;
+      
+      const initials = profile.vendor_name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('dossierAvatar').textContent = initials;
+
+      const tierBadge = document.getElementById('dossierTierBadge');
+      const tierTheme = {
+        'emerald': 'bg-emerald-bg text-emerald border-emerald-border',
+        'brand': 'bg-brand/20 text-brand-light border-brand/30',
+        'amber': 'bg-amber-bg text-amber-light border-amber-border',
+        'terracotta': 'bg-terracotta-bg text-terracotta-light border-terracotta-border'
+      }[profile.badge_color] || 'bg-subtle text-slate-300 border-border';
+      tierBadge.className = `text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${tierTheme}`;
+      tierBadge.textContent = profile.tier_name;
+
+      // Score and Recommendation Banner
+      document.getElementById('dossierVriBigScore').textContent = `VRI: ${profile.vri_score.toFixed(1)} / 100`;
+      document.getElementById('dossierGovernanceText').textContent = profile.governance_recommendation;
+      const recBanner = document.getElementById('dossierRecommendationBanner');
+      recBanner.className = `p-4 rounded-xl border space-y-2 ${profile.badge_color === 'terracotta' ? 'border-terracotta-border/80 bg-[#1C0D0E]' : (profile.badge_color === 'emerald' ? 'border-emerald-border/80 bg-[#0D1C14]' : 'border-border bg-surface')}`;
+
+      // 4 Risk Factors
+      const rf = profile.risk_factors || {};
+      document.getElementById('dossierFactorRate').textContent = `${rf.rate_integrity || 100}%`;
+      document.getElementById('dossierBarRate').style.width = `${rf.rate_integrity || 100}%`;
+
+      document.getElementById('dossierFactorClause').textContent = `${rf.clause_adherence || 100}%`;
+      document.getElementById('dossierBarClause').style.width = `${rf.clause_adherence || 100}%`;
+
+      document.getElementById('dossierFactorBilling').textContent = `${rf.billing_accuracy || 100}%`;
+      document.getElementById('dossierBarBilling').style.width = `${rf.billing_accuracy || 100}%`;
+
+      document.getElementById('dossierFactorDispute').textContent = `${rf.dispute_friction || 100}%`;
+      document.getElementById('dossierBarDispute').style.width = `${rf.dispute_friction || 100}%`;
+
+      // Metrics Grid
+      document.getElementById('dossierPriceCreep').textContent = profile.price_creep_velocity_pct > 0 ? `+${profile.price_creep_velocity_pct}%` : '0.0%';
+      document.getElementById('dossierInvoicesCount').textContent = `${profile.total_invoices_audited} (${profile.pass_rate.toFixed(0)}% pass)`;
+      document.getElementById('dossierOverchargeTotal').textContent = `$${profile.total_overcharge.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+      // Recent Audits List
+      const auditsList = document.getElementById('dossierRecentAuditsList');
+      if (profile.recent_audits && profile.recent_audits.length > 0) {
+        auditsList.innerHTML = profile.recent_audits.map(a => `
+          <div class="p-2 rounded bg-surface border border-border flex items-center justify-between text-[11px]">
+            <div class="flex items-center gap-2">
+              <strong class="text-white">${a.invoice_number}</strong>
+              <span class="text-slate-500">${a.audited_at}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-300 font-mono">$${a.total_billed.toFixed(2)}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold ${a.status === 'PASSED' ? 'bg-emerald/20 text-emerald' : 'bg-terracotta-bg text-terracotta-light'}">${a.status}</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        auditsList.innerHTML = `<div class="p-2 rounded bg-surface border border-border text-[11px] text-slate-400">No invoices audited yet for this supplier.</div>`;
+      }
+
+      lucide.createIcons();
     }
   </script>
 </body>

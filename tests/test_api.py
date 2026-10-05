@@ -513,3 +513,93 @@ def test_extractor_scanned_image_and_unsupported_types():
     import pytest
     with pytest.raises(ValueError, match="Unsupported file type"):
         extract_document("test.xyz", mime_type="application/xyz")
+
+
+
+def test_api_vendor_risk_matrix():
+    response = client.get("/api/vendors/risk-matrix")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert "kpis" in data
+    assert "vendors" in data
+    kpis = data["kpis"]
+    assert kpis["total_vendors"] >= 3
+    assert "fleet_average_vri" in kpis
+    assert "high_risk_vendors_count" in kpis
+    assert "stp_eligibility_pct" in kpis
+    assert "total_capital_at_risk" in kpis
+
+    vendor_names = [v["vendor_name"] for v in data["vendors"]]
+    assert "CloudScale Innovations" in vendor_names
+    assert "Apex Cyber Defense" in vendor_names
+    assert "Nexus Data Systems" in vendor_names
+
+    cs = next(v for v in data["vendors"] if v["vendor_name"] == "CloudScale Innovations")
+    assert cs["risk_tier"] in ["TIER_3_ELEVATED", "TIER_4_CRITICAL"]
+    assert cs["stp_eligible"] is False
+    assert cs["price_creep_velocity_pct"] > 0
+
+    apex = next(v for v in data["vendors"] if v["vendor_name"] == "Apex Cyber Defense")
+    assert apex["risk_tier"] == "TIER_1_LOW"
+    assert apex["stp_eligible"] is True
+    assert apex["vri_score"] >= 90.0
+
+
+def test_api_vendor_risk_profile_by_id_and_name():
+    # Fetch matrix to get CloudScale ID
+    matrix_res = client.get("/api/vendors/risk-matrix")
+    matrix_data = matrix_res.json()
+    cs_entry = next(v for v in matrix_data["vendors"] if v["vendor_name"] == "CloudScale Innovations")
+    cs_id = cs_entry["vendor_id"]
+
+    # 1. By ID
+    res_id = client.get(f"/api/vendors/{cs_id}/risk-profile")
+    assert res_id.status_code == 200
+    profile_id = res_id.json()
+    assert profile_id["vendor_name"] == "CloudScale Innovations"
+    assert "risk_factors" in profile_id
+    assert "rate_integrity" in profile_id["risk_factors"]
+    assert "clause_adherence" in profile_id["risk_factors"]
+
+    # 2. By Name
+    res_name = client.get("/api/vendors/by-name/CloudScale/risk-profile")
+    assert res_name.status_code == 200
+    profile_name = res_name.json()
+    assert profile_name["vendor_id"] == cs_id
+
+    # 3. 404 cases
+    assert client.get("/api/vendors/99999/risk-profile").status_code == 404
+    assert client.get("/api/vendors/by-name/NonExistentCorp/risk-profile").status_code == 404
+
+
+def test_vendor_risk_scoring_boundary_conditions():
+    from src.intelligence.vendor_risk_matrix import compute_vri_score, classify_risk_tier, RiskTier
+
+    # Pristine perfect vendor
+    perfect_score = compute_vri_score(
+        pass_rate=100.0,
+        leakage_rate=0.0,
+        price_creep_velocity=0.0,
+        unapproved_fee_count=0,
+        rate_mismatch_count=0,
+        active_disputes_count=0,
+    )
+    assert perfect_score == 100.0
+    tier_perfect = classify_risk_tier(perfect_score)
+    assert tier_perfect["tier_code"] == RiskTier.TIER_1_LOW
+    assert "Straight-Through" in tier_perfect["governance_recommendation"]
+
+    # Critical risk vendor
+    worst_score = compute_vri_score(
+        pass_rate=0.0,
+        leakage_rate=0.45,
+        price_creep_velocity=50.0,
+        unapproved_fee_count=5,
+        rate_mismatch_count=5,
+        active_disputes_count=4,
+    )
+    assert worst_score == 5.0  # Floor constraint
+    tier_worst = classify_risk_tier(worst_score)
+    assert tier_worst["tier_code"] == RiskTier.TIER_4_CRITICAL
+    assert "Hold" in tier_worst["governance_recommendation"]

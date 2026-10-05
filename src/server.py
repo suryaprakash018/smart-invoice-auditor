@@ -43,6 +43,10 @@ from src.database.models import (
 )
 from src.integrations.erp_exporter import generate_erp_export
 from src.integrations.webhook_dispatcher import dispatch_webhook
+from src.intelligence.vendor_risk_matrix import (
+    get_fleet_vendor_risk_matrix,
+    calculate_vendor_risk_profile,
+)
 from src.extractor import InvoiceExtractor
 from src.audit_engine import ContractAuditEngine
 from src.evals.evaluator import ComplianceEvaluator
@@ -736,6 +740,37 @@ def get_analytics_ledger(
         "action_breakdown": action_map,
         "audit_ledger": ledger_list,
     }
+
+
+@app.get("/api/vendors/risk-matrix")
+def get_vendor_risk_matrix_endpoint(db: Session = Depends(get_db)):
+    """
+    Fleet-wide Supplier Risk Intelligence & Reliability Matrix.
+    """
+    return get_fleet_vendor_risk_matrix(db)
+
+
+@app.get("/api/vendors/{vendor_id}/risk-profile")
+def get_vendor_risk_profile_endpoint(vendor_id: int, db: Session = Depends(get_db)):
+    """
+    Granular Behavioral Fraud & Reliability Dossier for a specific supplier by ID.
+    """
+    profile = calculate_vendor_risk_profile(db, vendor_id)
+    if not profile:
+        raise HTTPException(status_code=404, detail="Vendor not found.")
+    return profile
+
+
+@app.get("/api/vendors/by-name/{vendor_name}/risk-profile")
+def get_vendor_risk_profile_by_name_endpoint(vendor_name: str, db: Session = Depends(get_db)):
+    """
+    Granular Behavioral Fraud & Reliability Dossier for a supplier by name.
+    """
+    vendor = db.query(VendorRecord).filter(VendorRecord.name.ilike(f"%{vendor_name}%")).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail=f"Vendor '{vendor_name}' not found.")
+    profile = calculate_vendor_risk_profile(db, vendor.id)
+    return profile
 
 
 @app.get("/api/evals/benchmark")
