@@ -4,7 +4,7 @@ import shutil
 import uuid
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, BackgroundTasks
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, BackgroundTasks, Header
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -36,6 +36,7 @@ from src.database.models import (
     AuditRunRecord,
     AuditDiscrepancyRecord,
     HumanDecisionRecord,
+    UserRecord,
 )
 from src.extractor import InvoiceExtractor
 from src.audit_engine import ContractAuditEngine
@@ -180,6 +181,61 @@ class HITLDecisionRequest(BaseModel):
     routing_target: Optional[str] = None  # e.g., "LEGAL", "PROCUREMENT", "VP_FINANCE"
     dispute_email_content: Optional[str] = None
     reviewer_notes: Optional[str] = None
+    reviewer_id: Optional[str] = "Surya Prakash"
+    reviewer_role: Optional[str] = "AP_REVIEWER"
+
+
+@app.get("/api/auth/users")
+def list_users(db: Session = Depends(get_db)):
+    users = db.query(UserRecord).order_by(UserRecord.id.asc()).all()
+    return {
+        "users": [
+            {
+                "id": u.id,
+                "username": u.username,
+                "full_name": u.full_name,
+                "role": u.role,
+                "title": u.title,
+                "avatar_color": u.avatar_color,
+            }
+            for u in users
+        ]
+    }
+
+
+@app.get("/api/auth/me")
+def get_current_user_profile(
+    x_user_username: Optional[str] = Header(None, alias="X-User-Username"),
+    username: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    target_username = username or x_user_username or "surya.prakash"
+    user = db.query(UserRecord).filter(UserRecord.username == target_username).first()
+    if not user:
+        user = db.query(UserRecord).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    is_vp = (user.role == "FINANCE_VP")
+    is_readonly = (user.role == "AUDITOR_READONLY")
+
+    return {
+        "id": user.id,
+        "username": user.username,
+        "full_name": user.full_name,
+        "role": user.role,
+        "title": user.title,
+        "avatar_color": user.avatar_color,
+        "permissions": {
+            "can_audit": True,
+            "can_dispute": not is_readonly,
+            "can_partial_remit": not is_readonly,
+            "can_conditional_hold": not is_readonly,
+            "can_route_workflow": not is_readonly,
+            "can_approve_override": is_vp,
+            "is_readonly": is_readonly,
+        },
+    }
 
 
 # In-Memory Task Queue for Batch Processing
@@ -356,7 +412,29 @@ def audit_sample_invoice(sample_type: str, db: Session = Depends(get_db)):
 
 
 @app.post("/api/hitl-decision")
-def record_hitl_decision(decision: HITLDecisionRequest, db: Session = Depends(get_db)):
+def record_hitl_decision(
+    decision: HITLDecisionRequest,
+    x_user_role: Optional[str] = Header(None, alias="X-User-Role"),
+    x_user_name: Optional[str] = Header(None, alias="X-User-Name"),
+    db: Session = Depends(get_db),
+):
+    active_role = decision.reviewer_role or x_user_role or "AP_REVIEWER"
+    active_name = decision.reviewer_id or x_user_name or "Surya Prakash"
+
+    # 1. Forensic Auditor role is strictly read-only
+    if active_role == "AUDITOR_READONLY":
+        raise HTTPException(
+            status_code=403,
+            detail="Forensic Auditor persona is strictly read-only. Decision dispatch is restricted to operational AP Reviewers and Finance Executives.",
+        )
+
+    # 2. Executive Overrides require VP Finance clearance
+    if decision.action == "APPROVE_OVERCHARGE" and active_role != "FINANCE_VP":
+        raise HTTPException(
+            status_code=403,
+            detail="Executive Overrides for invoice discrepancies require VP Finance authorization under corporate SOX compliance controls. Escalate via Route Workflow instead.",
+        )
+
     # Look up most recent audit run for invoice
     audit_run = (
         db.query(AuditRunRecord)
@@ -374,7 +452,7 @@ def record_hitl_decision(decision: HITLDecisionRequest, db: Session = Depends(ge
         )
     elif decision.action == "APPROVE_OVERCHARGE":
         status_message = (
-            f"Manual exception granted by reviewer for #{decision.invoice_number}. "
+            f"Executive override & exception granted by {active_name} ({active_role}) for #{decision.invoice_number}. "
             f"Invoice marked approved for payment with audit tag."
         )
     elif decision.action == "PARTIAL_APPROVE":
@@ -392,15 +470,16 @@ def record_hitl_decision(decision: HITLDecisionRequest, db: Session = Depends(ge
         target = decision.routing_target or "Legal Counsel"
         status_message = (
             f"Invoice #{decision.invoice_number} routed to {target} for compliance determination. "
-            f"Escalation notes attached."
+            f"Escalation notes attached by {active_name}."
         )
     else:
-        status_message = f"Invoice #{decision.invoice_number} rejected and returned to vendor."
+        status_message = f"Invoice #{decision.invoice_number} rejected and returned to vendor by {active_name}."
 
     if audit_run:
         hitl_rec = HumanDecisionRecord(
             audit_run_id=audit_run.id,
-            reviewer_id="Surya Prakash",
+            reviewer_id=active_name,
+            reviewer_role=active_role,
             action=decision.action,
             disputed_amount=decision.disputed_amount,
             reviewer_notes=decision.reviewer_notes or status_message,
@@ -420,6 +499,8 @@ def record_hitl_decision(decision: HITLDecisionRequest, db: Session = Depends(ge
     return {
         "status": "SUCCESS",
         "message": status_message,
+        "reviewer": active_name,
+        "reviewer_role": active_role,
         "total_savings_to_date": total_blocked,
     }
 

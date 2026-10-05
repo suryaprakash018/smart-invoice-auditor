@@ -131,9 +131,23 @@ class HumanDecisionRecord(Base):
     id = Column(Integer, primary_key=True, index=True)
     audit_run_id = Column(Integer, ForeignKey("audit_runs.id"), nullable=False)
     reviewer_id = Column(String(128), default="Surya Prakash", nullable=False)
-    action = Column(String(64), nullable=False)  # APPROVE_OVERCHARGE, DISPUTE_AND_EMAIL, REJECT
+    reviewer_role = Column(String(64), default="AP_REVIEWER", nullable=True)
+    action = Column(String(64), nullable=False)  # APPROVE_OVERCHARGE, DISPUTE_AND_EMAIL, REJECT, PARTIAL_APPROVE
     disputed_amount = Column(Float, default=0.0)
     reviewer_notes = Column(Text, nullable=True)
     decided_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     audit_run = relationship("AuditRunRecord", back_populates="human_decisions")
+
+
+class UserRecord(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(128), unique=True, index=True, nullable=False)
+    full_name = Column(String(255), nullable=False)
+    role = Column(String(64), nullable=False)  # AP_REVIEWER, FINANCE_VP, AUDITOR_READONLY
+    title = Column(String(255), nullable=False)
+    avatar_color = Column(String(32), default="brand", nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+

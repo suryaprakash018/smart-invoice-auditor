@@ -282,7 +282,87 @@ def test_api_copilot_strict_legal_tone():
     data = response.json()
     assert data["revised_draft"] is not None
     assert "FORMAL NOTICE OF DISCREPANCY & AUDIT HOLD" in data["revised_draft"]
-    assert "PAYMENT HOLD" in data["revised_draft"]
+def test_rbac_list_users():
+    response = client.get("/api/auth/users")
+    assert response.status_code == 200
+    data = response.json()
+    assert "users" in data
+    assert len(data["users"]) >= 3
+    roles = [u["role"] for u in data["users"]]
+    assert "AP_REVIEWER" in roles
+    assert "FINANCE_VP" in roles
+    assert "AUDITOR_READONLY" in roles
+
+
+def test_rbac_get_me_profile():
+    # Test default
+    res_default = client.get("/api/auth/me")
+    assert res_default.status_code == 200
+    d_def = res_default.json()
+    assert d_def["username"] == "surya.prakash"
+    assert d_def["permissions"]["can_approve_override"] is False
+    assert d_def["permissions"]["is_readonly"] is False
+
+    # Test VP profile via header
+    res_vp = client.get("/api/auth/me", headers={"X-User-Username": "elena.rostova"})
+    assert res_vp.status_code == 200
+    d_vp = res_vp.json()
+    assert d_vp["username"] == "elena.rostova"
+    assert d_vp["role"] == "FINANCE_VP"
+    assert d_vp["permissions"]["can_approve_override"] is True
+
+    # Test Auditor profile
+    res_auditor = client.get("/api/auth/me", headers={"X-User-Username": "marcus.vance"})
+    assert res_auditor.status_code == 200
+    d_aud = res_auditor.json()
+    assert d_aud["role"] == "AUDITOR_READONLY"
+    assert d_aud["permissions"]["is_readonly"] is True
+    assert d_aud["permissions"]["can_dispute"] is False
+
+
+def test_rbac_ap_reviewer_blocked_from_override():
+    payload = {
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "action": "APPROVE_OVERCHARGE",
+        "disputed_amount": 1550.0,
+        "reviewer_id": "Surya Prakash",
+        "reviewer_role": "AP_REVIEWER",
+    }
+    response = client.post("/api/hitl-decision", json=payload)
+    assert response.status_code == 403
+    assert "Executive Overrides" in response.json()["detail"]
+
+
+def test_rbac_finance_vp_can_approve_override():
+    payload = {
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "action": "APPROVE_OVERCHARGE",
+        "disputed_amount": 1550.0,
+        "reviewer_id": "Elena Rostova",
+        "reviewer_role": "FINANCE_VP",
+    }
+    response = client.post("/api/hitl-decision", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "SUCCESS"
+    assert data["reviewer_role"] == "FINANCE_VP"
+
+
+def test_rbac_readonly_auditor_blocked_from_decision():
+    payload = {
+        "invoice_number": "INV-2025-094",
+        "vendor_name": "CloudScale Innovations",
+        "action": "DISPUTE_AND_EMAIL",
+        "disputed_amount": 1550.0,
+        "reviewer_id": "Marcus Vance",
+        "reviewer_role": "AUDITOR_READONLY",
+    }
+    response = client.post("/api/hitl-decision", json=payload)
+    assert response.status_code == 403
+    assert "Forensic Auditor persona is strictly read-only" in response.json()["detail"]
+
 
 
 

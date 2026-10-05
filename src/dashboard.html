@@ -416,6 +416,51 @@
         <i id="themeIconMoon" data-lucide="moon" class="w-3.5 h-3.5 text-brand hidden"></i>
         <span id="themeLabel" class="text-xs font-semibold">Light</span>
       </button>
+
+      <div class="h-4 w-px bg-border"></div>
+
+      <!-- User Persona & RBAC Role Switcher -->
+      <div class="relative">
+        <button id="userMenuBtn" onclick="toggleUserDropdown()" class="btn-secondary px-2.5 py-1 rounded-lg text-slate-200 text-xs flex items-center gap-2 hover:text-white transition shadow-sm border border-border">
+          <div id="userAvatarPill" class="h-6 w-6 rounded-full bg-brand text-white flex items-center justify-center font-bold text-[10px] uppercase shadow-sm">SP</div>
+          <div class="text-left hidden lg:block leading-tight">
+            <div id="userNavName" class="font-bold text-white text-[11px]">Surya Prakash</div>
+            <div id="userNavRole" class="text-[9px] text-blue-400 font-medium">AP Specialist</div>
+          </div>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="userMenuDropdown" class="hidden absolute right-0 mt-2 w-64 rounded-xl bg-panel border border-border shadow-2xl p-2 z-50 space-y-1 font-sans">
+          <div class="px-2.5 py-1.5 border-b border-border/60 text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+            Switch Persona / Role (RBAC)
+          </div>
+          
+          <button onclick="switchUserRole('surya.prakash')" class="w-full text-left p-2 rounded-lg hover:bg-subtle transition flex items-center gap-2.5 group">
+            <div class="h-7 w-7 rounded-full bg-brand/20 text-brand flex items-center justify-center font-bold text-xs group-hover:scale-105 transition">SP</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-white group-hover:text-brand transition">Surya Prakash</div>
+              <div class="text-[10px] text-slate-400">AP Specialist (Standard Reviewer)</div>
+            </div>
+          </button>
+
+          <button onclick="switchUserRole('elena.rostova')" class="w-full text-left p-2 rounded-lg hover:bg-subtle transition flex items-center gap-2.5 group">
+            <div class="h-7 w-7 rounded-full bg-emerald/20 text-emerald flex items-center justify-center font-bold text-xs group-hover:scale-105 transition">ER</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-white group-hover:text-emerald transition">Elena Rostova</div>
+              <div class="text-[10px] text-emerald font-semibold">VP Finance & Controller (Executive)</div>
+            </div>
+          </button>
+
+          <button onclick="switchUserRole('marcus.vance')" class="w-full text-left p-2 rounded-lg hover:bg-subtle transition flex items-center gap-2.5 group">
+            <div class="h-7 w-7 rounded-full bg-cyan-400/20 text-cyan-400 flex items-center justify-center font-bold text-xs group-hover:scale-105 transition">MV</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-white group-hover:text-cyan-400 transition">Marcus Vance</div>
+              <div class="text-[10px] text-slate-400">Forensic Auditor (Read-Only)</div>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -785,6 +830,14 @@
             </div>
           </div>
 
+          <!-- Read-Only Banner for External Auditor Persona -->
+          <div id="hitlAuditorReadOnlyBanner" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs flex items-center gap-2.5">
+            <i data-lucide="lock" class="w-4 h-4 text-amber shrink-0"></i>
+            <div>
+              <strong>Forensic Audit Mode:</strong> External auditor persona is strictly read-only. Action submission and payment dispatch are disabled under corporate SOX compliance controls.
+            </div>
+          </div>
+
           <!-- Action Tray Mode Switcher Tabs -->
           <div class="grid grid-cols-4 gap-1.5 p-1 bg-bg rounded-lg border border-border text-xs">
             <button onclick="switchHitlMode('dispute')" id="hitlTabDispute" class="tab-active py-2 px-2.5 rounded-md text-[11px] transition text-center flex items-center justify-center gap-1.5">
@@ -921,14 +974,19 @@
           </div>
 
           <!-- Global Decision Sign-off & Secondary Override -->
-          <div class="flex items-center justify-between gap-3 pt-3 border-t border-border">
-            <div class="text-[11px] text-slate-400 font-sans">
-              Sign-off: <strong class="text-slate-200 font-medium">Surya Prakash (Lead AP Compliance)</strong>
+          <div class="flex items-center justify-between gap-3 pt-3 border-t border-border flex-wrap">
+            <div class="text-[11px] text-slate-400 font-sans flex items-center gap-2">
+              <span>Sign-off:</span>
+              <strong id="hitlSignOffLabel" class="text-slate-200 font-medium">Surya Prakash (AP Specialist)</strong>
+              <span id="hitlSignOffBadge" class="text-[9px] px-1.5 py-0.5 rounded-full bg-brand/20 text-brand-light font-semibold">AP_REVIEWER</span>
             </div>
 
-            <button onclick="commitDecision('APPROVE_OVERCHARGE')" class="text-xs text-slate-500 hover:text-slate-300 transition underline underline-offset-2">
-              Grant Executive Override & Full Exception
-            </button>
+            <div id="executiveOverrideContainer">
+              <button id="btnExecutiveOverride" onclick="handleExecutiveOverrideClick()" class="text-xs text-slate-400 hover:text-slate-200 transition underline underline-offset-2 flex items-center gap-1.5">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                <span id="btnExecutiveOverrideText">Grant Executive Override (Requires VP Clearance)</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1209,6 +1267,7 @@
       const savedTheme = localStorage.getItem('veritas_theme') || 'dark';
       updateThemeUI(savedTheme);
       updateKeyStatusDisplay(localStorage.getItem('veritas_gemini_key') || '');
+      loadUserProfile(localStorage.getItem('veritas_user') || 'surya.prakash');
       lucide.createIcons();
 
       // Pre-fetch count badge for header
@@ -2334,14 +2393,145 @@
       await submitHitlRequest(payload);
     }
 
+    let currentUser = {
+      username: "surya.prakash",
+      full_name: "Surya Prakash",
+      role: "AP_REVIEWER",
+      title: "Accounts Payable Specialist",
+      avatar_color: "brand"
+    };
+
+    async function loadUserProfile(username) {
+      try {
+        const res = await fetch(`/api/auth/me?username=${encodeURIComponent(username)}`);
+        if (res.ok) {
+          currentUser = await res.json();
+          updateUserUI();
+        }
+      } catch (e) {
+        console.error("Failed loading user profile:", e);
+      }
+    }
+
+    function updateUserUI() {
+      const nameEl = document.getElementById('userNavName');
+      const roleEl = document.getElementById('userNavRole');
+      const avatarEl = document.getElementById('userAvatarPill');
+      const signOffLabel = document.getElementById('hitlSignOffLabel');
+      const signOffBadge = document.getElementById('hitlSignOffBadge');
+      const readOnlyBanner = document.getElementById('hitlAuditorReadOnlyBanner');
+      const overrideBtn = document.getElementById('btnExecutiveOverride');
+      const overrideText = document.getElementById('btnExecutiveOverrideText');
+
+      if (nameEl) nameEl.textContent = currentUser.full_name;
+      if (roleEl) {
+        const titleParts = currentUser.title.split(' ');
+        roleEl.textContent = titleParts.slice(0, 2).join(' ');
+      }
+      if (avatarEl) {
+        const initials = currentUser.full_name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        avatarEl.textContent = initials;
+        if (currentUser.role === 'FINANCE_VP') {
+          avatarEl.className = "h-6 w-6 rounded-full bg-emerald text-white flex items-center justify-center font-bold text-[10px] uppercase shadow-sm";
+        } else if (currentUser.role === 'AUDITOR_READONLY') {
+          avatarEl.className = "h-6 w-6 rounded-full bg-cyan-500 text-white flex items-center justify-center font-bold text-[10px] uppercase shadow-sm";
+        } else {
+          avatarEl.className = "h-6 w-6 rounded-full bg-brand text-white flex items-center justify-center font-bold text-[10px] uppercase shadow-sm";
+        }
+      }
+
+      if (signOffLabel) signOffLabel.textContent = `${currentUser.full_name} (${currentUser.title})`;
+      if (signOffBadge) {
+        signOffBadge.textContent = currentUser.role;
+        if (currentUser.role === 'FINANCE_VP') {
+          signOffBadge.className = "text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-bg text-emerald border border-emerald-border font-semibold";
+        } else if (currentUser.role === 'AUDITOR_READONLY') {
+          signOffBadge.className = "text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold";
+        } else {
+          signOffBadge.className = "text-[9px] px-1.5 py-0.5 rounded-full bg-brand/20 text-brand-light border border-brand/30 font-semibold";
+        }
+      }
+
+      const isReadOnly = (currentUser.role === 'AUDITOR_READONLY');
+      if (readOnlyBanner) {
+        if (isReadOnly) readOnlyBanner.classList.remove('hidden');
+        else readOnlyBanner.classList.add('hidden');
+      }
+
+      if (overrideBtn && overrideText) {
+        if (currentUser.role === 'FINANCE_VP') {
+          overrideBtn.className = "text-xs text-emerald hover:text-emerald-light transition font-semibold flex items-center gap-1.5";
+          overrideText.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-emerald animate-pulse"></span> Executive Override Authorized (VP Finance)`;
+        } else {
+          overrideBtn.className = "text-xs text-slate-400 hover:text-slate-200 transition underline underline-offset-2 flex items-center gap-1.5";
+          overrideText.textContent = "Grant Executive Override (Requires VP Clearance)";
+        }
+      }
+
+      lucide.createIcons();
+    }
+
+    function toggleUserDropdown() {
+      const dd = document.getElementById('userMenuDropdown');
+      dd.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const btn = document.getElementById('userMenuBtn');
+      const dd = document.getElementById('userMenuDropdown');
+      if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) {
+        dd.classList.add('hidden');
+      }
+    });
+
+    function switchUserRole(username) {
+      localStorage.setItem('veritas_user', username);
+      loadUserProfile(username);
+      document.getElementById('userMenuDropdown').classList.add('hidden');
+      const roleLabel = (username === 'elena.rostova' ? 'VP Finance (Executive)' : username === 'marcus.vance' ? 'Forensic Auditor (Read-Only)' : 'AP Specialist');
+      showToast("Persona Switched", `Active identity set to ${username} (${roleLabel})`, "info");
+    }
+
+    function handleExecutiveOverrideClick() {
+      if (currentUser.role === 'AUDITOR_READONLY') {
+        showToast("Action Prohibited", "Forensic Auditor persona is strictly read-only.", "error");
+        return;
+      }
+      if (currentUser.role !== 'FINANCE_VP') {
+        showToast("VP Clearance Required", "SOX controls require VP of Finance authorization for Executive Overrides. Switch to Elena Rostova or route via workflow.", "warning");
+        return;
+      }
+      commitDecision('APPROVE_OVERCHARGE');
+    }
+
     // Base API Caller for HITL Decisions
     async function submitHitlRequest(payload) {
+      if (currentUser.role === 'AUDITOR_READONLY') {
+        showToast("Action Prohibited", "Forensic Auditor persona is strictly read-only. Decision dispatch is restricted.", "error");
+        return;
+      }
+
+      // Attach active reviewer info
+      payload.reviewer_id = currentUser.full_name;
+      payload.reviewer_role = currentUser.role;
+
       try {
         const res = await fetch('/api/hitl-decision', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-User-Role': currentUser.role,
+            'X-User-Name': currentUser.full_name,
+            'X-User-Username': currentUser.username
+          },
           body: JSON.stringify(payload)
         });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.detail || "Decision commit rejected by compliance gateway.");
+        }
+
         const result = await res.json();
 
         // Update Telemetry with GSAP
@@ -2354,7 +2544,7 @@
         showToast("Decision Committed", result.message, "success");
         document.getElementById('hitlComposerSection').classList.add('hidden');
       } catch (err) {
-        showToast("Action Failed", err.message, "error");
+        showToast("Compliance Guard", err.message, "error");
       }
     }
   </script>
