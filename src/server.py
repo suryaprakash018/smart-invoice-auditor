@@ -380,15 +380,20 @@ def list_contracts(db: Session = Depends(get_db)):
 
 @app.post("/api/audit-upload")
 async def audit_uploaded_invoice(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    if not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF invoices are currently supported.")
+    allowed_exts = [".pdf", ".png", ".jpg", ".jpeg", ".webp"]
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in allowed_exts:
+        raise HTTPException(
+            status_code=400,
+            detail="Supported formats: PDF, PNG, JPG, JPEG, and WebP invoices.",
+        )
 
     temp_path = os.path.join(UPLOADS_DIR, file.filename)
     with open(temp_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     try:
-        parsed_invoice = extractor.extract_from_pdf(temp_path)
+        parsed_invoice = extractor.extract_document(temp_path, mime_type=file.content_type)
         contract = _get_contract_pydantic_from_db(db, parsed_invoice.vendor_name)
         if not contract:
             raise HTTPException(status_code=404, detail="No matching contract found in database.")
@@ -398,9 +403,11 @@ async def audit_uploaded_invoice(file: UploadFile = File(...), db: Session = Dep
 
         return {
             "audit_id": audit_id,
+            "document_type": "IMAGE_OCR" if ext != ".pdf" else "PDF_VECTOR",
             "invoice": parsed_invoice.model_dump(),
             "contract": contract.model_dump(),
             "report": report.model_dump(),
+            "certificate_url": f"/api/audit/{audit_id}/certificate",
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -408,25 +415,34 @@ async def audit_uploaded_invoice(file: UploadFile = File(...), db: Session = Dep
 
 @app.post("/api/audit-sample/{sample_type}")
 def audit_sample_invoice(sample_type: str, db: Session = Depends(get_db)):
-    filename = "invoice_valid.pdf" if sample_type == "valid" else "invoice_overcharged.pdf"
-    pdf_path = os.path.join(SAMPLES_DIR, filename)
+    if sample_type == "valid":
+        filename = "invoice_valid.pdf"
+    elif sample_type == "scanned":
+        filename = "invoice_scanned_receipt.png"
+    else:
+        filename = "invoice_overcharged.pdf"
 
-    if not os.path.exists(pdf_path):
-        raise HTTPException(status_code=404, detail="Sample invoice not found.")
+    doc_path = os.path.join(SAMPLES_DIR, filename)
 
-    parsed_invoice = extractor.extract_from_pdf(pdf_path)
+    if not os.path.exists(doc_path):
+        raise HTTPException(status_code=404, detail=f"Sample invoice {filename} not found.")
+
+    ext = os.path.splitext(filename)[1].lower()
+    parsed_invoice = extractor.extract_document(doc_path)
     contract = _get_contract_pydantic_from_db(db, parsed_invoice.vendor_name)
     if not contract:
         raise HTTPException(status_code=404, detail="No matching contract found in database.")
 
     report = engine_audit.audit_invoice(parsed_invoice, contract)
-    audit_id = _persist_audit_to_db(db, parsed_invoice, report, pdf_path)
+    audit_id = _persist_audit_to_db(db, parsed_invoice, report, doc_path)
 
     return {
         "audit_id": audit_id,
+        "document_type": "IMAGE_OCR" if ext != ".pdf" else "PDF_VECTOR",
         "invoice": parsed_invoice.model_dump(),
         "contract": contract.model_dump(),
         "report": report.model_dump(),
+        "certificate_url": f"/api/audit/{audit_id}/certificate",
     }
 
 

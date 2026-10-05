@@ -35,6 +35,7 @@ class ParsedInvoice(BaseModel):
     subtotal: float = Field(description="Subtotal before taxes or discounts")
     tax_amount: float = Field(default=0.0, description="Tax or VAT billed")
     total_amount: float = Field(description="Final total billed amount")
+    document_type: str = Field(default="PDF_VECTOR", description="Document ingestion type: PDF_VECTOR, IMAGE_OCR, or SCANNED_PDF")
 
 
 class ContractRate(BaseModel):

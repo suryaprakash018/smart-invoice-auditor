@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from src.server import app
@@ -467,3 +468,48 @@ def test_webhook_dispatch_and_signatures():
 
 
 
+
+
+
+def test_api_audit_sample_scanned_receipt():
+    response = client.post("/api/audit-sample/scanned")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["invoice"]["invoice_number"] == "INV-2025-SCANNED-01"
+    assert data["invoice"]["document_type"] == "IMAGE_OCR"
+    assert data["report"]["status"] == "FLAGGED"
+    assert data["report"]["total_overcharge"] == 2750.0
+    assert len(data["report"]["discrepancies"]) == 4
+    assert data["certificate_url"] is not None
+
+
+def test_api_audit_upload_scanned_png():
+    img_path = Path("data/sample_invoices/invoice_scanned_receipt.png")
+    assert img_path.exists()
+
+    with open(img_path, "rb") as f:
+        response = client.post(
+            "/api/audit-upload",
+            files={"file": ("scanned_invoice.png", f, "image/png")}
+        )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["invoice"]["document_type"] == "IMAGE_OCR"
+    assert data["invoice"]["invoice_number"] == "INV-2025-SCANNED-01"
+    assert data["report"]["status"] == "FLAGGED"
+    assert data["report"]["total_overcharge"] == 2750.0
+
+
+def test_extractor_scanned_image_and_unsupported_types():
+    from src.extractor import extract_document
+    img_path = "data/sample_invoices/invoice_scanned_receipt.png"
+    invoice = extract_document(img_path, mime_type="image/png")
+    assert invoice.invoice_number == "INV-2025-SCANNED-01"
+    assert invoice.document_type == "IMAGE_OCR"
+    assert len(invoice.line_items) == 3
+
+    # Unsupported MIME type should raise ValueError
+    import pytest
+    with pytest.raises(ValueError, match="Unsupported file type"):
+        extract_document("test.xyz", mime_type="application/xyz")

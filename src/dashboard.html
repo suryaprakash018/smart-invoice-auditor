@@ -385,13 +385,18 @@
         <span>Audit Compliant ($0)</span>
       </button>
 
+      <button onclick="auditSampleInvoice('scanned')" class="btn-secondary px-3.5 py-1.5 rounded-lg text-slate-200 text-xs flex items-center gap-1.5 hover:text-white" title="Audit Scanned Paper Receipt using Multi-Format OCR">
+        <i data-lucide="scan" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span>Audit Scanned Receipt (OCR)</span>
+      </button>
+
       <div class="h-4 w-px bg-border"></div>
 
       <!-- Batch Processing Trigger -->
       <label class="btn-secondary px-3.5 py-1.5 rounded-lg text-slate-200 text-xs cursor-pointer flex items-center gap-1.5 hover:text-white" title="Queue multiple PDF invoices for background processing">
         <i data-lucide="layers" class="w-3.5 h-3.5 text-brand"></i>
         <span>Batch Audit</span>
-        <input type="file" id="batchPdfInput" multiple accept="application/pdf" class="hidden" onchange="handleBatchUpload(event)">
+        <input type="file" id="batchPdfInput" multiple accept="application/pdf,image/png,image/jpeg" class="hidden" onchange="handleBatchUpload(event)">
       </label>
 
       <!-- Executive Analytics & Audit Ledger Button -->
@@ -416,8 +421,8 @@
       <!-- Single Upload Trigger -->
       <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs cursor-pointer flex items-center gap-1.5">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-        <span>Upload PDF</span>
-        <input type="file" id="customPdfInput" accept="application/pdf" class="hidden" onchange="handleFileUpload(event)">
+        <span>Upload PDF / Image</span>
+        <input type="file" id="customPdfInput" accept="application/pdf,image/png,image/jpeg,image/webp" class="hidden" onchange="handleFileUpload(event)">
       </label>
 
       <div class="h-4 w-px bg-border"></div>
@@ -1867,11 +1872,17 @@
 
     // Trigger Demo Sample Audits
     async function auditSampleInvoice(type) {
-      const isOvercharged = (type === 'overcharged');
-      const filename = isOvercharged ? "invoice_overcharged.pdf" : "invoice_valid.pdf";
-      const pdfUrl = `/static/sample_invoices/${filename}`;
+      const isScanned = (type === 'scanned');
+      const isOvercharged = (type === 'overcharged' || isScanned);
+      let filename;
+      if (isScanned) {
+        filename = "invoice_scanned_receipt.png";
+      } else {
+        filename = isOvercharged ? "invoice_overcharged.pdf" : "invoice_valid.pdf";
+      }
+      const docUrl = `/static/sample_invoices/${filename}`;
 
-      showToast("Ingesting PDF", `Parsing ${filename} with Neural Layout Engine...`, "info");
+      showToast(isScanned ? "Ingesting Scanned Receipt" : "Ingesting PDF", `Parsing ${filename} with ${isScanned ? 'Multi-Modal Vision / OCR Fallback Engine' : 'Neural Layout Engine'}...`, "info");
       triggerScanner();
 
       try {
@@ -1879,8 +1890,12 @@
         if (!res.ok) throw new Error("API returned an error");
         currentAuditData = await res.json();
 
-        // 1. Render Real PDF via PDF.js with Multi-Page Engine
-        await loadPdfFromUrl(pdfUrl, isOvercharged);
+        // 1. Render Document onto Canvas (Image OCR or PDF.js)
+        if (isScanned) {
+          await renderImageOnCanvas(docUrl, isOvercharged);
+        } else {
+          await loadPdfFromUrl(docUrl, isOvercharged);
+        }
 
         // 2. Render Audit Intelligence with GSAP Micro-Interactions
         renderAuditIntelligence(currentAuditData);
@@ -1895,15 +1910,17 @@
       }
     }
 
-    // Handle Custom PDF File Upload
+    // Handle Custom File Upload (PDF, PNG, JPG, WebP)
     async function handleFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
 
+      const isImage = file.type.startsWith('image/');
+
       const formData = new FormData();
       formData.append('file', file);
 
-      showToast("Ingesting Document", `Evaluating ${file.name}...`, "info");
+      showToast("Ingesting Document", `Evaluating ${file.name} via ${isImage ? 'Optical OCR / Vision Pipeline' : 'Neural Parser'}...`, "info");
       triggerScanner();
 
       try {
@@ -1916,15 +1933,26 @@
           throw new Error(err.detail || "Upload audit failed");
         }
         currentAuditData = await res.json();
+        const isOvercharged = (currentAuditData.report.status === "FLAGGED");
 
-        const fileReader = new FileReader();
-        fileReader.onload = async function() {
-          currentPdfBytes = new Uint8Array(this.result);
-          await loadPdfFromBytes(currentPdfBytes, currentAuditData.report.status === "FLAGGED");
-          renderAuditIntelligence(currentAuditData);
-          showToast("Audit Complete", `Audited ${file.name} successfully.`, "success");
-        };
-        fileReader.readAsArrayBuffer(file);
+        if (isImage) {
+          const reader = new FileReader();
+          reader.onload = async function() {
+            await renderImageOnCanvas(this.result, isOvercharged);
+            renderAuditIntelligence(currentAuditData);
+            showToast("Audit Complete", `Audited scanned image ${file.name} successfully.`, "success");
+          };
+          reader.readAsDataURL(file);
+        } else {
+          const fileReader = new FileReader();
+          fileReader.onload = async function() {
+            currentPdfBytes = new Uint8Array(this.result);
+            await loadPdfFromBytes(currentPdfBytes, isOvercharged);
+            renderAuditIntelligence(currentAuditData);
+            showToast("Audit Complete", `Audited vector PDF ${file.name} successfully.`, "success");
+          };
+          fileReader.readAsArrayBuffer(file);
+        }
       } catch (err) {
         showToast("Upload Error", err.message, "error");
       }
@@ -2029,6 +2057,8 @@
     async function loadPdfFromUrl(url, isOvercharged) {
       document.getElementById('viewerEmptyState').classList.add('hidden');
       document.getElementById('pdfContainerWrapper').classList.remove('hidden');
+      document.getElementById('pageNavControls').classList.remove('hidden');
+      document.getElementById('docScaleIndicator').textContent = "115% Vector";
       switchViewerTab('invoice');
 
       currentPdfUrl = url;
@@ -2047,6 +2077,8 @@
     async function loadPdfFromBytes(typedarray, isOvercharged) {
       document.getElementById('viewerEmptyState').classList.add('hidden');
       document.getElementById('pdfContainerWrapper').classList.remove('hidden');
+      document.getElementById('pageNavControls').classList.remove('hidden');
+      document.getElementById('docScaleIndicator').textContent = "115% Vector";
       switchViewerTab('invoice');
 
       currentPdfBytes = typedarray;
@@ -2059,6 +2091,40 @@
       currentPage = 1;
 
       await renderCurrentPage();
+    }
+
+    // Render Scanned Receipt / Image directly on Canvas with Optical Grounding
+    async function renderImageOnCanvas(imgSrc, isOvercharged) {
+      document.getElementById('viewerEmptyState').classList.add('hidden');
+      document.getElementById('pdfContainerWrapper').classList.remove('hidden');
+      document.getElementById('pageNavControls').classList.add('hidden');
+      document.getElementById('docScaleIndicator').textContent = "100% Optical OCR";
+      switchViewerTab('invoice');
+
+      pdfDoc = null;
+      currentPage = 1;
+      totalPages = 1;
+      isCurrentOvercharged = isOvercharged;
+
+      const canvas = document.getElementById('pdfCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const img = new Image();
+      await new Promise((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Failed to load invoice image"));
+        img.src = imgSrc;
+      });
+
+      const targetWidth = 680;
+      const scale = targetWidth / (img.naturalWidth || 800);
+      canvas.width = targetWidth;
+      canvas.height = (img.naturalHeight || 1000) * scale;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      drawEvidenceAnnotations(isOvercharged, canvas.width, 1);
     }
 
     // Draw Optical Vector Frames on Canvas
@@ -2085,10 +2151,14 @@
       }
 
       if (isOvercharged) {
+        const isOcr = (currentAuditData && currentAuditData.invoice && currentAuditData.invoice.document_type === 'IMAGE_OCR');
+        const top1 = isOcr ? "275px" : "198px";
+        const top2 = isOcr ? "320px" : "236px";
+
         // Frame 1: Senior DevOps Rate Mismatch Line ($95.00/hr)
         const frame1 = document.createElement('div');
         frame1.className = "optical-vector-frame optical-frame-danger";
-        frame1.style.top = "198px";
+        frame1.style.top = top1;
         frame1.style.left = "36px";
         frame1.style.width = "calc(100% - 72px)";
         frame1.style.height = "34px";
@@ -2104,7 +2174,7 @@
         // Frame 2: Unauthorized Surcharge ($350.00)
         const frame2 = document.createElement('div');
         frame2.className = "optical-vector-frame optical-frame-danger";
-        frame2.style.top = "236px";
+        frame2.style.top = top2;
         frame2.style.left = "36px";
         frame2.style.width = "calc(100% - 72px)";
         frame2.style.height = "34px";
