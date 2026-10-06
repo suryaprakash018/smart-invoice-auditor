@@ -1166,3 +1166,23 @@ def serve_slides():
             return f.read()
     return "<h1>Veritas AP Executive Pitch Deck</h1><p>slides.html not found</p>"
 
+
+@app.get("/healthz")
+@app.get("/api/health")
+def healthcheck():
+    return {
+        "status": "healthy",
+        "service": "Veritas AP Enterprise Audit Engine",
+        "version": "2.5.0",
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    print(f"[INFO] Starting Veritas AP Enterprise Engine on {host}:{port}...")
+    uvicorn.run("src.server:app", host=host, port=port, reload=False)
+
+
