@@ -1155,3 +1155,14 @@ def serve_dashboard():
         with open(dashboard_file, "r", encoding="utf-8") as f:
             return f.read()
     return "<h1>Veritas AP Compliance System</h1><p>dashboard.html not found</p>"
+
+
+@app.get("/slides", response_class=HTMLResponse)
+@app.get("/presentation", response_class=HTMLResponse)
+def serve_slides():
+    slides_file = os.path.join(BASE_DIR, "src", "slides.html")
+    if os.path.exists(slides_file):
+        with open(slides_file, "r", encoding="utf-8") as f:
+            return f.read()
+    return "<h1>Veritas AP Executive Pitch Deck</h1><p>slides.html not found</p>"
+

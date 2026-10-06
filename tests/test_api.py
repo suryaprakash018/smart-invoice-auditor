@@ -603,3 +603,15 @@ def test_vendor_risk_scoring_boundary_conditions():
     tier_worst = classify_risk_tier(worst_score)
     assert tier_worst["tier_code"] == RiskTier.TIER_4_CRITICAL
     assert "Hold" in tier_worst["governance_recommendation"]
+
+
+def test_slides_and_presentation_endpoints():
+    res_slides = client.get("/slides")
+    assert res_slides.status_code == 200
+    assert "Veritas AP Enterprise" in res_slides.text
+    assert "Executive Pitch Deck" in res_slides.text
+
+    res_pres = client.get("/presentation")
+    assert res_pres.status_code == 200
+    assert "Deterministic Engine Active" in res_pres.text
+
