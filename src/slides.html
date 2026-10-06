@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veritas AP Enterprise — Executive Pitch Deck & Keynote Showcase</title>
 
+  <!-- Instant Theme Engine: Synchronize with Veritas Studio (Zero-FOUC) -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('veritas_theme') || 'dark';
+      document.documentElement.classList.toggle('dark', saved === 'dark');
+      document.documentElement.classList.toggle('light', saved === 'light');
+    })();
+  </script>
+
   <!-- Typography: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,6 +157,182 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 9999px;
     }
+
+    /* ============================================== */
+    /* LIGHT THEME (Apple Keynote Pristine Light)    */
+    /* ============================================== */
+    html.light body {
+      background-color: #F8FAFC !important;
+      color: #0F172A !important;
+    }
+
+    html.light .ambient-bg {
+      background: 
+        radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 15% 85%, rgba(224, 109, 83, 0.05) 0%, transparent 50%) !important;
+    }
+
+    html.light header {
+      background-color: rgba(255, 255, 255, 0.88) !important;
+      border-color: #E2E8F0 !important;
+    }
+
+    html.light footer {
+      background-color: rgba(255, 255, 255, 0.88) !important;
+      border-color: #E2E8F0 !important;
+    }
+
+    html.light #speakerDrawer {
+      background-color: rgba(255, 255, 255, 0.96) !important;
+      border-color: #E2E8F0 !important;
+      box-shadow: -10px 0 40px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    html.light .apple-glass {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(226, 232, 240, 0.9) !important;
+      box-shadow: 0 20px 45px -15px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(15, 23, 42, 0.04), inset 0 1px 0 0 #FFFFFF !important;
+    }
+
+    html.light .apple-glass-interactive:hover {
+      border-color: #CBD5E1 !important;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.12) !important;
+      transform: translateY(-2px);
+    }
+
+    html.light .hero-title-gradient {
+      background: linear-gradient(180deg, #0F172A 0%, #334155 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+    }
+
+    /* Cards, Panels & Structural Elements */
+    html.light .bg-surface,
+    html.light .bg-surface\/80,
+    html.light .bg-surface\/90,
+    html.light .bg-surface\/95 {
+      background-color: #F8FAFC !important;
+    }
+
+    html.light .bg-card,
+    html.light .bg-card\/60,
+    html.light .bg-card\/80 {
+      background-color: #F1F5F9 !important;
+    }
+
+    html.light .bg-panel {
+      background-color: #E2E8F0 !important;
+    }
+
+    html.light .bg-obsidian,
+    html.light .bg-obsidian\/80 {
+      background-color: rgba(255, 255, 255, 0.88) !important;
+    }
+
+    html.light .border-border,
+    html.light .border-border\/40,
+    html.light .border-border\/50,
+    html.light .border-border\/60 {
+      border-color: #E2E8F0 !important;
+    }
+
+    /* Category Pill */
+    html.light .bg-white\/\[0\.04\] {
+      background-color: #F1F5F9 !important;
+      border-color: #E2E8F0 !important;
+    }
+
+    /* High-Contrast Typography */
+    html.light .text-white {
+      color: #0F172A !important;
+    }
+
+    html.light .text-slate-100 {
+      color: #0F172A !important;
+    }
+
+    html.light .text-slate-200 {
+      color: #1E293B !important;
+    }
+
+    html.light .text-slate-300 {
+      color: #334155 !important;
+    }
+
+    html.light .text-slate-400 {
+      color: #64748B !important;
+    }
+
+    html.light .text-slate-500 {
+      color: #64748B !important;
+    }
+
+    /* Accent Containers */
+    html.light .bg-emerald-950\/10 {
+      background-color: #ECFDF5 !important;
+      border-color: #A7F3D0 !important;
+    }
+
+    html.light .bg-cyan-950\/60 {
+      background-color: #ECFEFF !important;
+      border-color: #A5F3FC !important;
+    }
+
+    html.light .text-cyan-400 {
+      color: #0891B2 !important;
+    }
+
+    html.light .border-cyan-800\/40 {
+      border-color: #A5F3FC !important;
+    }
+
+    html.light #deckBrandIconBox {
+      background-color: #0F172A !important;
+      color: #FFFFFF !important;
+    }
+
+    html.light #deckBrandIconBox i {
+      color: #FFFFFF !important;
+    }
+
+    /* Buttons */
+    html.light .deck-btn-enter {
+      background-color: #0F172A !important;
+      color: #FFFFFF !important;
+    }
+
+    html.light .deck-btn-enter:hover {
+      background-color: #1E293B !important;
+    }
+
+    html.light #dockBtnNext {
+      background-color: #0F172A !important;
+      color: #FFFFFF !important;
+    }
+
+    html.light #dockBtnNext:hover {
+      background-color: #1E293B !important;
+    }
+
+    html.light .deck-hero-enter {
+      background-color: #0F172A !important;
+      color: #FFFFFF !important;
+    }
+
+    html.light .deck-hero-enter:hover {
+      background-color: #1E293B !important;
+    }
+
+    /* Slider Track */
+    html.light input[type=range] {
+      background: #E2E8F0 !important;
+    }
+
+    /* Scrollbars */
+    html.light ::-webkit-scrollbar-thumb {
+      background: rgba(15, 23, 42, 0.15) !important;
+    }
   </style>
 </head>
 <body class="h-screen w-screen flex flex-col relative font-sans antialiased overflow-hidden">
@@ -162,7 +347,7 @@
     
     <!-- Left: Refined Brand -->
     <div class="flex items-center gap-3">
-      <div class="h-7 w-7 rounded-lg bg-white flex items-center justify-center shadow-md">
+      <div id="deckBrandIconBox" class="h-7 w-7 rounded-lg bg-white flex items-center justify-center shadow-md">
         <i data-lucide="shield-check" class="w-4 h-4 text-obsidian stroke-[2.5]"></i>
       </div>
       <div class="flex items-center gap-2">
@@ -183,8 +368,15 @@
       <span id="deckTimer">00:00</span>
     </div>
 
-    <!-- Right: Speaker Notes, Fullscreen, Studio Button -->
+    <!-- Right: Theme Switcher, Speaker Notes, Fullscreen, Studio Button -->
     <div class="flex items-center gap-2.5">
+      <button onclick="toggleDeckTheme()" id="deckThemeBtn" class="px-2.5 py-1 rounded-lg bg-card/80 hover:bg-panel border border-border/60 text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Toggle Light/Dark Theme (T)">
+        <i data-lucide="sun" id="themeIconSun" class="w-3.5 h-3.5 text-amber-400 hidden"></i>
+        <i data-lucide="moon" id="themeIconMoon" class="w-3.5 h-3.5 text-slate-400"></i>
+        <span id="themeLabel" class="text-[11px] font-medium hidden md:inline">Light</span>
+        <span class="text-[9px] font-mono text-slate-500">[T]</span>
+      </button>
+
       <button onclick="toggleSpeakerNotes()" class="px-2.5 py-1 rounded-lg bg-card/80 hover:bg-panel border border-border/60 text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Presenter Notes (N)">
         <i data-lucide="file-text" class="w-3 h-3 text-amber"></i>
         <span class="text-[11px] font-medium hidden md:inline">Notes</span>
@@ -195,7 +387,7 @@
         <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
       </button>
 
-      <a href="/" target="_blank" class="px-3 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-slate-200 text-obsidian transition flex items-center gap-1.5 shadow-sm">
+      <a href="/" target="_blank" class="deck-btn-enter px-3 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-slate-200 text-obsidian transition flex items-center gap-1.5 shadow-sm">
         <span>Enter Studio</span>
         <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
       </a>
@@ -696,7 +888,7 @@
 
         <!-- Launch Button -->
         <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="/" target="_blank" class="px-8 py-3.5 rounded-2xl bg-white hover:bg-slate-200 text-obsidian font-bold text-sm transition shadow-xl hover:scale-105 flex items-center gap-2">
+          <a href="/" target="_blank" class="deck-hero-enter px-8 py-3.5 rounded-2xl bg-white hover:bg-slate-200 text-obsidian font-bold text-sm transition shadow-xl hover:scale-105 flex items-center gap-2">
             <span>Enter Live Veritas Studio</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
           </a>
@@ -791,20 +983,83 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+      initDeckTheme();
       lucide.createIcons();
       buildDots();
       updateSlideDisplay();
       startStopwatch();
 
       document.addEventListener('keydown', handleKeyNavigation);
+
+      // Realtime cross-tab synchronization with Studio dashboard
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'veritas_theme') {
+          applyDeckTheme(e.newValue || 'dark');
+        }
+      });
     });
+
+    // ==============================================
+    // THEME ENGINE (DARK / LIGHT SYNCED WITH STUDIO)
+    // ==============================================
+    function initDeckTheme() {
+      const saved = localStorage.getItem('veritas_theme') || 'dark';
+      applyDeckTheme(saved);
+    }
+
+    function toggleDeckTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const newTheme = isDark ? 'light' : 'dark';
+      localStorage.setItem('veritas_theme', newTheme);
+      applyDeckTheme(newTheme);
+    }
+
+    function applyDeckTheme(theme) {
+      const isDark = (theme === 'dark');
+      document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.classList.toggle('light', !isDark);
+
+      const sunIcon = document.getElementById('themeIconSun');
+      const moonIcon = document.getElementById('themeIconMoon');
+      const label = document.getElementById('themeLabel');
+
+      if (sunIcon && moonIcon && label) {
+        sunIcon.classList.toggle('hidden', isDark);
+        moonIcon.classList.toggle('hidden', !isDark);
+        label.textContent = isDark ? 'Light' : 'Dark';
+      }
+
+      // Update dot styles to match active theme
+      const dots = document.getElementById('dockSlideDots');
+      if (dots && dots.children.length > 0) {
+        for (let i = 0; i < dots.children.length; i++) {
+          const dot = dots.children[i];
+          const isActive = (i + 1 === currentSlide);
+          if (isActive) {
+            dot.className = `h-1.5 w-6 rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-900'}`;
+          } else {
+            dot.className = `h-1.5 w-1.5 rounded-full transition-all duration-300 ${isDark ? 'bg-slate-700 hover:bg-slate-500' : 'bg-slate-300 hover:bg-slate-400'}`;
+          }
+        }
+      }
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
 
     function buildDots() {
       const container = document.getElementById('dockSlideDots');
       container.innerHTML = '';
+      const isDark = document.documentElement.classList.contains('dark');
       for (let i = 1; i <= totalSlides; i++) {
         const dot = document.createElement('button');
-        dot.className = `h-1.5 rounded-full transition-all duration-300 ${i === 1 ? 'w-6 bg-white' : 'w-1.5 bg-slate-700 hover:bg-slate-500'}`;
+        const isActive = (i === currentSlide);
+        dot.className = `h-1.5 rounded-full transition-all duration-300 ${
+          isActive 
+            ? (isDark ? 'w-6 bg-white' : 'w-6 bg-slate-900') 
+            : (isDark ? 'w-1.5 bg-slate-700 hover:bg-slate-500' : 'w-1.5 bg-slate-300 hover:bg-slate-400')
+        }`;
         dot.title = `Slide ${i}`;
         dot.onclick = () => goToSlide(i);
         container.appendChild(dot);
@@ -835,12 +1090,13 @@
       });
 
       // Update Dots
+      const isDark = document.documentElement.classList.contains('dark');
       const dots = document.getElementById('dockSlideDots').children;
       for (let i = 0; i < dots.length; i++) {
         if (i + 1 === currentSlide) {
-          dots[i].className = 'h-1.5 w-6 rounded-full bg-white transition-all duration-300';
+          dots[i].className = `h-1.5 w-6 rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-900'}`;
         } else {
-          dots[i].className = 'h-1.5 w-1.5 rounded-full bg-slate-700 hover:bg-slate-500 transition-all duration-300';
+          dots[i].className = `h-1.5 w-1.5 rounded-full transition-all duration-300 ${isDark ? 'bg-slate-700 hover:bg-slate-500' : 'bg-slate-300 hover:bg-slate-400'}`;
         }
       }
 
@@ -894,6 +1150,8 @@
         toggleFullscreen();
       } else if (e.key === 'n' || e.key === 'N') {
         toggleSpeakerNotes();
+      } else if (e.key === 't' || e.key === 'T') {
+        toggleDeckTheme();
       } else if (e.key >= '1' && e.key <= '8') {
         goToSlide(parseInt(e.key));
       }
