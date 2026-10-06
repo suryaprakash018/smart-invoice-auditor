@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veritas AP Enterprise — Executive Pitch Deck & Showcase</title>
+  <title>Veritas AP Enterprise — Executive Pitch Deck & Keynote Showcase</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <!-- Typography: Plus Jakarta Sans, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,7 +16,7 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- GSAP Animation Engine -->
+  <!-- GSAP 3.12.5 Animation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
   <script>
@@ -25,16 +25,15 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            bg: '#0B0D11',
-            surface: '#12151C',
-            panel: '#181C26',
-            card: '#1D2230',
-            subtle: '#262D3D',
-            border: '#272E3F',
+            canvas: '#07080B',
+            surface: '#0F1219',
+            card: '#141824',
+            panel: '#1A2030',
+            border: '#222B3D',
             brand: {
               DEFAULT: '#3B82F6',
               glow: '#60A5FA',
@@ -62,574 +61,650 @@
   </script>
 
   <style>
+    /* Global Reset & Ambient Glow Canvas */
     body {
-      background-color: #0B0D11;
+      background-color: #07080B;
       color: #F8FAFC;
       user-select: none;
       overflow: hidden;
     }
-    .slide-container {
+
+    /* Ambient Aurora Gradient */
+    .ambient-aurora {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.12), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(224, 109, 83, 0.08), transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Slide Container Base (Strictly display: none when inactive) */
+    .keynote-slide {
+      display: none;
+      width: 100%;
+      height: 100%;
       position: absolute;
       inset: 0;
-      opacity: 0;
-      pointer-events: none;
-      display: none;
+      padding: 5rem 3.5rem 5rem;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    .keynote-slide.active {
+      display: flex !important;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 4rem 2.5rem 3.5rem;
-      overflow-y: auto;
     }
-    .slide-container.active {
-      display: flex !important;
-      opacity: 1;
-      pointer-events: auto;
-      z-index: 10;
-    }
-    .glow-card {
-      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 70%), #141822;
+
+    /* Master Glass Cards */
+    .glass-panel {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%), #0F131C;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(24px);
+    }
+    .glass-card-hover {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 35px 90px -15px rgba(0, 0, 0, 0.95);
+    }
+
+    /* Glowing Accents */
+    .glow-brand {
+      box-shadow: 0 0 35px -5px rgba(59, 130, 246, 0.4);
     }
     .glow-terracotta {
-      background: radial-gradient(circle at top left, rgba(224, 109, 83, 0.12), transparent 70%), #161418;
-      border: 1px solid rgba(224, 109, 83, 0.25);
+      box-shadow: 0 0 35px -5px rgba(224, 109, 83, 0.4);
     }
     .glow-emerald {
-      background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.12), transparent 70%), #121816;
-      border: 1px solid rgba(16, 185, 129, 0.25);
+      box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.4);
     }
-    .step-pill.active {
-      background-color: #3B82F6;
-      width: 2.5rem;
+
+    /* Neon Text Gradient */
+    .text-gradient-hero {
+      background: linear-gradient(135deg, #FFFFFF 20%, #93C5FD 60%, #34D399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .text-gradient-terracotta {
+      background: linear-gradient(135deg, #FFA28B 0%, #E06D53 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .text-gradient-emerald {
+      background: linear-gradient(135deg, #6EE7B7 0%, #10B981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Pulse Dot Keyframe */
+    @keyframes radarPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(224, 109, 83, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(224, 109, 83, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(224, 109, 83, 0); }
+    }
+    .radar-pulse {
+      animation: radarPulse 2s infinite;
     }
   </style>
 </head>
-<body class="h-screen w-screen flex flex-col relative font-sans antialiased">
+<body class="h-screen w-screen flex flex-col relative font-sans antialiased overflow-hidden">
+
+  <!-- Ambient Dynamic Aurora -->
+  <div class="ambient-aurora"></div>
 
   <!-- ============================================== -->
-  <!-- TOP SLIDE HEADER & CONTROLS                    -->
+  <!-- 1. CINEMATIC TOP COMMAND BAR                   -->
   <!-- ============================================== -->
-  <header class="h-16 px-8 border-b border-border bg-surface/90 backdrop-blur-md flex items-center justify-between z-30 flex-shrink-0">
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2.5">
-        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand to-indigo-600 flex items-center justify-center shadow-lg shadow-brand/20">
-          <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+  <header class="h-16 px-6 lg:px-10 border-b border-border/70 bg-surface/80 backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative">
+    
+    <!-- Left: Brand, Live Rule Engine Telemetry -->
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-dark via-brand to-cyan-400 flex items-center justify-center shadow-lg shadow-brand/25">
+          <i data-lucide="shield-check" class="w-5 h-5 text-white stroke-[2.5]"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-sm tracking-tight text-white">VERITAS AP</span>
-            <span class="text-[10px] font-mono font-bold bg-brand/20 text-brand px-1.5 py-0.5 rounded border border-brand/30">ENTERPRISE</span>
+            <span class="font-black text-sm tracking-tight text-white font-sans">VERITAS AP</span>
+            <span class="text-[9px] font-mono font-extrabold bg-brand/20 text-brand px-1.5 py-0.5 rounded border border-brand/40 uppercase tracking-widest">Enterprise</span>
           </div>
-          <span class="text-[10px] text-slate-400 block -mt-0.5">Executive Showcase & Pitch Deck</span>
+          <span class="text-[10px] text-slate-400 font-mono tracking-tight">Autonomous Contract Auditor</span>
         </div>
       </div>
-      <span class="h-4 w-px bg-border"></span>
-      <div class="flex items-center gap-2 text-xs text-slate-400">
-        <span class="h-2 w-2 rounded-full bg-emerald animate-pulse"></span>
-        <span class="font-medium text-slate-300">Deterministic Engine Active</span>
-        <span class="text-[11px] font-mono text-cyan-400 font-semibold bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">0.15ms</span>
+
+      <span class="h-4 w-px bg-border hidden sm:block"></span>
+
+      <!-- Deterministic Engine Speed Benchmark Chip -->
+      <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-950/40 border border-cyan-800/40 text-xs">
+        <span class="h-2 w-2 rounded-full bg-emerald animate-ping"></span>
+        <span class="text-[11px] text-slate-300 font-medium">Deterministic Engine Active</span>
+        <span class="text-[11px] font-mono font-bold text-cyan-400 bg-cyan-900/60 px-1.5 py-0.2 rounded">0.15ms</span>
       </div>
     </div>
 
-    <!-- Center: Presentation Timer -->
-    <div class="flex items-center gap-2 bg-panel px-3 py-1 rounded-full border border-border text-xs text-slate-300 font-mono">
-      <i data-lucide="clock" class="w-3.5 h-3.5 text-brand"></i>
-      <span id="presentationTimer">00:00</span>
+    <!-- Center: Live Presentation Stopwatch & Sound Toggle -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border text-xs text-slate-300 font-mono shadow-inner">
+        <i data-lucide="timer" class="w-3.5 h-3.5 text-brand"></i>
+        <span id="keynoteTimer" class="font-bold">00:00</span>
+      </div>
     </div>
 
-    <!-- Right Controls: Navigation & Live Studio Launch -->
+    <!-- Right: Speaker Notes, Fullscreen, Studio Launch -->
     <div class="flex items-center gap-3">
-      <button onclick="toggleFullscreen()" class="p-2 rounded-lg bg-panel hover:bg-subtle text-slate-300 hover:text-white transition border border-border" title="Toggle Fullscreen (F)">
-        <i data-lucide="maximize" class="w-4 h-4"></i>
+      <!-- Presenter Notes Trigger Button -->
+      <button onclick="toggleSpeakerNotes()" id="btnSpeakerNotes" class="px-3 py-1.5 rounded-lg bg-card hover:bg-panel border border-border text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Toggle Presenter Cue Notes (Press N)">
+        <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber"></i>
+        <span class="hidden md:inline font-medium">Speaker Notes</span>
+        <span class="text-[10px] font-mono text-slate-500">[N]</span>
       </button>
 
-      <a href="/" target="_blank" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-brand hover:bg-brand-glow text-white transition flex items-center gap-1.5 shadow-lg shadow-brand/25">
-        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-        <span>Launch Live Studio</span>
+      <!-- Fullscreen Toggle -->
+      <button onclick="toggleFullscreen()" class="p-2 rounded-lg bg-card hover:bg-panel border border-border text-slate-300 hover:text-white transition" title="Toggle Fullscreen (Press F)">
+        <i data-lucide="maximize-2" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Direct Live Studio Jump -->
+      <a href="/" target="_blank" class="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-brand to-indigo-600 hover:from-brand-glow hover:to-indigo-500 text-white transition flex items-center gap-2 shadow-lg shadow-brand/30 hover:shadow-brand/50">
+        <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
+        <span>Launch Studio</span>
       </a>
     </div>
   </header>
 
-  <!-- Top Progress Bar (0% -> 100%) -->
+  <!-- Top Real-time Linear Progress Bar (0% -> 100%) -->
   <div class="w-full h-1 bg-surface z-30 flex-shrink-0">
-    <div id="slideProgressBar" class="h-full bg-gradient-to-r from-brand via-indigo-500 to-emerald transition-all duration-300" style="width: 12.5%;"></div>
+    <div id="keynoteProgressBar" class="h-full bg-gradient-to-r from-brand via-cyan-400 to-emerald transition-all duration-300" style="width: 12.5%;"></div>
   </div>
 
   <!-- ============================================== -->
-  <!-- SLIDE VIEWPORT CONTAINER                       -->
+  <!-- 2. MAIN SLIDE VIEWPORT (8 Masterclass Slides)  -->
   <!-- ============================================== -->
   <main id="slidesViewport" class="flex-1 w-full relative overflow-hidden">
 
     <!-- -------------------------------------------- -->
-    <!-- SLIDE 1: Title & The $300B Hook              -->
+    <!-- SLIDE 1: The $300B Black Hole (The Problem)  -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container active" data-slide="1" style="display: flex;">
-      <div class="max-w-5xl w-full text-center space-y-8 my-auto">
+    <section class="keynote-slide active" data-slide="1" style="display: flex;">
+      <div class="max-w-5xl w-full text-center space-y-8 my-auto z-10">
         
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-semibold">
-          <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
-          <span>The $300 Billion Enterprise Problem</span>
+        <!-- Category Pill -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-bold tracking-wide uppercase">
+          <i data-lucide="alert-octagon" class="w-3.5 h-3.5"></i>
+          <span>The $300 Billion Enterprise Bleed</span>
         </div>
 
+        <!-- Big Hero Typography -->
         <div class="space-y-4">
-          <h1 class="text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-            Autonomous Contract Auditing <br>
-            <span class="bg-gradient-to-r from-brand via-cyan-400 to-emerald bg-clip-text text-transparent">
-              Without LLM Hallucinations
-            </span>
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08]">
+            Enterprises Don't Lose Billions <br class="hidden sm:block">
+            To Fraud. They Lose It To <br class="hidden sm:block">
+            <span class="text-gradient-hero">Quiet Contract Drift.</span>
           </h1>
-          <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Eliminating enterprise billing leakage with a <strong class="text-white font-semibold">0.15ms deterministic Pydantic v2 engine</strong>, 
-            multimodal optical vector grounding, and granular human-in-the-loop workflows.
+          <p class="text-base md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
+            Unauthorized labor rate inflation, stealth platform fees, and premature payment acceleration 
+            drain <strong class="text-white font-semibold">1.5% to 4.2% of corporate spend</strong> unnoticed by manual AP accounting.
           </p>
         </div>
 
-        <!-- 3 Big Metric Highlights -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-left">
-          <div class="glow-card p-6 rounded-2xl space-y-2">
-            <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-              <span>Annual Enterprise Loss</span>
-              <i data-lucide="dollar-sign" class="w-4 h-4 text-terracotta"></i>
-            </div>
-            <div class="text-4xl font-extrabold text-terracotta font-mono">$300B+</div>
-            <p class="text-xs text-slate-400 leading-normal">
-              Silent leakage caused by subtle off-hours surcharges, unapproved labor rate drift, and accelerated terms.
-            </p>
-          </div>
-
-          <div class="glow-card p-6 rounded-2xl space-y-2">
-            <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-              <span>Deterministic Rule Latency</span>
-              <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
-            </div>
-            <div class="text-4xl font-extrabold text-cyan-400 font-mono">0.15 ms</div>
-            <p class="text-xs text-slate-400 leading-normal">
-              Zero-latency Python rule execution. 100% mathematically verifiable calculations without token drift.
-            </p>
-          </div>
-
-          <div class="glow-card p-6 rounded-2xl space-y-2">
-            <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-              <span>Automated Verification</span>
-              <i data-lucide="check-circle" class="w-4 h-4 text-emerald"></i>
-            </div>
-            <div class="text-4xl font-extrabold text-emerald font-mono">38 / 38</div>
-            <p class="text-xs text-slate-400 leading-normal">
-              100% passing test suites across OCR ingestion, RBAC access gates, SAP/NetSuite exports, and webhooks.
-            </p>
-          </div>
-        </div>
-
-        <div class="pt-4 flex items-center justify-center gap-4 text-xs text-slate-500 font-mono">
-          <span>Use <strong>[→] Space</strong> to advance</span>
-          <span>•</span>
-          <span>Press <strong>[F]</strong> for Fullscreen</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- -------------------------------------------- -->
-    <!-- SLIDE 2: The LLM Wrapper Trap vs Veritas     -->
-    <!-- -------------------------------------------- -->
-    <section class="slide-container hidden" data-slide="2" style="display: none;">
-      <div class="max-w-5xl w-full space-y-6 my-auto">
-        <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-semibold">
-            <span>Competitive Analysis</span>
-          </div>
-          <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            The "AI Wrapper" Trap vs. Enterprise Reality
-          </h2>
-          <p class="text-sm text-slate-400">
-            Why dumping raw invoice PDFs into generic LLMs fails production compliance standards.
-          </p>
-        </div>
-
-        <!-- Comparative Table Card -->
-        <div class="glow-card rounded-2xl overflow-hidden border border-border">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-surface text-xs text-slate-400 uppercase font-mono border-b border-border">
-              <tr>
-                <th class="py-3 px-6">Evaluation Dimension</th>
-                <th class="py-3 px-6 text-slate-400">Generative LLM Wrapper (GPT-4)</th>
-                <th class="py-3 px-6 text-slate-400">Traditional OCR Only</th>
-                <th class="py-3 px-6 text-emerald font-bold">Veritas AP Enterprise</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-border/60 text-xs md:text-sm">
-              <tr class="hover:bg-subtle/30 transition">
-                <td class="py-3.5 px-6 font-semibold text-white">Calculation Latency</td>
-                <td class="py-3.5 px-6 text-terracotta">3,000 – 6,000 ms (Slow)</td>
-                <td class="py-3.5 px-6 text-slate-400">1,500 – 2,500 ms</td>
-                <td class="py-3.5 px-6 text-emerald font-bold font-mono">0.15 ms (Real-Time)</td>
-              </tr>
-              <tr class="hover:bg-subtle/30 transition">
-                <td class="py-3.5 px-6 font-semibold text-white">Mathematical Defensibility</td>
-                <td class="py-3.5 px-6 text-terracotta">~93% (Prone to math drift)</td>
-                <td class="py-3.5 px-6 text-slate-400">Raw text (No audit logic)</td>
-                <td class="py-3.5 px-6 text-emerald font-bold">100% Pydantic v2 Verified</td>
-              </tr>
-              <tr class="hover:bg-subtle/30 transition">
-                <td class="py-3.5 px-6 font-semibold text-white">Optical Document Grounding</td>
-                <td class="py-3.5 px-6 text-slate-400">Plain text hallucinated</td>
-                <td class="py-3.5 px-6 text-slate-400">Raw OCR boxes (No context)</td>
-                <td class="py-3.5 px-6 text-emerald font-bold">Sub-pixel vector bounding pins</td>
-              </tr>
-              <tr class="hover:bg-subtle/30 transition">
-                <td class="py-3.5 px-6 font-semibold text-white">Human Resolution Workflows</td>
-                <td class="py-3.5 px-6 text-terracotta">Naive Binary "Approve / Reject"</td>
-                <td class="py-3.5 px-6 text-slate-400">None</td>
-                <td class="py-3.5 px-6 text-emerald font-bold">4-Tier Action Hub (Partial Remit)</td>
-              </tr>
-              <tr class="hover:bg-subtle/30 transition">
-                <td class="py-3.5 px-6 font-semibold text-white">Enterprise ERP Interoperability</td>
-                <td class="py-3.5 px-6 text-slate-400">Manual Copy-Paste</td>
-                <td class="py-3.5 px-6 text-slate-400">Raw CSV Dump</td>
-                <td class="py-3.5 px-6 text-emerald font-bold">SAP S/4HANA, NetSuite, QuickBooks</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="p-4 rounded-xl bg-panel border border-border flex items-center justify-between text-xs text-slate-300">
-          <div class="flex items-center gap-3">
-            <i data-lucide="shield-alert" class="w-5 h-5 text-amber"></i>
-            <span><strong>The Golden Rule of Enterprise AP:</strong> An external audit failure occurs if an AI is off by even $0.01. Determinism is mandatory.</span>
-          </div>
-          <span class="text-xs font-mono text-cyan-400">Pydantic v2 Strict Mode</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- -------------------------------------------- -->
-    <!-- SLIDE 3: System Architecture Flow            -->
-    <!-- -------------------------------------------- -->
-    <section class="slide-container hidden" data-slide="3" style="display: none;">
-      <div class="max-w-5xl w-full space-y-6 my-auto">
-        <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-semibold">
-            <span>Engineering Architecture</span>
-          </div>
-          <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            High-Throughput Dual-Engine Architecture
-          </h2>
-          <p class="text-sm text-slate-400">
-            Decoupling deterministic mathematical enforcement from optical layout perception.
-          </p>
-        </div>
-
-        <!-- 5-Stage Interactive Architecture Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-3.5 pt-2">
+        <!-- 3 Dramatic Drift Vectors Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-3 text-left">
           
-          <!-- Stage 1 -->
-          <div class="glow-card p-4 rounded-xl space-y-2 border-t-2 border-t-brand">
-            <span class="text-[10px] font-mono text-brand font-bold">STAGE 01</span>
-            <div class="text-sm font-bold text-white">Multimodal Ingestion</div>
-            <p class="text-[11px] text-slate-400 leading-relaxed">
-              Accepts native digital vector PDFs, multi-page addenda, and scanned receipts via optical OCR.
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-t-2 border-t-terracotta">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-terracotta uppercase">Drift Vector 01</span>
+              <i data-lucide="trending-up" class="w-4 h-4 text-terracotta"></i>
+            </div>
+            <div class="text-2xl font-black text-white font-mono">Rate Card Creep</div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Senior DevOps billed at <strong class="text-terracotta font-mono font-semibold">$95/hr</strong> instead of the fixed <strong class="text-emerald font-mono font-semibold">$80/hr</strong> contract card. Cumulative leakage: <strong>+$1,200.00</strong> per cycle.
             </p>
           </div>
 
-          <!-- Stage 2 -->
-          <div class="glow-card p-4 rounded-xl space-y-2 border-t-2 border-t-cyan-400">
-            <span class="text-[10px] font-mono text-cyan-400 font-bold">STAGE 02</span>
-            <div class="text-sm font-bold text-white">Vector Layout Normalizer</div>
-            <p class="text-[11px] text-slate-400 leading-relaxed">
-              Extracts 150 DPI physical coordinates and structures raw lines into typed Pydantic V2 models.
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-t-2 border-t-amber">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-amber uppercase">Drift Vector 02</span>
+              <i data-lucide="ban" class="w-4 h-4 text-amber"></i>
+            </div>
+            <div class="text-2xl font-black text-white font-mono">Prohibited Surcharges</div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Vendors quietly tack on <strong class="text-amber font-mono font-semibold">$350.00</strong> "Emergency Platform Fees" strictly barred under Master Services Agreement §4.2.
             </p>
           </div>
 
-          <!-- Stage 3 (Dual Core) -->
-          <div class="glow-emerald p-4 rounded-xl space-y-2 border-t-2 border-t-emerald shadow-lg shadow-emerald/10">
-            <span class="text-[10px] font-mono text-emerald font-bold">STAGE 03 (CORE)</span>
-            <div class="text-sm font-bold text-white">0.15ms Rule Engine</div>
-            <p class="text-[11px] text-slate-300 leading-relaxed">
-              Strict mathematical rate card matching, fee restrictions (§4.2), and term calculations (§5.3).
-            </p>
-          </div>
-
-          <!-- Stage 4 -->
-          <div class="glow-card p-4 rounded-xl space-y-2 border-t-2 border-t-indigo-400">
-            <span class="text-[10px] font-mono text-indigo-400 font-bold">STAGE 04</span>
-            <div class="text-sm font-bold text-white">HITL Action Hub</div>
-            <p class="text-[11px] text-slate-400 leading-relaxed">
-              Non-binary resolution: Full Dispute, Partial Remittance ($3,200/$1,550), and Hold routing.
-            </p>
-          </div>
-
-          <!-- Stage 5 -->
-          <div class="glow-card p-4 rounded-xl space-y-2 border-t-2 border-t-amber">
-            <span class="text-[10px] font-mono text-amber font-bold">STAGE 05</span>
-            <div class="text-sm font-bold text-white">ERP & Webhook Sync</div>
-            <p class="text-[11px] text-slate-400 leading-relaxed">
-              Double-entry export to SAP, NetSuite, QuickBooks, plus HMAC-SHA256 signed webhook alerts.
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-t-2 border-t-cyan-400">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-cyan-400 uppercase">Drift Vector 03</span>
+              <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i>
+            </div>
+            <div class="text-2xl font-black text-white font-mono">Accelerated Due Dates</div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Invoices accelerate payment terms from <strong class="text-cyan-400 font-mono font-semibold">Net 30 to Net 15</strong>, prematurely squeezing corporate working capital.
             </p>
           </div>
 
         </div>
 
-        <!-- Scale Note -->
-        <div class="glow-card p-4 rounded-xl border border-border flex items-center justify-between text-xs text-slate-400">
-          <div class="flex items-center gap-3">
-            <i data-lucide="database" class="w-4 h-4 text-cyan-400"></i>
-            <span>Scale Readiness: Verified automated transition to <strong>PostgreSQL 16 & Celery Redis</strong> asynchronous workers.</span>
-          </div>
-          <span class="font-mono text-emerald font-semibold">38 Unit & Integration Suites Passing</span>
+        <!-- The LLM Trap Footer Pill -->
+        <div class="p-4 rounded-2xl bg-card/60 border border-border max-w-2xl mx-auto flex items-center justify-center gap-3 text-xs text-slate-300">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-terracotta flex-shrink-0"></i>
+          <span><strong>Why Generic LLMs Fail Here:</strong> A 1-cent hallucination is an external accounting audit failure. Financial compliance requires 100% determinism.</span>
         </div>
+
       </div>
     </section>
 
     <!-- -------------------------------------------- -->
-    <!-- SLIDE 4: Forensic Optical Grounding          -->
+    <!-- SLIDE 2: The Speed & Determinism Race        -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container hidden" data-slide="4" style="display: none;">
-      <div class="max-w-5xl w-full space-y-6 my-auto">
+    <section class="keynote-slide hidden" data-slide="2" style="display: none;">
+      <div class="max-w-5xl w-full space-y-7 my-auto z-10">
+        
         <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-semibold">
-            <span>Optical Evidence Engine</span>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-bold uppercase tracking-wide">
+            <span>Deterministic vs Generative</span>
           </div>
-          <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+          <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">
+            The Latency & Math Accuracy Battle
+          </h2>
+          <p class="text-sm text-slate-300 max-w-xl mx-auto">
+            Why enterprise AP cannot rely on sluggish, non-deterministic generative LLM prompts.
+          </p>
+        </div>
+
+        <!-- Interactive Benchmark Race Widget -->
+        <div class="glass-panel p-6 lg:p-8 rounded-3xl space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-border">
+            <div class="text-xs font-mono text-slate-400">SIMULATED INVOICE AUDIT LATENCY BENCHMARK (1 FILE)</div>
+            <button onclick="runLatencyRace()" id="btnRunRace" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand hover:bg-brand-glow text-white transition flex items-center gap-1.5 shadow-md shadow-brand/25">
+              <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
+              <span>Re-Run Live Race</span>
+            </button>
+          </div>
+
+          <!-- Race Bars -->
+          <div class="space-y-5">
+            
+            <!-- Competitor 1: GPT-4 Wrapper -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-300 flex items-center gap-2">
+                  <i data-lucide="bot" class="w-4 h-4 text-terracotta"></i>
+                  Generative LLM Prompt Wrapper (GPT-4o)
+                </span>
+                <span id="gpt4TimeText" class="font-mono text-terracotta font-bold">4,250 ms (4.25 seconds)</span>
+              </div>
+              <div class="h-3 w-full bg-surface rounded-full overflow-hidden p-0.5 border border-border">
+                <div id="gpt4RaceBar" class="h-full bg-terracotta rounded-full transition-all duration-1000" style="width: 88%;"></div>
+              </div>
+              <span class="text-[10px] text-slate-500 font-mono">High cost (~$0.04/file), token jitter, ~93% math consistency, 0 visual bounding boxes.</span>
+            </div>
+
+            <!-- Competitor 2: Pure OCR -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-300 flex items-center gap-2">
+                  <i data-lucide="scan" class="w-4 h-4 text-amber"></i>
+                  Traditional OCR Pipeline
+                </span>
+                <span id="ocrTimeText" class="font-mono text-amber font-bold">1,820 ms</span>
+              </div>
+              <div class="h-3 w-full bg-surface rounded-full overflow-hidden p-0.5 border border-border">
+                <div id="ocrRaceBar" class="h-full bg-amber rounded-full transition-all duration-700" style="width: 48%;"></div>
+              </div>
+              <span class="text-[10px] text-slate-500 font-mono">Dumb text coordinates, no contract context, no human-in-the-loop dispute workflows.</span>
+            </div>
+
+            <!-- Winner: Veritas AP -->
+            <div class="space-y-1.5 pt-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-extrabold text-white flex items-center gap-2 text-sm">
+                  <i data-lucide="zap" class="w-4 h-4 text-emerald"></i>
+                  Veritas AP Enterprise (Pydantic v2 Engine)
+                </span>
+                <span class="font-mono text-emerald font-black text-sm bg-emerald/10 px-2 py-0.5 rounded border border-emerald/30">0.15 ms (66x SLA Margin)</span>
+              </div>
+              <div class="h-4 w-full bg-surface rounded-full overflow-hidden p-0.5 border-2 border-emerald/40 glow-emerald">
+                <div class="h-full bg-gradient-to-r from-emerald to-cyan-400 rounded-full" style="width: 3.5%;"></div>
+              </div>
+              <span class="text-[11px] text-emerald-light font-mono font-semibold">Instantaneous deterministic execution, 100% mathematical precision, sub-pixel vector pins.</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Metric Badges Row -->
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div class="glass-panel p-4 rounded-2xl">
+            <div class="text-[10px] text-slate-400 font-mono uppercase">Mathematical Error Rate</div>
+            <div class="text-2xl font-black text-emerald font-mono mt-0.5">0.00%</div>
+            <div class="text-[10px] text-slate-500">Pydantic Strict Typings</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl">
+            <div class="text-[10px] text-slate-400 font-mono uppercase">Cost Per 10k Invoices</div>
+            <div class="text-2xl font-black text-cyan-400 font-mono mt-0.5">&lt; $0.10</div>
+            <div class="text-[10px] text-slate-500">Zero Token Ingestion Cost</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl">
+            <div class="text-[10px] text-slate-400 font-mono uppercase">Automated Test Suites</div>
+            <div class="text-2xl font-black text-white font-mono mt-0.5">39 / 39</div>
+            <div class="text-[10px] text-emerald">100% Tests Passing</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- -------------------------------------------- -->
+    <!-- SLIDE 3: The Dual-Engine Architecture        -->
+    <!-- -------------------------------------------- -->
+    <section class="keynote-slide hidden" data-slide="3" style="display: none;">
+      <div class="max-w-5xl w-full space-y-7 my-auto z-10">
+        
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-bold uppercase tracking-wide">
+            <span>High-Throughput Dual Core</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">
+            Decoupled Dual-Engine Architecture
+          </h2>
+          <p class="text-sm text-slate-300 max-w-xl mx-auto">
+            Separating physical optical perception from deterministic mathematical contract enforcement.
+          </p>
+        </div>
+
+        <!-- 4 Step Interactive Pipeline -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          
+          <!-- Core 1 -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-t-2 border-t-brand">
+            <span class="text-xs font-mono font-bold text-brand uppercase">Layer 01</span>
+            <div class="text-lg font-bold text-white">Multimodal Ingestion</div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Parses High-DPI digital vector PDFs via PyMuPDF and handles scanned physical receipts via OCR fallback pipelines.
+            </p>
+            <div class="pt-2 text-[10px] font-mono text-slate-500">
+              Output: Normalized Token Stream
+            </div>
+          </div>
+
+          <!-- Core 2 (The Crown Jewel) -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-t-2 border-t-emerald glow-emerald bg-emerald-950/10">
+            <span class="text-xs font-mono font-bold text-emerald uppercase">Layer 02 (Core)</span>
+            <div class="text-lg font-bold text-white">0.15ms Deterministic Engine</div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Enforces Master Agreement clauses: Schedule A rates (§3.1), emergency fee bans (§4.2), and Net terms (§5.3).
+            </p>
+            <div class="pt-2 text-[10px] font-mono text-emerald">
+              Latency: 0.15ms • Pydantic v2 Verified
+            </div>
+          </div>
+
+          <!-- Core 3 -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-t-2 border-t-terracotta">
+            <span class="text-xs font-mono font-bold text-terracotta uppercase">Layer 03</span>
+            <div class="text-lg font-bold text-white">Vector Optical Grounding</div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Generates sub-pixel coordinate bounding frames anchoring every discrepancy pin directly to the visual PDF surface.
+            </p>
+            <div class="pt-2 text-[10px] font-mono text-slate-500">
+              Visual Paper Trail: 150 DPI Pins
+            </div>
+          </div>
+
+          <!-- Core 4 -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-t-2 border-t-cyan-400">
+            <span class="text-xs font-mono font-bold text-cyan-400 uppercase">Layer 04</span>
+            <div class="text-lg font-bold text-white">ERP & Webhook Sync</div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Dispatches balanced double-entry journals for SAP, NetSuite, and QuickBooks, plus HMAC-SHA256 signed webhooks.
+            </p>
+            <div class="pt-2 text-[10px] font-mono text-slate-500">
+              Integrations: SAP, NetSuite, Slack
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Production PostgreSQL & Celery Banner -->
+        <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between text-xs text-slate-300 gap-3">
+          <div class="flex items-center gap-3">
+            <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+            <span><strong>Scale Transition Blueprint:</strong> Verified production migration utility (`migrate_sqlite_to_pg.py`) aligning 28 invoices, 41 line items, and 42 discrepancies to <strong>PostgreSQL 16 & Celery</strong>.</span>
+          </div>
+          <span class="text-[11px] font-mono text-emerald font-bold px-2 py-0.5 rounded bg-emerald/10 border border-emerald/30 flex-shrink-0">Ready for 100k Invoices/Day</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- -------------------------------------------- -->
+    <!-- SLIDE 4: Interactive Optical Forensic Lab    -->
+    <!-- -------------------------------------------- -->
+    <section class="keynote-slide hidden" data-slide="4" style="display: none;">
+      <div class="max-w-5xl w-full space-y-6 my-auto z-10">
+        
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-bold uppercase tracking-wide">
+            <span>Visual Evidence Verification</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">
             Forensic Vector Grounding in Action
           </h2>
-          <p class="text-sm text-slate-400">
-            Physical bounding boxes locked to sub-pixel document coordinates — zero searching required.
+          <p class="text-sm text-slate-300 max-w-xl mx-auto">
+            Reviewers never hunt through documents. Bounding boxes anchor directly to coordinate frames.
           </p>
         </div>
 
-        <!-- Live Sample Mockup -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Live Document Simulation Stage -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          <!-- Document Vector Preview Frame -->
-          <div class="md:col-span-2 glow-card p-6 rounded-2xl relative border border-border space-y-4">
+          <!-- Document Vector Viewport (Left 2 cols) -->
+          <div class="lg:col-span-2 glass-panel p-6 rounded-3xl space-y-4 relative overflow-hidden border border-border">
             <div class="flex items-center justify-between pb-3 border-b border-border text-xs">
-              <span class="font-mono text-slate-300 flex items-center gap-2">
+              <div class="flex items-center gap-2 text-slate-300 font-mono">
                 <i data-lucide="file-text" class="w-4 h-4 text-brand"></i>
-                invoice_overcharged.pdf
-              </span>
-              <span class="font-mono text-terracotta font-semibold bg-terracotta/10 px-2 py-0.5 rounded border border-terracotta/30">
-                +$1,550.00 Overcharge Detected
-              </span>
+                <span class="font-bold">invoice_overcharged.pdf</span>
+                <span class="text-slate-500 font-normal">Page 1 of 1</span>
+              </div>
+              <button onclick="triggerLaserScanDemo()" class="px-3 py-1 rounded-lg bg-brand/20 hover:bg-brand/30 text-brand border border-brand/40 font-mono text-[11px] font-bold transition flex items-center gap-1.5">
+                <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+                <span>Re-Scan Vector Layer</span>
+              </button>
             </div>
 
-            <!-- Visual Simulated Invoice Rows with Bounding Boxes -->
+            <!-- Simulated Laser Beam -->
+            <div id="slideLaserBeam" class="hidden absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_15px_#22d3ee] z-20 pointer-events-none"></div>
+
+            <!-- Invoice Document Body with Terracotta Bounding Frames -->
             <div class="space-y-3 font-mono text-xs">
-              <div class="p-3 rounded-lg bg-surface flex items-center justify-between border border-border text-slate-400">
-                <span>01. QA Automation Engineer (60 hrs @ $65.00/hr)</span>
-                <span class="text-emerald font-bold">$3,900.00 [COMPLIANT]</span>
+              
+              <!-- Row 1: Compliant -->
+              <div class="p-3 rounded-xl bg-surface border border-border flex items-center justify-between text-slate-400">
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full bg-emerald"></span>
+                  <span>01. QA Automation Engineer (60h @ $65/h)</span>
+                </div>
+                <span class="text-emerald font-bold">$3,900.00 [OK]</span>
               </div>
 
-              <!-- Flagged Item 1 -->
-              <div class="p-3 rounded-lg bg-terracotta/10 border-2 border-terracotta flex items-center justify-between text-slate-200 relative">
-                <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full bg-terracotta animate-ping"></span>
-                  <span>02. Senior DevOps Architect (80 hrs @ $95.00/hr)</span>
+              <!-- Row 2: Overcharge Rate Mismatch -->
+              <div class="p-3 rounded-xl bg-terracotta/10 border-2 border-terracotta flex items-center justify-between text-slate-200 relative glow-terracotta">
+                <div class="flex items-center gap-2.5">
+                  <span class="h-2.5 w-2.5 rounded-full bg-terracotta radar-pulse"></span>
+                  <div>
+                    <span class="font-bold text-white">02. Senior Cloud DevOps Architect</span>
+                    <span class="block text-[10px] text-terracotta font-sans mt-0.5">Billed $95.00/hr vs Master Agreement §3.1 Cap of $80.00/hr</span>
+                  </div>
                 </div>
                 <div class="text-right">
-                  <span class="text-terracotta font-bold">$7,600.00</span>
-                  <span class="block text-[10px] text-terracotta font-sans">Rate Card Cap: $80.00/hr (+ $1,200 delta)</span>
+                  <span class="text-terracotta font-extrabold text-sm">$7,600.00</span>
+                  <span class="block text-[10px] font-bold text-terracotta font-mono">+$1,200.00 Delta</span>
                 </div>
               </div>
 
-              <!-- Flagged Item 2 -->
-              <div class="p-3 rounded-lg bg-terracotta/10 border-2 border-terracotta flex items-center justify-between text-slate-200 relative">
-                <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full bg-terracotta animate-ping"></span>
-                  <span>03. Emergency Off-Hours Support Surcharge</span>
+              <!-- Row 3: Prohibited Fee -->
+              <div class="p-3 rounded-xl bg-terracotta/10 border-2 border-terracotta flex items-center justify-between text-slate-200 relative glow-terracotta">
+                <div class="flex items-center gap-2.5">
+                  <span class="h-2.5 w-2.5 rounded-full bg-terracotta radar-pulse"></span>
+                  <div>
+                    <span class="font-bold text-white">03. Emergency Platform Support Fee</span>
+                    <span class="block text-[10px] text-terracotta font-sans mt-0.5">Prohibited Surcharge: Master Agreement §4.2 prohibits off-hours support fees</span>
+                  </div>
                 </div>
                 <div class="text-right">
-                  <span class="text-terracotta font-bold">+$350.00</span>
-                  <span class="block text-[10px] text-terracotta font-sans">Prohibited Fee: Master Agreement §4.2</span>
+                  <span class="text-terracotta font-extrabold text-sm">+$350.00</span>
+                  <span class="block text-[10px] font-bold text-terracotta font-mono">Unapproved Surcharge</span>
                 </div>
               </div>
+
             </div>
 
+            <!-- Footer Vector Status -->
             <div class="flex items-center justify-between pt-2 text-[11px] text-slate-400">
-              <span class="flex items-center gap-1.5 text-emerald">
+              <span class="flex items-center gap-1.5 text-emerald font-medium">
                 <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
-                Optical High-DPI Vector Layer Active
+                Optical High-DPI Layer Active
               </span>
-              <span>150 DPI Coordinate Anchors</span>
+              <span class="font-mono">Sub-pixel coordinate grounding</span>
             </div>
           </div>
 
-          <!-- Discrepancy Breakdown Card -->
-          <div class="glow-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
-            <div class="space-y-3">
-              <div class="text-xs text-slate-400 uppercase font-mono tracking-wider font-semibold">Violation Summary</div>
-              <div class="space-y-2">
-                <div class="text-xs text-slate-300">
-                  <strong class="text-white">Rate Violation (§3.1):</strong>
-                  <div class="text-terracotta font-mono font-bold">+$1,200.00</div>
+          <!-- Total Recovered Discrepancy Box -->
+          <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+              <div class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Audit Forensic Output</div>
+              
+              <div class="p-4 rounded-2xl bg-terracotta/10 border border-terracotta/30 space-y-1">
+                <div class="text-[11px] text-terracotta font-mono font-semibold uppercase">Total Overcharge Blocked</div>
+                <div class="text-4xl font-black text-terracotta font-mono">+$1,550.00</div>
+                <div class="text-[10px] text-slate-400">Across 2 Material Clause Breaches</div>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between text-slate-300 pb-1.5 border-b border-border">
+                  <span>Gross Invoice Billed:</span>
+                  <span class="font-mono font-bold text-white">$11,850.00</span>
                 </div>
-                <div class="text-xs text-slate-300">
-                  <strong class="text-white">Unauthorized Surcharge (§4.2):</strong>
-                  <div class="text-terracotta font-mono font-bold">+$350.00</div>
+                <div class="flex items-center justify-between text-slate-300 pb-1.5 border-b border-border">
+                  <span>Contract Authorized:</span>
+                  <span class="font-mono font-bold text-emerald">$10,300.00</span>
                 </div>
-                <div class="text-xs text-slate-300">
-                  <strong class="text-white">Accelerated Terms (§5.3):</strong>
-                  <div class="text-amber font-mono font-semibold">Net 15 vs Net 30</div>
+                <div class="flex items-center justify-between text-slate-300">
+                  <span>Governing Contract:</span>
+                  <span class="font-mono font-bold text-cyan-400">MSA-2025-CS01</span>
                 </div>
               </div>
             </div>
 
-            <a href="/" target="_blank" class="w-full py-2.5 rounded-xl bg-brand hover:bg-brand-glow text-white text-xs font-semibold text-center transition shadow-lg shadow-brand/20 flex items-center justify-center gap-2">
+            <a href="/" target="_blank" class="w-full py-3 rounded-xl bg-brand hover:bg-brand-glow text-white text-xs font-bold text-center transition shadow-lg shadow-brand/30 flex items-center justify-center gap-2">
               <i data-lucide="eye" class="w-4 h-4"></i>
               <span>Inspect in Live Studio</span>
             </a>
           </div>
 
         </div>
+
       </div>
     </section>
 
     <!-- -------------------------------------------- -->
     <!-- SLIDE 5: 4-Tier Granular Action Hub          -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container hidden" data-slide="5" style="display: none;">
-      <div class="max-w-5xl w-full space-y-6 my-auto">
+    <section class="keynote-slide hidden" data-slide="5" style="display: none;">
+      <div class="max-w-5xl w-full space-y-7 my-auto z-10">
+        
         <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold">
-            <span>Human-in-the-Loop Governance</span>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold uppercase tracking-wide">
+            <span>Enterprise Decision Operations</span>
           </div>
-          <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            Beyond Binary: Enterprise Resolution Hub
+          <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">
+            Beyond Binary: The 4-Tier Action Hub
           </h2>
-          <p class="text-sm text-slate-400">
-            Real AP departments cannot freeze legitimate vendor payments over isolated line-item discrepancies.
+          <p class="text-sm text-slate-300 max-w-xl mx-auto">
+            Freezing legitimate vendor payments destroys commercial relationships. We built real AP workflows.
           </p>
         </div>
 
-        <!-- 4 Action Modes Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+        <!-- 4 Granular Action Modes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           
-          <!-- Mode 1 -->
-          <div class="glow-card p-5 rounded-2xl space-y-2 border-l-4 border-l-terracotta">
+          <!-- Mode 1: Full Dispute -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-l-4 border-l-terracotta">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-extrabold text-white">Mode 1: Full Dispute & Notice</div>
-              <span class="text-[10px] font-mono text-terracotta font-bold uppercase">Legal Demand</span>
+              <div class="text-base font-extrabold text-white">Mode 1: Full Legal Dispute</div>
+              <span class="text-[10px] font-mono text-terracotta font-bold uppercase bg-terracotta/10 px-2 py-0.5 rounded border border-terracotta/30">Formal Notice</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Automatically generates a formal statutory dispute notice citing Master Agreement §4.2, 
-              complete with an RFC-822 formatted email preview modal and 1-click clipboard copy.
+              Generates formal dispute demand notices citing statutory breaches of Master Services Agreement §4.2, 
+              paired with a dedicated RFC-822 formatted email preview modal.
             </p>
+            <div class="text-[10px] text-slate-500 font-mono">1-Click Clipboard Notice Dispatch</div>
           </div>
 
-          <!-- Mode 2 -->
-          <div class="glow-emerald p-5 rounded-2xl space-y-2 border-l-4 border-l-emerald">
+          <!-- Mode 2: Partial Remittance (Hero) -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-l-4 border-l-emerald glow-emerald bg-emerald-950/10">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-extrabold text-white">Mode 2: Partial Remittance</div>
-              <span class="text-[10px] font-mono text-emerald font-bold uppercase">Recommended</span>
+              <div class="text-base font-extrabold text-white">Mode 2: Partial Remittance & Credit Memo</div>
+              <span class="text-[10px] font-mono text-emerald font-bold uppercase bg-emerald/20 px-2 py-0.5 rounded border border-emerald/40">Industry Best Practice</span>
             </div>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Authorizes the compliant balance (<strong class="text-white">$3,200.00</strong>) for immediate vendor payment, 
-              while placing the <strong class="text-terracotta">$1,550.00</strong> overcharge on hold pending a formal credit memo.
+            <p class="text-xs text-slate-200 leading-relaxed">
+              Authorizes the compliant balance (<strong class="text-emerald font-mono">$3,200.00</strong>) for immediate vendor payment, 
+              while placing the <strong class="text-terracotta font-mono">$1,550.00</strong> overcharge on hold pending a formal credit note.
             </p>
+            <div class="text-[10px] text-emerald font-mono font-bold">Protects Supplier Cash Flow & Retains Corporate Leverage</div>
           </div>
 
-          <!-- Mode 3 -->
-          <div class="glow-card p-5 rounded-2xl space-y-2 border-l-4 border-l-amber">
+          <!-- Mode 3: Conditional Hold -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-l-4 border-l-amber">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-extrabold text-white">Mode 3: Conditional AP Hold</div>
-              <span class="text-[10px] font-mono text-amber font-bold uppercase">Contingent</span>
+              <div class="text-base font-extrabold text-white">Mode 3: Conditional AP Hold</div>
+              <span class="text-[10px] font-mono text-amber font-bold uppercase bg-amber/10 px-2 py-0.5 rounded border border-amber/30">Milestone Gate</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Applies a conditional accounting hold linked to specific milestone criteria—such as awaiting project lead sign-off 
+              Enforces contingent holds pending explicit business conditions—such as awaiting Project Lead verification of hours 
               or execution of an amended Statement of Work.
             </p>
+            <div class="text-[10px] text-slate-500 font-mono">Contingency Sign-off Tracking</div>
           </div>
 
-          <!-- Mode 4 -->
-          <div class="glow-card p-5 rounded-2xl space-y-2 border-l-4 border-l-brand">
+          <!-- Mode 4: Workflow Escalation -->
+          <div class="glass-panel glass-card-hover p-6 rounded-2xl space-y-3 border-l-4 border-l-brand">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-extrabold text-white">Mode 4: Workflow Escalation</div>
-              <span class="text-[10px] font-mono text-brand font-bold uppercase">Routing</span>
+              <div class="text-base font-extrabold text-white">Mode 4: Workflow Escalation</div>
+              <span class="text-[10px] font-mono text-brand font-bold uppercase bg-brand/10 px-2 py-0.5 rounded border border-brand/30">Tiered RBAC</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Dispatches the invoice to General Counsel, Procurement Operations, or the Finance VP based on dollar 
-              threshold clearance rules and enterprise RBAC policies.
+              Directly dispatches threshold exceptions to Legal Counsel, Procurement Operations, or the Finance VP 
+              backed by cryptographic audit logs and approval clearance rules.
             </p>
-          </div>
-
-        </div>
-
-        <div class="p-3.5 rounded-xl bg-panel border border-border flex items-center justify-between text-xs text-slate-400">
-          <span>Immutable Audit Log: All human-in-the-loop decisions write cryptographic records to the relational database.</span>
-          <span class="font-mono text-cyan-400">Zero Unaccounted Overrides</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- -------------------------------------------- -->
-    <!-- SLIDE 6: Veritas Copilot Math Engine         -->
-    <!-- -------------------------------------------- -->
-    <section class="slide-container hidden" data-slide="6" style="display: none;">
-      <div class="max-w-5xl w-full space-y-6 my-auto">
-        <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-semibold">
-            <span>Specialized Financial AI</span>
-          </div>
-          <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            Veritas Copilot: Dynamic Settlement Solver
-          </h2>
-          <p class="text-sm text-slate-400">
-            Interactive contract counsel that models settlement compromises with mathematical precision.
-          </p>
-        </div>
-
-        <!-- Interactive Live Calculator Widget on Slide! -->
-        <div class="glow-card p-6 rounded-2xl border border-border grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          
-          <!-- Left: Scenario & Input -->
-          <div class="space-y-4">
-            <div class="text-sm font-bold text-white">Live Rate Compromise Simulation</div>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Suppose procurement wishes to propose a compromise labor rate of <strong class="text-cyan-400 font-mono">$85.00/hr</strong> 
-              (between $80.00 contract and $95.00 billed).
-            </p>
-            
-            <div class="space-y-2">
-              <label class="text-[11px] text-slate-400 block font-mono">Select Proposed Compromise Rate:</label>
-              <div class="flex items-center gap-2">
-                <button onclick="calculateSlideRate(85)" class="rate-btn px-3 py-1.5 rounded-lg bg-brand text-white font-mono text-xs font-bold transition hover:bg-brand-glow">$85.00/hr</button>
-                <button onclick="calculateSlideRate(88)" class="rate-btn px-3 py-1.5 rounded-lg bg-panel hover:bg-subtle text-slate-300 font-mono text-xs font-bold transition border border-border">$88.00/hr</button>
-                <button onclick="calculateSlideRate(90)" class="rate-btn px-3 py-1.5 rounded-lg bg-panel hover:bg-subtle text-slate-300 font-mono text-xs font-bold transition border border-border">$90.00/hr</button>
-              </div>
-            </div>
-
-            <div class="text-[11px] text-slate-400 leading-normal">
-              Copilot dynamically computes client savings, calculates remaining overcharge deltas, and populates the Action Hub in 1 click.
-            </div>
-          </div>
-
-          <!-- Right: Live Result Card -->
-          <div class="p-5 rounded-xl bg-surface border border-border space-y-3 font-mono text-xs">
-            <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-border">
-              <span>Rate Concession Delta</span>
-              <span id="slideDelta" class="text-emerald font-bold">$10.00 / hr</span>
-            </div>
-            <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-border">
-              <span>Hours Evaluated</span>
-              <span class="text-white font-bold">80.0 hrs</span>
-            </div>
-            <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-border">
-              <span>Prohibited Fee Added (§4.2)</span>
-              <span class="text-terracotta font-bold">+$350.00</span>
-            </div>
-            <div class="flex items-center justify-between text-slate-200 pt-1">
-              <span>Credit Memo Requested</span>
-              <span id="slideCreditMemo" class="text-terracotta text-sm font-extrabold">$1,150.00</span>
-            </div>
-            <div class="flex items-center justify-between text-slate-200">
-              <span>Authorized Remittance</span>
-              <span id="slideAuthorized" class="text-emerald text-sm font-extrabold">$3,600.00</span>
-            </div>
-
-            <div class="pt-2">
-              <span class="text-[10px] text-slate-400 font-sans block">
-                Instant Action: Generates RFC-822 counter-offer email citing statutory billing breach.
-              </span>
-            </div>
+            <div class="text-[10px] text-slate-500 font-mono">Strict Role Separation Gates</div>
           </div>
 
         </div>
@@ -638,211 +713,354 @@
     </section>
 
     <!-- -------------------------------------------- -->
-    <!-- SLIDE 7: Supplier Risk & ERP Interop         -->
+    <!-- SLIDE 6: Veritas Copilot Dynamic Math Solver -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container hidden" data-slide="7" style="display: none;">
-      <div class="max-w-5xl w-full space-y-6 my-auto">
+    <section class="keynote-slide hidden" data-slide="6" style="display: none;">
+      <div class="max-w-5xl w-full space-y-7 my-auto z-10">
+        
         <div class="text-center space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/10 border border-emerald/30 text-emerald text-xs font-semibold">
-            <span>Enterprise Integration & Governance</span>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-bold uppercase tracking-wide">
+            <span>Specialized AI Counsel</span>
           </div>
-          <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            Supplier Risk Matrix & Native ERP Sync
+          <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">
+            Veritas Copilot: Concession Math Solver
           </h2>
-          <p class="text-sm text-slate-400">
-            Continuous supplier telemetry paired with double-entry accounting interoperability.
+          <p class="text-sm text-slate-300 max-w-xl mx-auto">
+            Drag the proposed settlement rate to witness dynamic arithmetic reconciliation in real-time.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <!-- Interactive Live Concession Solver Stage -->
+        <div class="glass-panel p-6 lg:p-8 rounded-3xl border border-border grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           
-          <!-- Supplier Risk Matrix Card -->
-          <div class="glow-card p-6 rounded-2xl space-y-4 border border-border">
-            <div class="flex items-center justify-between">
-              <div class="text-sm font-bold text-white">Vendor Reliability Index (VRI)</div>
-              <span class="text-xs font-mono font-bold text-emerald bg-emerald/10 px-2 py-0.5 rounded border border-emerald/30">Fleet VRI: 84.2</span>
+          <!-- Left: Interactive Slider Control -->
+          <div class="space-y-5">
+            <div>
+              <div class="text-base font-extrabold text-white">Simulate Settlement Compromise</div>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                When a vendor bills $95.00/hr against an $80.00 contract, procurement frequently negotiates an interim goodwill rate.
+              </p>
+            </div>
+
+            <!-- Interactive Slider -->
+            <div class="p-4 rounded-2xl bg-surface border border-border space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-slate-400">Proposed Compromise Rate:</span>
+                <span id="sliderRateVal" class="text-xl font-black text-cyan-400 font-mono">$85.00 / hr</span>
+              </div>
+              <input type="range" id="rateSlider" min="80" max="95" value="85" step="1" 
+                oninput="onRateSliderInput(this.value)" 
+                class="w-full accent-brand h-2 bg-panel rounded-lg cursor-pointer">
+              <div class="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                <span>$80.00 (Contract Cap)</span>
+                <span>$88.00</span>
+                <span>$95.00 (Vendor Billed)</span>
+              </div>
+            </div>
+
+            <!-- Quick Pill Presets -->
+            <div class="flex items-center gap-2">
+              <button onclick="setRatePreset(80)" class="px-3 py-1 rounded-lg bg-card hover:bg-panel text-[11px] font-mono text-slate-300 border border-border transition">Strict $80.00</button>
+              <button onclick="setRatePreset(85)" class="px-3 py-1 rounded-lg bg-brand/20 text-[11px] font-mono text-brand border border-brand/40 font-bold transition">Compromise $85.00</button>
+              <button onclick="setRatePreset(88)" class="px-3 py-1 rounded-lg bg-card hover:bg-panel text-[11px] font-mono text-slate-300 border border-border transition">Goodwill $88.00</button>
+            </div>
+          </div>
+
+          <!-- Right: Live Real-Time Financial Reconciler Output -->
+          <div class="glass-panel p-6 rounded-2xl border border-border space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-border">
+              <span>Hourly Rate Concession</span>
+              <span id="dispConcessionDelta" class="text-emerald font-bold text-sm">-$10.00 / hr</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-border">
+              <span>Client Capital Protected (80 hrs)</span>
+              <span id="dispClientSavings" class="text-emerald font-bold text-sm">+$800.00</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-border">
+              <span>Unapproved Surcharge Held (§4.2)</span>
+              <span class="text-terracotta font-bold text-sm">+$350.00</span>
             </div>
             
+            <div class="p-4 rounded-xl bg-surface border border-border space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-300 font-sans font-bold">Credit Memo Requested:</span>
+                <span id="dispCreditMemo" class="text-terracotta text-lg font-black font-mono">+$1,150.00</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-300 font-sans font-bold">Authorized Immediate Remittance:</span>
+                <span id="dispAuthRemit" class="text-emerald text-lg font-black font-mono">$3,600.00</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 font-sans pt-1">
+              ✨ 1-Click Action: Automatically drafts the statutory letter and updates the Action Hub payment payload.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- -------------------------------------------- -->
+    <!-- SLIDE 7: Macro Governance & ERP Interop      -->
+    <!-- -------------------------------------------- -->
+    <section class="keynote-slide hidden" data-slide="7" style="display: none;">
+      <div class="max-w-5xl w-full space-y-7 my-auto z-10">
+        
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold uppercase tracking-wide">
+            <span>Enterprise Interoperability</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">
+            Supplier Governance & Native ERP Sync
+          </h2>
+          <p class="text-sm text-slate-300 max-w-xl mx-auto">
+            From single-invoice auditing to continuous macro fleet intelligence and double-entry accounting.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Card 1: Supplier Risk Matrix -->
+          <div class="glass-panel glass-card-hover p-6 rounded-3xl space-y-4 border border-border">
+            <div class="flex items-center justify-between">
+              <div class="text-base font-bold text-white">Vendor Reliability Index (VRI)</div>
+              <span class="text-xs font-mono font-bold text-emerald bg-emerald/10 px-2.5 py-1 rounded-full border border-emerald/30">Fleet VRI: 84.2</span>
+            </div>
+
             <p class="text-xs text-slate-300 leading-relaxed">
-              Monitors cumulative billing fidelity, price-creep velocity, and dispute history. 
-              Automatically gates high-risk vendors into mandatory dual sign-off tiers.
+              Continuously monitors supplier price-creep velocity, dispute response times, and billing leakage. 
+              Automatically categorizes vendors into strict governance tiers.
             </p>
 
-            <div class="space-y-2 text-xs font-mono">
-              <div class="flex items-center justify-between text-slate-400">
-                <span>Apex Global Solutions</span>
-                <span class="text-terracotta font-bold">VRI 62.4 (High Risk)</span>
+            <div class="space-y-2.5 text-xs font-mono pt-1">
+              <div class="p-2.5 rounded-xl bg-surface border border-border flex items-center justify-between">
+                <div>
+                  <span class="font-bold text-white block">Apex Global Solutions</span>
+                  <span class="text-[10px] text-terracotta font-sans">+8.4% Price Creep • 3 Violations</span>
+                </div>
+                <span class="text-terracotta font-bold">VRI 62.4 [Tier 3 High Risk]</span>
               </div>
-              <div class="flex items-center justify-between text-slate-400">
-                <span>Vertex Logistics Corp</span>
-                <span class="text-emerald font-bold">VRI 94.8 (Tier 1 Preferred)</span>
+
+              <div class="p-2.5 rounded-xl bg-surface border border-border flex items-center justify-between">
+                <div>
+                  <span class="font-bold text-white block">Vertex Logistics Corp</span>
+                  <span class="text-[10px] text-emerald font-sans">0.0% Creep • 100% Compliant</span>
+                </div>
+                <span class="text-emerald font-bold">VRI 94.8 [Tier 1 Preferred]</span>
               </div>
             </div>
           </div>
 
-          <!-- ERP Interoperability Card -->
-          <div class="glow-card p-6 rounded-2xl space-y-4 border border-border">
+          <!-- Card 2: ERP Exporters -->
+          <div class="glass-panel glass-card-hover p-6 rounded-3xl space-y-4 border border-border">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-bold text-white">Double-Entry ERP Connectors</div>
-              <span class="text-xs font-mono font-bold text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">Direct Formatted</span>
+              <div class="text-base font-bold text-white">Double-Entry ERP Connectors</div>
+              <span class="text-xs font-mono font-bold text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">Balanced Exports</span>
             </div>
 
             <p class="text-xs text-slate-300 leading-relaxed">
-              Produces balanced accounts payable debits and credits formatted for major enterprise systems:
+              Outputs ready-to-ingest accounts payable double-entry debit and credit journals formatted natively for enterprise systems:
             </p>
 
-            <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono pt-1">
-              <div class="p-2 rounded-lg bg-surface border border-border text-white">
+            <div class="grid grid-cols-3 gap-2.5 text-center text-xs font-mono">
+              <div class="p-3 rounded-xl bg-surface border border-border">
                 <div class="text-[10px] text-slate-400">SAP S/4HANA</div>
-                <strong>IDoc XML</strong>
+                <strong class="text-white block mt-0.5">IDoc XML</strong>
               </div>
-              <div class="p-2 rounded-lg bg-surface border border-border text-white">
+              <div class="p-3 rounded-xl bg-surface border border-border">
                 <div class="text-[10px] text-slate-400">NetSuite</div>
-                <strong>VendorBill</strong>
+                <strong class="text-white block mt-0.5">VendorBill</strong>
               </div>
-              <div class="p-2 rounded-lg bg-surface border border-border text-white">
+              <div class="p-3 rounded-xl bg-surface border border-border">
                 <div class="text-[10px] text-slate-400">QuickBooks</div>
-                <strong>Journal CSV</strong>
+                <strong class="text-white block mt-0.5">Journal CSV</strong>
               </div>
             </div>
 
-            <div class="text-[11px] text-slate-400 flex items-center gap-2">
-              <i data-lucide="lock" class="w-3.5 h-3.5 text-brand"></i>
-              <span>All webhooks outbound to Slack/Teams carry HMAC-SHA256 signatures.</span>
+            <div class="text-[11px] text-slate-400 flex items-center gap-2 pt-1">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald"></i>
+              <span>Outbound webhooks signed with tamper-proof HMAC-SHA256 signatures.</span>
             </div>
           </div>
 
         </div>
+
       </div>
     </section>
 
     <!-- -------------------------------------------- -->
-    <!-- SLIDE 8: Production Benchmarks & Conclusion  -->
+    <!-- SLIDE 8: Production Readiness & Grand Finale -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container hidden" data-slide="8" style="display: none;">
-      <div class="max-w-5xl w-full text-center space-y-8 my-auto">
-        <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/10 border border-emerald/30 text-emerald text-xs font-semibold">
-            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-            <span>Verified Production Benchmarks</span>
+    <section class="keynote-slide hidden" data-slide="8" style="display: none;">
+      <div class="max-w-5xl w-full text-center space-y-8 my-auto z-10">
+        
+        <div class="space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold uppercase tracking-wide">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Verified Production Standards</span>
           </div>
-          <h2 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-            Production-Ready Enterprise AP
+          <h2 class="text-5xl md:text-6xl font-black text-white tracking-tight">
+            Production-Grade Enterprise SaaS
           </h2>
-          <p class="text-base text-slate-300 max-w-2xl mx-auto">
-            Transforming Accounts Payable from a vulnerable operational leak into an automated, mathematically verified profit center.
+          <p class="text-base md:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Veritas AP Enterprise transforms Accounts Payable from a vulnerable back-office cost center into an automated, mathematically verified profit center.
           </p>
         </div>
 
-        <!-- 4 Grid Benchmarks -->
+        <!-- 4 Monumental Metrics -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
-          <div class="glow-card p-5 rounded-xl space-y-1">
-            <span class="text-[10px] text-slate-400 font-mono">RULE LATENCY</span>
-            <div class="text-3xl font-extrabold text-cyan-400 font-mono">0.15ms</div>
-            <span class="text-[11px] text-slate-400">Pydantic v2 Engine</span>
+          <div class="glass-panel p-5 rounded-2xl space-y-1">
+            <span class="text-[10px] text-slate-400 font-mono uppercase font-bold">Rule Engine Latency</span>
+            <div class="text-3xl font-black text-cyan-400 font-mono">0.15ms</div>
+            <span class="text-[11px] text-slate-400">Deterministic Math</span>
           </div>
 
-          <div class="glow-card p-5 rounded-xl space-y-1">
-            <span class="text-[10px] text-slate-400 font-mono">TEST COVERAGE</span>
-            <div class="text-3xl font-extrabold text-emerald font-mono">38/38</div>
+          <div class="glass-panel p-5 rounded-2xl space-y-1">
+            <span class="text-[10px] text-slate-400 font-mono uppercase font-bold">Automated Test Suites</span>
+            <div class="text-3xl font-black text-emerald font-mono">39 / 39</div>
             <span class="text-[11px] text-slate-400">100% Suites Passing</span>
           </div>
 
-          <div class="glow-card p-5 rounded-xl space-y-1">
-            <span class="text-[10px] text-slate-400 font-mono">PROTECTED CAPITAL</span>
-            <div class="text-3xl font-extrabold text-terracotta font-mono">$24,800+</div>
+          <div class="glass-panel p-5 rounded-2xl space-y-1">
+            <span class="text-[10px] text-slate-400 font-mono uppercase font-bold">Protected Capital</span>
+            <div class="text-3xl font-black text-terracotta font-mono">$24,800+</div>
             <span class="text-[11px] text-slate-400">28 Verified Audits</span>
           </div>
 
-          <div class="glow-card p-5 rounded-xl space-y-1">
-            <span class="text-[10px] text-slate-400 font-mono">SCALE BLUEPRINT</span>
-            <div class="text-3xl font-extrabold text-brand font-mono">PG 16</div>
+          <div class="glass-panel p-5 rounded-2xl space-y-1">
+            <span class="text-[10px] text-slate-400 font-mono uppercase font-bold">Database Architecture</span>
+            <div class="text-3xl font-black text-brand font-mono">PG 16</div>
             <span class="text-[11px] text-slate-400">PostgreSQL + Celery</span>
           </div>
         </div>
 
-        <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="/" target="_blank" class="px-6 py-3 rounded-xl bg-brand hover:bg-brand-glow text-white font-bold text-sm transition shadow-xl shadow-brand/30 flex items-center gap-2">
-            <i data-lucide="play" class="w-4 h-4 fill-white"></i>
-            <span>Launch Live Interactive Studio</span>
+        <!-- Grand Finale Portal CTA -->
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="/" target="_blank" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-brand via-indigo-500 to-emerald hover:scale-105 text-white font-black text-sm tracking-wide transition shadow-2xl shadow-brand/40 flex items-center gap-3">
+            <i data-lucide="play" class="w-5 h-5 fill-white"></i>
+            <span>Enter Live Veritas Studio</span>
           </a>
-          <button onclick="goToSlide(1)" class="px-5 py-3 rounded-xl bg-panel hover:bg-subtle text-slate-300 hover:text-white font-semibold text-sm transition border border-border flex items-center gap-2">
+          <button onclick="goToSlide(1)" class="px-6 py-4 rounded-2xl bg-card hover:bg-panel text-slate-300 hover:text-white font-bold text-sm transition border border-border flex items-center gap-2">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-            <span>Restart Presentation</span>
+            <span>Replay Keynote</span>
           </button>
         </div>
 
         <div class="text-xs text-slate-500 font-mono">
-          Veritas AP Enterprise • Presented by Surya Prakash
+          Veritas AP Enterprise • System Architecture by Surya Prakash
         </div>
+
       </div>
     </section>
 
   </main>
 
   <!-- ============================================== -->
-  <!-- BOTTOM NAVIGATION STEPPER & CONTROLS           -->
+  <!-- 3. SLEEK FLOATING DOCK STEPPER CONTROLS        -->
   <!-- ============================================== -->
-  <footer class="h-16 px-8 border-t border-border bg-surface/90 backdrop-blur-md flex items-center justify-between z-30 flex-shrink-0">
-    <!-- Left: Prev / Next Buttons -->
+  <footer class="h-16 px-6 lg:px-10 border-t border-border/70 bg-surface/80 backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative">
+    
+    <!-- Prev / Next Navigation Buttons -->
     <div class="flex items-center gap-2">
-      <button onclick="prevSlide()" class="px-3 py-1.5 rounded-lg bg-panel hover:bg-subtle text-slate-300 hover:text-white transition border border-border text-xs flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed" id="btnPrev">
+      <button onclick="prevSlide()" id="btnPrev" class="px-3.5 py-1.5 rounded-xl bg-card hover:bg-panel border border-border text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-30 disabled:cursor-not-allowed">
         <i data-lucide="chevron-left" class="w-4 h-4"></i>
         <span>Prev</span>
       </button>
-      <button onclick="nextSlide()" class="px-3.5 py-1.5 rounded-lg bg-brand hover:bg-brand-glow text-white transition text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-brand/20" id="btnNext">
+      <button onclick="nextSlide()" id="btnNext" class="px-4 py-1.5 rounded-xl bg-brand hover:bg-brand-glow text-white text-xs font-bold flex items-center gap-1.5 transition shadow-md shadow-brand/25">
         <span>Next</span>
         <i data-lucide="chevron-right" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <!-- Center: Interactive Slide Stepper Dots -->
-    <div class="flex items-center gap-2" id="slideDotsContainer">
+    <!-- Center: Interactive Clickable Slide Stepper Dock -->
+    <div class="flex items-center gap-2.5" id="slideDockPills">
       <!-- Generated via JS -->
     </div>
 
-    <!-- Right: Slide Index & Key Legend -->
+    <!-- Right: Slide Counter & Hotkey Cheat Sheet -->
     <div class="flex items-center gap-4 text-xs font-mono text-slate-400">
-      <span class="hidden md:inline text-slate-500">Navigation: [← / →] [Space] [F]</span>
+      <span class="hidden md:inline text-slate-500">Keys: [← / →] [Space] [F] [N]</span>
       <span class="h-3 w-px bg-border hidden md:inline"></span>
-      <span class="text-white font-semibold font-mono" id="slideCounterText">Slide 01 of 08</span>
+      <span id="slideIndexLabel" class="text-white font-bold font-mono">01 / 08</span>
     </div>
   </footer>
 
   <!-- ============================================== -->
-  <!-- INTERACTIVE PRESENTATION JAVASCRIPT ENGINE     -->
+  <!-- 4. SLIDE-OUT PRESENTER CUE DRAWER (PRESS N)    -->
+  <!-- ============================================== -->
+  <aside id="speakerNotesDrawer" class="hidden fixed top-16 right-0 bottom-16 w-96 bg-surface/95 backdrop-blur-2xl border-l border-border z-40 p-6 flex-col justify-between shadow-2xl transition-all duration-300">
+    <div class="space-y-4 overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-border">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4 text-amber"></i>
+          <span class="text-xs font-bold text-white uppercase tracking-wider font-mono">Presenter Script Cue</span>
+        </div>
+        <button onclick="toggleSpeakerNotes()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <span class="text-[10px] font-mono font-bold text-brand uppercase" id="cueSlideHeader">Slide 1 Cues</span>
+        <div id="cueTextBody" class="text-xs text-slate-300 leading-relaxed space-y-3 font-normal">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-border text-[11px] text-slate-500 font-mono">
+      Pro Tip: Press <strong>[N]</strong> anytime to toggle this script drawer.
+    </div>
+  </aside>
+
+  <!-- ============================================== -->
+  <!-- 5. JAVASCRIPT KEYNOTE CONTROLLER & DEMO LOGIC  -->
   <!-- ============================================== -->
   <script>
     let currentSlide = 1;
     const totalSlides = 8;
-    let presentationSeconds = 0;
-    let timerInterval = null;
+    let secondsElapsed = 0;
+    let timerHandle = null;
+
+    // Verbatim Presenter Script Cues for Each Slide
+    const speakerCues = {
+      1: `<strong>Verbatim Hook:</strong> "Over $300 Billion is lost annually to enterprise invoice billing leakage—not because of deliberate fraud, but through quiet contract drift: off-hours surcharges that were never authorized, rate card inflation that creeps in after six months, and altered payment terms. Most current AI prototypes try to solve this by dumping raw PDF text into an LLM prompt. That fails in production because a 1-cent math hallucination is an external audit failure."`,
+      2: `<strong>Verbatim Benchmark:</strong> "Watch our latency race: An LLM prompt takes over 4,000ms and burns tokens. Our pure Python Pydantic v2 deterministic rule engine finishes in 0.15 milliseconds with 100% mathematical certainty. An AP accountant never waits."`,
+      3: `<strong>Architecture Explanation:</strong> "We decoupled perception from business logic. Layer 1 extracts 150 DPI vector geometry. Layer 2 evaluates contracts in 0.15ms. Layer 3 anchors sub-pixel pins. Layer 4 syncs double-entry accounting directly to SAP S/4HANA and NetSuite."`,
+      4: `<strong>Optical Proof:</strong> "Notice the live bounding boxes on invoice_overcharged.pdf. The AI didn't just summarize text—it pinned the $15/hr DevOps rate mismatch (+$1,200) and the prohibited emergency surcharge (+$350) right to the document coordinate frames."`,
+      5: `<strong>The Business Reality:</strong> "A junior demo has a binary 'Approve / Reject' button. In enterprise AP, if a vendor delivered $3,200 of compliant work, you cannot legally withhold the full invoice. Mode 2 releases the $3,200 while placing the $1,550 overcharge on hold pending a credit memo."`,
+      6: `<strong>Copilot Negotiation:</strong> "Drag the rate slider. When procurement asks for an $85/hr goodwill rate, Veritas Copilot recalculates the line-item concession, computes the exact credit memo, and prepares the formal demand notice in one click."`,
+      7: `<strong>Macro Governance:</strong> "Beyond single invoices, CFOs get fleet-wide Vendor Reliability Index (VRI) telemetry. High-risk vendors are automatically gated, and double-entry accounting journals are natively exported for SAP, NetSuite, and QuickBooks."`,
+      8: `<strong>Conclusion:</strong> "Under the hood, we have 39 automated tests running in 4.2 seconds, plus a production PostgreSQL 16 & Celery migration blueprint. Let's enter the live studio."`
+    };
 
     // Initialize Presentation Engine
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
-      buildSlideDots();
+      buildDockPills();
       updateSlideDisplay();
-      startPresentationTimer();
+      startPresentationStopwatch();
 
-      // Keyboard Controls
-      document.addEventListener('keydown', handleKeyNavigation);
+      // Keyboard Listener
+      document.addEventListener('keydown', handleKeyControls);
     });
 
-    function buildSlideDots() {
-      const container = document.getElementById('slideDotsContainer');
+    function buildDockPills() {
+      const container = document.getElementById('slideDockPills');
       container.innerHTML = '';
       for (let i = 1; i <= totalSlides; i++) {
-        const dot = document.createElement('button');
-        dot.className = `h-2 rounded-full transition-all duration-300 ${i === 1 ? 'w-8 bg-brand' : 'w-2 bg-slate-600 hover:bg-slate-400'}`;
-        dot.title = `Go to Slide ${i}`;
-        dot.onclick = () => goToSlide(i);
-        container.appendChild(dot);
+        const pill = document.createElement('button');
+        pill.className = `h-2 rounded-full transition-all duration-300 ${i === 1 ? 'w-8 bg-brand' : 'w-2 bg-slate-700 hover:bg-slate-500'}`;
+        pill.title = `Jump to Slide ${i}`;
+        pill.onclick = () => goToSlide(i);
+        container.appendChild(pill);
       }
     }
 
     function updateSlideDisplay() {
-      const slides = document.querySelectorAll('.slide-container');
+      const slides = document.querySelectorAll('.keynote-slide');
       slides.forEach((slide) => {
         const slideNum = parseInt(slide.getAttribute('data-slide'));
         if (slideNum === currentSlide) {
@@ -851,7 +1069,7 @@
           slide.classList.add('active');
           slide.style.display = 'flex';
           gsap.fromTo(slide, 
-            { opacity: 0, y: 14 }, 
+            { opacity: 0, y: 16 }, 
             { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
           );
         } else {
@@ -864,24 +1082,24 @@
         }
       });
 
-      // Update Dots
-      const dots = document.getElementById('slideDotsContainer').children;
-      for (let i = 0; i < dots.length; i++) {
+      // Update Dock Pills
+      const pills = document.getElementById('slideDockPills').children;
+      for (let i = 0; i < pills.length; i++) {
         if (i + 1 === currentSlide) {
-          dots[i].className = 'h-2 w-8 rounded-full bg-brand transition-all duration-300';
+          pills[i].className = 'h-2 w-8 rounded-full bg-brand transition-all duration-300';
         } else {
-          dots[i].className = 'h-2 w-2 rounded-full bg-slate-600 hover:bg-slate-400 transition-all duration-300';
+          pills[i].className = 'h-2 w-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all duration-300';
         }
       }
 
       // Update Progress Bar
       const pct = (currentSlide / totalSlides) * 100;
-      document.getElementById('slideProgressBar').style.width = `${pct}%`;
+      document.getElementById('keynoteProgressBar').style.width = `${pct}%`;
 
-      // Update Counter
-      document.getElementById('slideCounterText').textContent = `Slide 0${currentSlide} of 0${totalSlides}`;
+      // Update Slide Label
+      document.getElementById('slideIndexLabel').textContent = `0${currentSlide} / 0${totalSlides}`;
 
-      // Update Prev / Next state
+      // Update Prev / Next Buttons
       document.getElementById('btnPrev').disabled = (currentSlide === 1);
       const btnNext = document.getElementById('btnNext');
       if (currentSlide === totalSlides) {
@@ -889,6 +1107,11 @@
       } else {
         btnNext.innerHTML = '<span>Next</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>';
       }
+
+      // Update Speaker Cue Drawer
+      document.getElementById('cueSlideHeader').textContent = `Slide ${currentSlide} Speaking Cues`;
+      document.getElementById('cueTextBody').innerHTML = speakerCues[currentSlide] || "Deliver slide talking points.";
+
       lucide.createIcons();
     }
 
@@ -910,7 +1133,7 @@
       }
     }
 
-    function handleKeyNavigation(e) {
+    function handleKeyControls(e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
@@ -921,6 +1144,8 @@
         prevSlide();
       } else if (e.key === 'f' || e.key === 'F') {
         toggleFullscreen();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleSpeakerNotes();
       } else if (e.key === 'Home') {
         goToSlide(1);
       } else if (e.key === 'End') {
@@ -938,40 +1163,71 @@
       }
     }
 
-    function startPresentationTimer() {
-      timerInterval = setInterval(() => {
-        presentationSeconds++;
-        const mins = String(Math.floor(presentationSeconds / 60)).padStart(2, '0');
-        const secs = String(presentationSeconds % 60).padStart(2, '0');
-        document.getElementById('presentationTimer').textContent = `${mins}:${secs}`;
+    function toggleSpeakerNotes() {
+      const drawer = document.getElementById('speakerNotesDrawer');
+      drawer.classList.toggle('hidden');
+      drawer.classList.toggle('flex');
+    }
+
+    function startPresentationStopwatch() {
+      timerHandle = setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        document.getElementById('keynoteTimer').textContent = `${mins}:${secs}`;
       }, 1000);
     }
 
-    // Interactive Rate Calculator on Slide 6
-    function calculateSlideRate(proposedRate) {
+    // Slide 2: Interactive Latency Race
+    function runLatencyRace() {
+      const gptBar = document.getElementById('gpt4RaceBar');
+      const ocrBar = document.getElementById('ocrRaceBar');
+      
+      gptBar.style.width = '0%';
+      ocrBar.style.width = '0%';
+
+      setTimeout(() => {
+        ocrBar.style.width = '48%';
+      }, 50);
+
+      setTimeout(() => {
+        gptBar.style.width = '88%';
+      }, 100);
+    }
+
+    // Slide 4: Interactive Laser Scan Simulation
+    function triggerLaserScanDemo() {
+      const beam = document.getElementById('slideLaserBeam');
+      beam.classList.remove('hidden');
+      gsap.fromTo(beam, { top: '0%' }, { top: '100%', duration: 1.6, ease: 'power1.inOut', onComplete: () => {
+        beam.classList.add('hidden');
+      }});
+    }
+
+    // Slide 6: Interactive Rate Slider Concession Engine
+    function onRateSliderInput(val) {
+      const proposedRate = parseFloat(val);
+      document.getElementById('sliderRateVal').textContent = `$${proposedRate.toFixed(2)} / hr`;
+
       const billedRate = 95.0;
       const hours = 80.0;
       const surcharge = 350.0;
       const otherServices = 3900.0; // compliant QA Engineer
 
       const rateDelta = billedRate - proposedRate;
-      const hoursSavings = rateDelta * hours;
-      const creditMemo = hoursSavings + surcharge;
-      const authorizedRemittance = (proposedRate * hours) + otherServices;
+      const clientSavings = rateDelta * hours;
+      const creditMemo = clientSavings + surcharge;
+      const authorizedRemit = (proposedRate * hours) + otherServices;
 
-      document.getElementById('slideDelta').textContent = `$${rateDelta.toFixed(2)} / hr`;
-      document.getElementById('slideCreditMemo').textContent = `$${creditMemo.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-      document.getElementById('slideAuthorized').textContent = `$${authorizedRemittance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      document.getElementById('dispConcessionDelta').textContent = `-$${rateDelta.toFixed(2)} / hr`;
+      document.getElementById('dispClientSavings').textContent = `+$${clientSavings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      document.getElementById('dispCreditMemo').textContent = `+$${creditMemo.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+      document.getElementById('dispAuthRemit').textContent = `$${authorizedRemit.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    }
 
-      // Highlight active button
-      const btns = document.querySelectorAll('.rate-btn');
-      btns.forEach(b => {
-        if (b.textContent.includes(`$${proposedRate}`)) {
-          b.className = 'rate-btn px-3 py-1.5 rounded-lg bg-brand text-white font-mono text-xs font-bold transition hover:bg-brand-glow';
-        } else {
-          b.className = 'rate-btn px-3 py-1.5 rounded-lg bg-panel hover:bg-subtle text-slate-300 font-mono text-xs font-bold transition border border-border';
-        }
-      });
+    function setRatePreset(val) {
+      document.getElementById('rateSlider').value = val;
+      onRateSliderInput(val);
     }
   </script>
 </body>
