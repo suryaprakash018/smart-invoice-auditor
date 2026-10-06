@@ -73,14 +73,15 @@
       inset: 0;
       opacity: 0;
       pointer-events: none;
-      display: flex;
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 5rem 3rem 4.5rem;
-      transition: opacity 0.3s ease;
+      padding: 4rem 2.5rem 3.5rem;
+      overflow-y: auto;
     }
     .slide-container.active {
+      display: flex !important;
       opacity: 1;
       pointer-events: auto;
       z-index: 10;
@@ -163,7 +164,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 1: Title & The $300B Hook              -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container active" data-slide="1">
+    <section class="slide-container active" data-slide="1" style="display: flex;">
       <div class="max-w-5xl w-full text-center space-y-8 my-auto">
         
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-semibold">
@@ -231,7 +232,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 2: The LLM Wrapper Trap vs Veritas     -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container" data-slide="2">
+    <section class="slide-container hidden" data-slide="2" style="display: none;">
       <div class="max-w-5xl w-full space-y-6 my-auto">
         <div class="text-center space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-semibold">
@@ -304,7 +305,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 3: System Architecture Flow            -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container" data-slide="3">
+    <section class="slide-container hidden" data-slide="3" style="display: none;">
       <div class="max-w-5xl w-full space-y-6 my-auto">
         <div class="text-center space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-semibold">
@@ -382,7 +383,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 4: Forensic Optical Grounding          -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container" data-slide="4">
+    <section class="slide-container hidden" data-slide="4" style="display: none;">
       <div class="max-w-5xl w-full space-y-6 my-auto">
         <div class="text-center space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta/10 border border-terracotta/30 text-terracotta text-xs font-semibold">
@@ -485,7 +486,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 5: 4-Tier Granular Action Hub          -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container" data-slide="5">
+    <section class="slide-container hidden" data-slide="5" style="display: none;">
       <div class="max-w-5xl w-full space-y-6 my-auto">
         <div class="text-center space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold">
@@ -562,7 +563,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 6: Veritas Copilot Math Engine         -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container" data-slide="6">
+    <section class="slide-container hidden" data-slide="6" style="display: none;">
       <div class="max-w-5xl w-full space-y-6 my-auto">
         <div class="text-center space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-semibold">
@@ -639,7 +640,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 7: Supplier Risk & ERP Interop         -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container" data-slide="7">
+    <section class="slide-container hidden" data-slide="7" style="display: none;">
       <div class="max-w-5xl w-full space-y-6 my-auto">
         <div class="text-center space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/10 border border-emerald/30 text-emerald text-xs font-semibold">
@@ -718,7 +719,7 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 8: Production Benchmarks & Conclusion  -->
     <!-- -------------------------------------------- -->
-    <section class="slide-container" data-slide="8">
+    <section class="slide-container hidden" data-slide="8" style="display: none;">
       <div class="max-w-5xl w-full text-center space-y-8 my-auto">
         <div class="space-y-2">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/10 border border-emerald/30 text-emerald text-xs font-semibold">
@@ -845,10 +846,21 @@
       slides.forEach((slide) => {
         const slideNum = parseInt(slide.getAttribute('data-slide'));
         if (slideNum === currentSlide) {
+          gsap.killTweensOf(slide);
+          slide.classList.remove('hidden');
           slide.classList.add('active');
-          gsap.fromTo(slide, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+          slide.style.display = 'flex';
+          gsap.fromTo(slide, 
+            { opacity: 0, y: 14 }, 
+            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+          );
         } else {
+          gsap.killTweensOf(slide);
           slide.classList.remove('active');
+          slide.classList.add('hidden');
+          slide.style.display = 'none';
+          slide.style.opacity = '0';
+          slide.style.transform = 'none';
         }
       });
 
