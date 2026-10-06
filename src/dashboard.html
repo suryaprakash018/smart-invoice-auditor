@@ -509,8 +509,8 @@
       <!-- ============================================== -->
       <div id="viewAuditStudio" class="h-full w-full flex flex-col justify-between overflow-hidden relative">
         
-        <!-- Document Navigation Bar -->
-        <div class="h-12 px-6 border-b border-border bg-surface/80 flex items-center justify-between text-xs text-slate-400 flex-shrink-0 z-10">
+        <!-- Document Navigation Bar (Conditionally Rendered on Document Load) -->
+        <div id="docSecondaryToolbar" style="display: none;" class="hidden h-12 px-6 border-b border-border bg-surface/80 flex items-center justify-between text-xs text-slate-400 flex-shrink-0 z-10">
           <div class="flex items-center gap-3">
             <!-- Document vs Contract Tab -->
             <div class="flex items-center bg-panel p-0.5 rounded-lg border border-border">
@@ -622,8 +622,8 @@
 
         </div>
 
-        <!-- Bottom Document Status Bar -->
-        <div class="h-9 px-6 border-t border-border bg-surface/80 flex items-center justify-between text-[11px] text-slate-400 flex-shrink-0">
+        <!-- Bottom Document Status Bar (Conditionally Rendered on Document Load) -->
+        <div id="docBottomStatusBar" style="display: none;" class="hidden h-9 px-6 border-t border-border bg-surface/80 flex items-center justify-between text-[11px] text-slate-400 flex-shrink-0">
           <span id="footerFileName" class="truncate max-w-md font-mono text-slate-300">Ready</span>
           <div class="flex items-center gap-3">
             <span>Engine Latency: <strong class="text-emerald font-mono">0.15ms</strong></span>
@@ -1982,7 +1982,34 @@
       setTimeout(() => beam.classList.add('hidden'), 2500);
     }
 
+    function showDocumentToolbars() {
+      const toolbar = document.getElementById('docSecondaryToolbar');
+      const bottomBar = document.getElementById('docBottomStatusBar');
+      if (toolbar) {
+        toolbar.classList.remove('hidden');
+        toolbar.style.display = 'flex';
+      }
+      if (bottomBar) {
+        bottomBar.classList.remove('hidden');
+        bottomBar.style.display = 'flex';
+      }
+    }
+
+    function hideDocumentToolbars() {
+      const toolbar = document.getElementById('docSecondaryToolbar');
+      const bottomBar = document.getElementById('docBottomStatusBar');
+      if (toolbar) {
+        toolbar.classList.add('hidden');
+        toolbar.style.display = 'none';
+      }
+      if (bottomBar) {
+        bottomBar.classList.add('hidden');
+        bottomBar.style.display = 'none';
+      }
+    }
+
     async function loadPdfFromUrl(url, isOvercharged) {
+      showDocumentToolbars();
       document.getElementById('viewerEmptyState').classList.add('hidden');
       document.getElementById('pdfContainerWrapper').classList.remove('hidden');
       document.getElementById('pageNavControls').classList.remove('hidden');
@@ -2002,6 +2029,7 @@
     }
 
     async function loadPdfFromBytes(typedarray, isOvercharged) {
+      showDocumentToolbars();
       document.getElementById('viewerEmptyState').classList.add('hidden');
       document.getElementById('pdfContainerWrapper').classList.remove('hidden');
       document.getElementById('pageNavControls').classList.remove('hidden');
@@ -2021,6 +2049,7 @@
     }
 
     async function renderImageOnCanvas(imgSrc, isOvercharged) {
+      showDocumentToolbars();
       document.getElementById('viewerEmptyState').classList.add('hidden');
       document.getElementById('pdfContainerWrapper').classList.remove('hidden');
       document.getElementById('pageNavControls').classList.add('hidden');
