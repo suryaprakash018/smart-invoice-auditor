@@ -483,31 +483,33 @@
       <!-- Action Buttons -->
       <div class="flex items-center gap-2.5 flex-shrink-0">
         
-        <!-- Findings & Action Drawer Trigger Button -->
-        <button onclick="toggleAuditDrawer('audit')" id="btnHeaderAuditFindings" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition shadow-sm" title="View Audit Findings & Resolution Hub">
-          <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-brand"></i>
-          <span>Findings & Actions</span>
-          <span id="btnHeaderAuditBadge" class="hidden text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-terracotta text-white">0</span>
-        </button>
-
         <!-- Upload Invoice Button -->
-        <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm">
+        <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm hover:brightness-110 transition shrink-0">
           <i data-lucide="upload" class="w-3.5 h-3.5"></i>
           <span>Upload Document</span>
           <input type="file" id="customPdfInput" accept="application/pdf,image/png,image/jpeg,image/webp" class="hidden" onchange="handleFileUpload(event)">
         </label>
 
-        <!-- Toggle Copilot Slide-Out Assistant -->
-        <button onclick="toggleAuditDrawer('copilot')" id="btnToggleCopilot" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-medium flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Toggle Veritas AP AI Copilot Assistant">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand"></i>
-          <span class="hidden sm:inline">Ask Copilot</span>
-        </button>
-
         <!-- Executive Pitch Deck Button -->
-        <a href="/slides" target="_blank" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition shadow-sm" title="Open Executive Pitch Deck (/slides)">
+        <a href="/slides" target="_blank" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition shadow-sm shrink-0" title="Open Executive Pitch Deck (/slides)">
           <i data-lucide="presentation" class="w-3.5 h-3.5 text-indigo-400"></i>
-          <span class="hidden lg:inline">Pitch Deck</span>
+          <span class="hidden sm:inline">Pitch Deck</span>
         </a>
+
+        <span class="h-4 w-px bg-border hidden md:block"></span>
+
+        <!-- Drawer Segmented Control: Findings Hub & Copilot -->
+        <div class="flex items-center bg-panel p-0.5 rounded-xl border border-border shrink-0">
+          <button onclick="toggleAuditDrawer('audit')" id="btnHeaderAuditFindings" class="px-2.5 py-1.5 rounded-lg text-slate-300 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition" title="View Audit Findings & Resolution Hub">
+            <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-brand"></i>
+            <span>Findings</span>
+            <span id="btnHeaderAuditBadge" class="hidden text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-terracotta text-white">0</span>
+          </button>
+          <button onclick="toggleAuditDrawer('copilot')" id="btnToggleCopilot" class="px-2.5 py-1.5 rounded-lg text-slate-400 text-xs font-medium flex items-center gap-1.5 hover:text-white transition" title="Toggle Veritas AP AI Copilot Assistant">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span class="hidden sm:inline">Copilot</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -523,47 +525,53 @@
       <div id="viewAuditStudio" class="h-full w-full flex flex-col justify-between overflow-hidden relative">
         
         <!-- Document Navigation Bar (Conditionally Rendered on Document Load) -->
-        <div id="docSecondaryToolbar" style="display: none;" class="hidden h-12 px-6 border-b border-border bg-surface/80 flex items-center justify-between text-xs text-slate-400 flex-shrink-0 z-10">
-          <div class="flex items-center gap-3">
+        <div id="docSecondaryToolbar" style="display: none;" class="hidden h-12 px-4 sm:px-6 border-b border-border bg-surface/90 backdrop-blur-md flex items-center justify-between text-xs text-slate-400 flex-shrink-0 z-10 gap-2 overflow-hidden select-none">
+          
+          <!-- Left: Document vs Contract Tab & Page Navigator -->
+          <div class="flex items-center gap-2.5 shrink-0 min-w-0">
             <!-- Document vs Contract Tab -->
-            <div class="flex items-center bg-panel p-0.5 rounded-lg border border-border">
-              <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-3 py-1 rounded-md text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5">
+            <div class="flex items-center bg-panel p-0.5 rounded-lg border border-border shrink-0">
+              <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-2.5 py-1 rounded-md text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5 whitespace-nowrap">
                 <i data-lucide="file-text" class="w-3.5 h-3.5 text-brand"></i>
                 <span>Invoice</span>
               </button>
-              <button onclick="switchViewerTab('contract')" id="tabBtnContract" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5">
+              <button onclick="switchViewerTab('contract')" id="tabBtnContract" class="px-2.5 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5 whitespace-nowrap">
                 <i data-lucide="scale" class="w-3.5 h-3.5"></i>
                 <span>Contract (§4.2)</span>
               </button>
             </div>
 
             <!-- Multi-Page Navigator -->
-            <div id="pageNavControls" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-panel border border-border">
+            <div id="pageNavControls" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-panel border border-border shrink-0">
               <button id="prevPageBtn" onclick="changePdfPage(-1)" class="p-0.5 rounded hover:bg-subtle text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
                 <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
               </button>
-              <span id="pageIndicator" class="text-[11px] font-semibold font-mono text-slate-300 px-1.5">Page 1 of 1</span>
+              <span id="pageIndicator" class="text-[11px] font-semibold font-mono text-slate-300 px-1 whitespace-nowrap">Page 1 of 1</span>
               <button id="nextPageBtn" onclick="changePdfPage(1)" class="p-0.5 rounded hover:bg-subtle text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
               </button>
             </div>
           </div>
 
-          <!-- Dynamic Center Findings Pill (Visible when invoice is audited) -->
-          <div id="viewerFindingsPill" class="hidden items-center gap-2 cursor-pointer px-3.5 py-1 rounded-full text-xs font-semibold transition hover:scale-105" onclick="toggleAuditDrawer('audit')"></div>
+          <!-- Center: Dynamic Findings Pill (Guaranteed Single-Line, Never Wraps) -->
+          <div class="flex items-center justify-center min-w-0 px-1 overflow-hidden">
+            <div id="viewerFindingsPill" class="hidden items-center gap-1.5 cursor-pointer px-3 py-1 rounded-full text-xs font-semibold transition hover:scale-105 whitespace-nowrap shrink-0 shadow-sm" onclick="toggleAuditDrawer('audit')"></div>
+          </div>
 
-          <!-- Optical Scale Status & Drawer Trigger -->
-          <div class="flex items-center gap-3">
-            <span id="docScaleIndicator" class="text-xs text-slate-400 font-mono">135% High-DPI Vector</span>
-            <span class="h-3 w-px bg-border"></span>
-            <span class="text-xs text-emerald font-medium flex items-center gap-1.5">
+          <!-- Right: Optical Telemetry & Drawer Trigger -->
+          <div class="flex items-center gap-2.5 shrink-0">
+            <span id="docScaleIndicator" class="hidden 2xl:inline-block text-[11px] text-slate-400 font-mono whitespace-nowrap">115% Vector</span>
+            <span class="hidden 2xl:inline-block h-3 w-px bg-border"></span>
+            
+            <span id="docGroundingBadge" class="hidden xl:inline-flex items-center gap-1.5 text-xs text-emerald font-medium whitespace-nowrap">
               <span class="h-1.5 w-1.5 rounded-full bg-emerald animate-ping"></span>
               Optical Grounding Active
             </span>
-            <span class="h-3 w-px bg-border"></span>
-            <button onclick="toggleAuditDrawer('audit')" class="btn-secondary px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-200 flex items-center gap-1.5 hover:text-white" title="Open Findings & Resolution Drawer">
-              <i data-lucide="panel-right-open" class="w-3.5 h-3.5 text-brand"></i>
-              <span>Review Panel</span>
+            <span class="hidden xl:inline-block h-3 w-px bg-border"></span>
+
+            <button id="btnToolbarReviewPanel" onclick="toggleAuditDrawer()" class="btn-secondary px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-200 flex items-center gap-1.5 hover:text-white transition whitespace-nowrap shrink-0" title="Toggle Side-by-Side Review Panel">
+              <i id="iconToolbarReviewPanel" data-lucide="panel-right" class="w-3.5 h-3.5 text-brand"></i>
+              <span id="txtToolbarReviewPanel">Review Panel</span>
             </button>
           </div>
         </div>
@@ -1594,7 +1602,7 @@
           if (badge && d.kpis) badge.textContent = d.kpis.total_audits;
         })
         .catch(() => {});
-
+      updateDrawerUiStates(false, 'audit');
       lucide.createIcons();
     });
 
@@ -1691,17 +1699,53 @@
     // Side-by-Side Audit Intelligence & Action Drawer
     let currentDrawerTab = 'audit';
 
+    function updateDrawerUiStates(isOpen, activeTab) {
+      const btnHeaderAudit = document.getElementById('btnHeaderAuditFindings');
+      const btnHeaderCopilot = document.getElementById('btnToggleCopilot');
+      const btnToolbarPanel = document.getElementById('btnToolbarReviewPanel');
+      const iconToolbar = document.getElementById('iconToolbarReviewPanel');
+      const txtToolbar = document.getElementById('txtToolbarReviewPanel');
+
+      if (btnHeaderAudit) {
+        if (isOpen && activeTab === 'audit') {
+          btnHeaderAudit.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-brand/20 border border-brand/40 text-brand shadow-sm transition";
+        } else {
+          btnHeaderAudit.className = "px-2.5 py-1.5 rounded-lg text-slate-300 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition";
+        }
+      }
+
+      if (btnHeaderCopilot) {
+        if (isOpen && activeTab === 'copilot') {
+          btnHeaderCopilot.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 bg-brand/20 border border-brand/40 text-brand shadow-sm transition";
+        } else {
+          btnHeaderCopilot.className = "px-2.5 py-1.5 rounded-lg text-slate-400 text-xs font-medium flex items-center gap-1.5 hover:text-white transition";
+        }
+      }
+
+      if (btnToolbarPanel) {
+        if (isOpen) {
+          btnToolbarPanel.className = "btn-secondary px-2.5 py-1 rounded-lg text-xs font-semibold text-brand bg-brand/15 border-brand/40 flex items-center gap-1.5 hover:brightness-110 transition whitespace-nowrap shrink-0";
+          if (iconToolbar) iconToolbar.setAttribute('data-lucide', 'panel-right-close');
+          if (txtToolbar) txtToolbar.textContent = "Hide Panel";
+        } else {
+          btnToolbarPanel.className = "btn-secondary px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-200 flex items-center gap-1.5 hover:text-white transition whitespace-nowrap shrink-0";
+          if (iconToolbar) iconToolbar.setAttribute('data-lucide', 'panel-right');
+          if (txtToolbar) txtToolbar.textContent = "Review Panel";
+        }
+      }
+      lucide.createIcons();
+    }
+
     function toggleAuditDrawer(tab = null) {
       const drawer = document.getElementById('auditRightDrawer');
       if (!drawer) return;
       const isHidden = drawer.classList.contains('hidden');
-
-      if (tab) {
-        switchDrawerTab(tab);
-      }
+      const prevTab = currentDrawerTab;
 
       if (isHidden) {
+        if (tab) switchDrawerTab(tab);
         drawer.classList.remove('hidden');
+        updateDrawerUiStates(true, currentDrawerTab);
         // Trigger center canvas resize to fit new width perfectly
         setTimeout(() => {
           if (pdfDoc) renderCurrentPage();
@@ -1709,8 +1753,13 @@
             renderImageOnCanvas(currentLoadedImageSrc, isCurrentOvercharged);
           }
         }, 30);
-      } else if (!tab || (tab && tab === currentDrawerTab)) {
-        closeAuditDrawer();
+      } else {
+        if (tab && tab !== prevTab) {
+          switchDrawerTab(tab);
+          updateDrawerUiStates(true, tab);
+        } else {
+          closeAuditDrawer();
+        }
       }
     }
 
@@ -1718,6 +1767,7 @@
       const drawer = document.getElementById('auditRightDrawer');
       if (!drawer || drawer.classList.contains('hidden')) return;
       drawer.classList.add('hidden');
+      updateDrawerUiStates(false, currentDrawerTab);
       // Trigger center canvas resize to expand to full width
       setTimeout(() => {
         if (pdfDoc) renderCurrentPage();
@@ -1747,6 +1797,10 @@
       }
       if (contentAudit) contentAudit.classList.toggle('hidden', !isAudit);
       if (contentCopilot) contentCopilot.classList.toggle('hidden', isAudit);
+
+      const drawer = document.getElementById('auditRightDrawer');
+      const isOpen = drawer && !drawer.classList.contains('hidden');
+      updateDrawerUiStates(isOpen, tabName);
       lucide.createIcons();
     }
 
@@ -2125,7 +2179,7 @@
 
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      document.getElementById('docScaleIndicator').textContent = `${Math.round(targetScale * 100)}% High-DPI Vector`;
+      document.getElementById('docScaleIndicator').textContent = `${Math.round(targetScale * 100)}% Vector`;
 
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
       drawEvidenceAnnotations(isCurrentOvercharged, viewport.width, currentPage);
@@ -2311,11 +2365,11 @@
       const findingsPill = document.getElementById('viewerFindingsPill');
       if (findingsPill) {
         if (isPassed) {
-          findingsPill.className = "flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-emerald-bg text-emerald border border-emerald-border cursor-pointer hover:bg-emerald-bg/80 transition shadow-sm";
-          findingsPill.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald"></span><span>✓ 100% Compliant ($0.00) — View Details →</span>`;
+          findingsPill.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-bg text-emerald border border-emerald-border cursor-pointer hover:bg-emerald-bg/80 transition shadow-sm whitespace-nowrap shrink-0";
+          findingsPill.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald shrink-0"></span><span class="font-semibold whitespace-nowrap">✓ 100% Compliant ($0.00)</span><span class="hidden 2xl:inline text-[11px] opacity-75 font-normal ml-0.5 whitespace-nowrap">· View Details →</span>`;
         } else {
-          findingsPill.className = "flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-terracotta-bg text-terracotta-light border border-terracotta-border cursor-pointer hover:bg-terracotta-bg/80 transition shadow-sm";
-          findingsPill.innerHTML = `<span class="h-2 w-2 rounded-full bg-terracotta animate-pulse"></span><span>⚠️ ${report.discrepancies.length} Violations (+$${report.total_overcharge.toFixed(2)}) — Review Findings →</span>`;
+          findingsPill.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-terracotta-bg text-terracotta-light border border-terracotta-border cursor-pointer hover:bg-terracotta-bg/80 transition shadow-sm whitespace-nowrap shrink-0";
+          findingsPill.innerHTML = `<span class="h-2 w-2 rounded-full bg-terracotta animate-pulse shrink-0"></span><span class="font-semibold whitespace-nowrap">⚠️ ${report.discrepancies.length} Violations (+$${report.total_overcharge.toFixed(2)})</span><span class="hidden 2xl:inline text-[11px] opacity-75 font-normal ml-0.5 whitespace-nowrap">· Review Findings →</span>`;
         }
         findingsPill.classList.remove('hidden');
       }
