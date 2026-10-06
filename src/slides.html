@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veritas AP Enterprise — Executive Pitch Deck & Keynote Showcase</title>
 
-  <!-- Immediate Theme Engine: Synchronize with Veritas Studio (Zero-FOUC) -->
+  <!-- Immediate Anti-FOUC Theme Initialization (Synchronized with Veritas Studio) -->
   <script>
     (function() {
       const saved = localStorage.getItem('veritas_theme') || 'dark';
@@ -25,7 +25,7 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- GSAP 3.12.5 Animation Engine -->
+  <!-- GSAP Animation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
   <script>
@@ -38,27 +38,28 @@
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            obsidian: '#050608',
-            surface: '#0B0D13',
-            card: '#111520',
-            panel: '#171D2C',
-            border: '#1F273B',
+            bg: 'var(--color-bg)',
+            surface: 'var(--color-surface)',
+            card: 'var(--color-card)',
+            panel: 'var(--color-panel)',
+            subtle: 'var(--color-subtle)',
+            border: 'var(--color-border)',
             brand: {
-              DEFAULT: '#3B82F6',
-              glow: '#60A5FA',
+              DEFAULT: '#2563EB',
+              glow: '#3B82F6',
               dark: '#1D4ED8',
             },
             terracotta: {
-              DEFAULT: '#E06D53',
-              light: '#F87171',
+              DEFAULT: '#E11D48',
+              light: '#F43F5E',
             },
             emerald: {
               DEFAULT: '#10B981',
               light: '#34D399',
             },
             amber: {
-              DEFAULT: '#F59E0B',
-              light: '#FBBF24',
+              DEFAULT: '#D97706',
+              light: '#F59E0B',
             },
           }
         }
@@ -67,39 +68,140 @@
   </script>
 
   <style>
-    /* ============================================== */
-    /* GLOBAL RESET & OLED BLACK CANVAS              */
-    /* ============================================== */
+    /* ========================================================== */
+    /* DUAL THEME TOKENS: OLED OBSIDIAN (DARK) & APPLE PURE (LIGHT)*/
+    /* ========================================================== */
+    :root {
+      --color-bg: #050608;
+      --color-surface: #0B0E14;
+      --color-card: #10141D;
+      --color-panel: #161C28;
+      --color-subtle: #1C2433;
+      --color-border: #1E2738;
+      --color-border-subtle: rgba(255, 255, 255, 0.08);
+
+      --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%), #0D1018;
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #94A3B8;
+      --text-subtle: #64748B;
+
+      --header-bg: rgba(5, 6, 8, 0.85);
+      --header-border: #1E2738;
+
+      --badge-bg: rgba(255, 255, 255, 0.04);
+      --badge-border: rgba(255, 255, 255, 0.08);
+      --badge-text: #94A3B8;
+
+      --title-gradient-from: #FFFFFF;
+      --title-gradient-to: #CBD5E1;
+
+      --inner-card-bg: #0B0E14;
+      --inner-card-border: #1E2738;
+
+      --dock-bg: rgba(5, 6, 8, 0.85);
+      --dock-border: #1E2738;
+      --dock-btn-next-bg: #FFFFFF;
+      --dock-btn-next-text: #050608;
+
+      --code-box-bg: #0B0E14;
+      --code-box-text: #E2E8F0;
+      --code-box-border: #1E2738;
+
+      --scanner-color: #E06D53;
+      --ambient-gradient: 
+        radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 15% 85%, rgba(224, 109, 83, 0.04) 0%, transparent 50%);
+    }
+
+    html.light {
+      --color-bg: #F8FAFC;
+      --color-surface: #FFFFFF;
+      --color-card: #FFFFFF;
+      --color-panel: #F1F5F9;
+      --color-subtle: #E2E8F0;
+      --color-border: #CBD5E1;
+      --color-border-subtle: #E2E8F0;
+
+      --glass-bg: #FFFFFF;
+      --glass-border: #E2E8F0;
+      --glass-shadow: 0 20px 45px -15px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05), inset 0 1px 0 0 #FFFFFF;
+
+      --text-primary: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #475569;
+      --text-subtle: #64748B;
+
+      --header-bg: rgba(255, 255, 255, 0.92);
+      --header-border: #E2E8F0;
+
+      --badge-bg: #F1F5F9;
+      --badge-border: #CBD5E1;
+      --badge-text: #334155;
+
+      --title-gradient-from: #0F172A;
+      --title-gradient-to: #334155;
+
+      --inner-card-bg: #F8FAFC;
+      --inner-card-border: #E2E8F0;
+
+      --dock-bg: rgba(255, 255, 255, 0.92);
+      --dock-border: #E2E8F0;
+      --dock-btn-next-bg: #0F172A;
+      --dock-btn-next-text: #FFFFFF;
+
+      --code-box-bg: #F8FAFC;
+      --code-box-text: #0F172A;
+      --code-box-border: #CBD5E1;
+
+      --scanner-color: #E11D48;
+      --ambient-gradient: 
+        radial-gradient(circle at 50% 15%, rgba(37, 99, 235, 0.07) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 15% 85%, rgba(225, 29, 72, 0.04) 0%, transparent 50%);
+    }
+
+    /* Global Body */
     body {
-      background-color: #050608;
-      color: #F8FAFC;
+      background-color: var(--color-bg);
+      color: var(--text-primary);
       user-select: none;
       overflow: hidden;
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* Ambient Subtle Mesh Gradient */
+    /* High-Contrast Light Mode Text Overrides */
+    html.light .text-white { color: #0F172A !important; }
+    html.light .text-slate-100 { color: #0F172A !important; }
+    html.light .text-slate-200 { color: #1E293B !important; }
+    html.light .text-slate-300 { color: #334155 !important; }
+    html.light .text-slate-400 { color: #475569 !important; }
+    html.light .text-slate-500 { color: #64748B !important; }
+
+    /* Ambient Background */
     .ambient-bg {
       position: fixed;
       inset: 0;
-      background: 
-        radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
-        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
-        radial-gradient(circle at 15% 85%, rgba(224, 109, 83, 0.04) 0%, transparent 50%);
+      background: var(--ambient-gradient);
       pointer-events: none;
       z-index: 0;
       transition: background 0.3s ease;
     }
 
-    /* Keynote Slide Base (Strictly display: none when inactive) */
+    /* Keynote Stage Base */
     .slide-stage {
       display: none;
       width: 100%;
       height: 100%;
       position: absolute;
       inset: 0;
-      padding: 4.5rem 2rem 4.5rem;
+      padding: 4.5rem 1.5rem 4.5rem;
       overflow-y: auto;
       z-index: 10;
     }
@@ -110,24 +212,69 @@
       align-items: center;
     }
 
-    /* Apple-Grade Minimalist Glass Surfaces */
+    /* Keynote Glass Cards */
     .apple-glass {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%), #0D1018;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .apple-glass-interactive:hover {
-      border-color: rgba(255, 255, 255, 0.18);
       transform: translateY(-2px);
+      box-shadow: 0 35px 90px -15px rgba(0, 0, 0, 0.15);
+    }
+    html.dark .apple-glass-interactive:hover {
+      border-color: rgba(255, 255, 255, 0.18);
       box-shadow: 0 35px 90px -15px rgba(0, 0, 0, 0.9);
     }
 
-    /* Hero Typography Gradients */
+    /* Inner Structural Cards */
+    .inner-card {
+      background-color: var(--inner-card-bg);
+      border: 1px solid var(--inner-card-border);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* Hero Headline Gradient */
     .hero-title-gradient {
-      background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
+      background: linear-gradient(180deg, var(--title-gradient-from) 0%, var(--title-gradient-to) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    /* Category Pill */
+    .deck-category-pill {
+      background-color: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      color: var(--badge-text);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    /* Header & Footer */
+    header {
+      background-color: var(--header-bg) !important;
+      border-color: var(--header-border) !important;
+    }
+    footer {
+      background-color: var(--dock-bg) !important;
+      border-color: var(--dock-border) !important;
+    }
+
+    /* Buttons */
+    .deck-btn-enter {
+      background-color: var(--dock-btn-next-bg);
+      color: var(--dock-btn-next-text);
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .deck-btn-enter:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    #dockBtnNext {
+      background-color: var(--dock-btn-next-bg);
+      color: var(--dock-btn-next-text);
     }
 
     /* Laser Scanner Beam */
@@ -142,16 +289,16 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent 0%, #E06D53 50%, transparent 100%);
-      box-shadow: 0 0 16px 2px #E06D53;
+      background: linear-gradient(90deg, transparent 0%, var(--scanner-color) 50%, transparent 100%);
+      box-shadow: 0 0 16px 2px var(--scanner-color);
       animation: scanline 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       pointer-events: none;
     }
 
-    /* Custom Slider */
+    /* Slider */
     input[type=range] {
       -webkit-appearance: none;
-      background: #171D2C;
+      background: var(--color-subtle);
       border-radius: 9999px;
       height: 6px;
     }
@@ -160,9 +307,9 @@
       height: 20px;
       width: 20px;
       border-radius: 50%;
-      background: #3B82F6;
+      background: #2563EB;
       cursor: pointer;
-      box-shadow: 0 0 14px rgba(59, 130, 246, 0.8);
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
       border: 2px solid #FFFFFF;
       transition: transform 0.1s ease;
     }
@@ -170,7 +317,26 @@
       transform: scale(1.15);
     }
 
-    /* Custom Scrollbar */
+    /* Code Pre Container */
+    .erp-code-container {
+      background-color: var(--code-box-bg);
+      color: var(--code-box-text);
+      border: 1px solid var(--code-box-border);
+    }
+
+    /* Modals & Overlays */
+    #speakerDrawer, #gridModal, #shortcutsModal {
+      background-color: var(--color-surface);
+      border-color: var(--color-border);
+    }
+
+    /* Brand Logo Box */
+    #deckBrandIconBox {
+      background-color: var(--dock-btn-next-bg);
+      color: var(--dock-btn-next-text);
+    }
+
+    /* Scrollbars */
     ::-webkit-scrollbar {
       width: 5px;
       height: 5px;
@@ -179,186 +345,10 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--color-border);
       border-radius: 9999px;
     }
 
-    /* Pulse Glow for Live Badges */
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(0.96); }
-    }
-    .pulse-glow {
-      animation: pulseGlow 2s ease-in-out infinite;
-    }
-
-    /* ============================================== */
-    /* LIGHT THEME (Apple Keynote Pristine Light)    */
-    /* ============================================== */
-    html.light body {
-      background-color: #F8FAFC !important;
-      color: #0F172A !important;
-    }
-
-    html.light .ambient-bg {
-      background: 
-        radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
-        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 15% 85%, rgba(224, 109, 83, 0.05) 0%, transparent 50%) !important;
-    }
-
-    html.light header {
-      background-color: rgba(255, 255, 255, 0.9) !important;
-      border-color: #E2E8F0 !important;
-    }
-
-    html.light footer {
-      background-color: rgba(255, 255, 255, 0.9) !important;
-      border-color: #E2E8F0 !important;
-    }
-
-    html.light #speakerDrawer,
-    html.light #gridModal,
-    html.light #shortcutsModal {
-      background-color: rgba(255, 255, 255, 0.97) !important;
-      border-color: #E2E8F0 !important;
-      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.15) !important;
-    }
-
-    html.light .apple-glass {
-      background: #FFFFFF !important;
-      border: 1px solid rgba(226, 232, 240, 0.9) !important;
-      box-shadow: 0 20px 45px -15px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(15, 23, 42, 0.04), inset 0 1px 0 0 #FFFFFF !important;
-    }
-
-    html.light .apple-glass-interactive:hover {
-      border-color: #CBD5E1 !important;
-      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.12) !important;
-      transform: translateY(-2px);
-    }
-
-    html.light .hero-title-gradient {
-      background: linear-gradient(180deg, #0F172A 0%, #334155 100%) !important;
-      -webkit-background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-
-    /* Cards, Panels & Structural Elements */
-    html.light .bg-surface,
-    html.light .bg-surface\/80,
-    html.light .bg-surface\/90,
-    html.light .bg-surface\/95 {
-      background-color: #F8FAFC !important;
-    }
-
-    html.light .bg-card,
-    html.light .bg-card\/60,
-    html.light .bg-card\/80 {
-      background-color: #F1F5F9 !important;
-    }
-
-    html.light .bg-panel {
-      background-color: #E2E8F0 !important;
-    }
-
-    html.light .bg-obsidian,
-    html.light .bg-obsidian\/80 {
-      background-color: rgba(255, 255, 255, 0.9) !important;
-    }
-
-    html.light .border-border,
-    html.light .border-border\/40,
-    html.light .border-border\/50,
-    html.light .border-border\/60 {
-      border-color: #E2E8F0 !important;
-    }
-
-    /* Category Pill */
-    html.light .bg-white\/\[0\.04\] {
-      background-color: #F1F5F9 !important;
-      border-color: #E2E8F0 !important;
-    }
-
-    /* High-Contrast Typography */
-    html.light .text-white {
-      color: #0F172A !important;
-    }
-
-    html.light .text-slate-100 {
-      color: #0F172A !important;
-    }
-
-    html.light .text-slate-200 {
-      color: #1E293B !important;
-    }
-
-    html.light .text-slate-300 {
-      color: #334155 !important;
-    }
-
-    html.light .text-slate-400 {
-      color: #64748B !important;
-    }
-
-    html.light .text-slate-500 {
-      color: #64748B !important;
-    }
-
-    /* Accent Containers */
-    html.light .bg-emerald-950\/10,
-    html.light .bg-emerald-950\/20 {
-      background-color: #ECFDF5 !important;
-      border-color: #A7F3D0 !important;
-    }
-
-    html.light .bg-cyan-950\/60,
-    html.light .bg-cyan-950\/20 {
-      background-color: #ECFEFF !important;
-      border-color: #A5F3FC !important;
-    }
-
-    html.light .text-cyan-400 {
-      color: #0891B2 !important;
-    }
-
-    html.light .border-cyan-800\/40 {
-      border-color: #A5F3FC !important;
-    }
-
-    html.light #deckBrandIconBox {
-      background-color: #0F172A !important;
-      color: #FFFFFF !important;
-    }
-
-    html.light #deckBrandIconBox i {
-      color: #FFFFFF !important;
-    }
-
-    /* Buttons */
-    html.light .deck-btn-enter,
-    html.light #dockBtnNext,
-    html.light .deck-hero-enter {
-      background-color: #0F172A !important;
-      color: #FFFFFF !important;
-    }
-
-    html.light .deck-btn-enter:hover,
-    html.light #dockBtnNext:hover,
-    html.light .deck-hero-enter:hover {
-      background-color: #1E293B !important;
-    }
-
-    /* Slider Track */
-    html.light input[type=range] {
-      background: #E2E8F0 !important;
-    }
-
-    /* Scrollbars */
-    html.light ::-webkit-scrollbar-thumb {
-      background: rgba(15, 23, 42, 0.15) !important;
-    }
-
-    /* Print & Keynote PDF Export Styles */
     @media print {
       body {
         overflow: visible !important;
@@ -393,69 +383,69 @@
   <!-- ============================================== -->
   <!-- 1. EXECUTIVE TOP NAVIGATION BAR               -->
   <!-- ============================================== -->
-  <header class="h-14 px-6 lg:px-12 border-b border-border/50 bg-obsidian/80 backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative">
+  <header class="h-14 px-4 sm:px-8 lg:px-12 border-b backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative">
     
     <!-- Left: Refined Brand & Status -->
     <div class="flex items-center gap-3">
-      <div id="deckBrandIconBox" class="h-7 w-7 rounded-lg bg-white flex items-center justify-center shadow-md">
-        <i data-lucide="shield-check" class="w-4 h-4 text-obsidian stroke-[2.5]"></i>
+      <div id="deckBrandIconBox" class="h-7 w-7 rounded-lg flex items-center justify-center shadow-md">
+        <i data-lucide="shield-check" class="w-4 h-4 stroke-[2.5]"></i>
       </div>
       <div class="flex items-center gap-2">
         <span class="font-extrabold text-sm tracking-tight text-white">Veritas AP Enterprise</span>
         <span class="text-[10px] font-mono text-slate-500 font-semibold">/ KEYNOTE</span>
       </div>
-      <span class="h-3 w-px bg-border/60 mx-1 hidden sm:block"></span>
+      <span class="h-3 w-px bg-border mx-1 hidden sm:block"></span>
       <div class="hidden sm:flex items-center gap-1.5 text-xs text-slate-400">
-        <span class="h-1.5 w-1.5 rounded-full bg-emerald pulse-glow"></span>
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
         <span class="text-[11px] font-mono text-slate-400">Deterministic Engine Active</span>
-        <span class="text-[11px] font-mono text-cyan-400 font-bold bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-800/40">0.15ms</span>
+        <span class="text-[11px] font-mono text-cyan-500 font-bold px-1.5 py-0.2 rounded border border-cyan-500/30">0.15ms</span>
       </div>
     </div>
 
     <!-- Center: Stopwatch Timer & Keynote Progress -->
-    <div class="flex items-center gap-2 px-3 py-0.5 rounded-full bg-card/60 border border-border/60 text-xs text-slate-400 font-mono">
+    <div class="flex items-center gap-2 px-3 py-0.5 rounded-full inner-card text-xs text-slate-400 font-mono">
       <i data-lucide="clock" class="w-3 h-3 text-brand"></i>
       <span id="deckTimer">00:00</span>
-      <span class="text-slate-600">|</span>
+      <span class="text-slate-400">|</span>
       <span class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Keynote Mode</span>
     </div>
 
     <!-- Right: Executive Controls Bar -->
     <div class="flex items-center gap-2">
       <!-- Grid Overview Button -->
-      <button onclick="toggleGridModal()" class="px-2.5 py-1 rounded-lg bg-card/80 hover:bg-panel border border-border/60 text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Slide Grid Overview (G)">
+      <button onclick="toggleGridModal()" class="px-2.5 py-1 rounded-lg inner-card text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Slide Grid Overview (G)">
         <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-indigo-400"></i>
         <span class="text-[11px] font-medium hidden lg:inline">Grid</span>
         <span class="text-[9px] font-mono text-slate-500">[G]</span>
       </button>
 
       <!-- Theme Switcher -->
-      <button onclick="toggleDeckTheme()" id="deckThemeBtn" class="px-2.5 py-1 rounded-lg bg-card/80 hover:bg-panel border border-border/60 text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Toggle Light/Dark Theme (T)">
-        <i data-lucide="sun" id="themeIconSun" class="w-3.5 h-3.5 text-amber-400 hidden"></i>
+      <button onclick="toggleDeckTheme()" id="deckThemeBtn" class="px-2.5 py-1 rounded-lg inner-card text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Toggle Light/Dark Theme (T)">
+        <i data-lucide="sun" id="themeIconSun" class="w-3.5 h-3.5 text-amber-500 hidden"></i>
         <i data-lucide="moon" id="themeIconMoon" class="w-3.5 h-3.5 text-slate-400"></i>
         <span id="themeLabel" class="text-[11px] font-medium hidden md:inline">Light</span>
         <span class="text-[9px] font-mono text-slate-500">[T]</span>
       </button>
 
       <!-- Speaker Teleprompter Notes -->
-      <button onclick="toggleSpeakerNotes()" class="px-2.5 py-1 rounded-lg bg-card/80 hover:bg-panel border border-border/60 text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Presenter Notes (N)">
-        <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber"></i>
+      <button onclick="toggleSpeakerNotes()" class="px-2.5 py-1 rounded-lg inner-card text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5" title="Presenter Notes (N)">
+        <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-500"></i>
         <span class="text-[11px] font-medium hidden md:inline">Notes</span>
         <span class="text-[9px] font-mono text-slate-500">[N]</span>
       </button>
 
       <!-- Sound Toggle -->
-      <button onclick="toggleSound()" id="deckSoundBtn" class="p-1.5 rounded-lg bg-card/80 hover:bg-panel border border-border/60 text-slate-300 hover:text-white transition" title="Sound Effects">
+      <button onclick="toggleSound()" id="deckSoundBtn" class="p-1.5 rounded-lg inner-card text-slate-300 hover:text-white transition" title="Sound Effects">
         <i data-lucide="volume-x" id="soundIcon" class="w-3.5 h-3.5 text-slate-400"></i>
       </button>
 
       <!-- Fullscreen -->
-      <button onclick="toggleFullscreen()" class="p-1.5 rounded-lg bg-card/80 hover:bg-panel border border-border/60 text-slate-300 hover:text-white transition" title="Fullscreen (F)">
+      <button onclick="toggleFullscreen()" class="p-1.5 rounded-lg inner-card text-slate-300 hover:text-white transition" title="Fullscreen (F)">
         <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
       </button>
 
       <!-- Direct Studio CTA -->
-      <a href="/" target="_blank" class="deck-btn-enter px-3 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-slate-200 text-obsidian transition flex items-center gap-1.5 shadow-sm">
+      <a href="/" target="_blank" class="deck-btn-enter px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
         <span>Enter Studio</span>
         <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
       </a>
@@ -463,7 +453,7 @@
   </header>
 
   <!-- Sleek Top Progress Bar -->
-  <div class="w-full h-0.5 bg-border/40 z-30 flex-shrink-0">
+  <div class="w-full h-0.5 bg-border z-30 flex-shrink-0">
     <div id="deckProgressBar" class="h-full bg-gradient-to-r from-brand via-indigo-500 to-emerald transition-all duration-300" style="width: 12.5%;"></div>
   </div>
 
@@ -475,16 +465,16 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 1: The Problem Hook (Laser Scanline)   -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage active" data-slide="1" style="display: flex;">
+    <section class="slide-stage active" data-slide="1" style="display: flex; opacity: 1;">
       <div class="max-w-5xl w-full text-center space-y-6 my-auto z-10 px-4">
         
         <!-- Category Pill & Ticker -->
         <div class="flex flex-wrap items-center justify-center gap-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-terracotta pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-terracotta"></span>
             <span>ENTERPRISE ACCOUNTS PAYABLE LEAKAGE</span>
           </div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta/10 border border-terracotta/30 text-xs font-mono text-terracotta">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-terracotta/10 border border-terracotta/30 text-xs font-mono text-terracotta">
             <span>Live Global Loss:</span>
             <strong id="leakageTicker" class="font-bold">$300,000,000,000</strong>
           </div>
@@ -497,7 +487,7 @@
             Billions Disappear.
           </h1>
           <p class="text-sm sm:text-base md:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Enterprises bleed <strong class="text-white font-medium">$300 Billion annually</strong> not from blatant fraud, but from stealth rate-card creep and unauthorized fees that quietly slip past human accounting.
+            Enterprises bleed <strong class="text-white font-semibold">$300 Billion annually</strong> not from blatant fraud, but from stealth rate-card creep and unauthorized fees that quietly slip past human accounting.
           </p>
         </div>
 
@@ -505,7 +495,7 @@
         <div class="apple-glass p-6 md:p-8 rounded-3xl max-w-3xl mx-auto text-left space-y-4 relative overflow-hidden">
           <div class="scanner-beam"></div>
 
-          <div class="flex items-center justify-between pb-3 border-b border-border/60 text-xs">
+          <div class="flex items-center justify-between pb-3 border-b border-border text-xs">
             <div class="flex items-center gap-2">
               <i data-lucide="file-search" class="w-4 h-4 text-terracotta"></i>
               <span class="font-mono text-slate-300 font-semibold">SIMULATED AUDIT SCAN • INV-2025-094</span>
@@ -517,17 +507,17 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <!-- Contract Truth -->
-            <div class="space-y-2.5 p-4 rounded-2xl bg-surface/80 border border-border/40">
+            <div class="space-y-2.5 p-4 rounded-2xl inner-card">
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-mono text-emerald uppercase tracking-wider font-bold">Master Agreement Truth</span>
                 <span class="text-[10px] font-mono text-slate-500">CloudScale MSA</span>
               </div>
               <div class="space-y-1.5 font-mono text-slate-300">
-                <div class="flex justify-between border-b border-border/30 pb-1">
+                <div class="flex justify-between border-b border-border pb-1">
                   <span>Senior DevOps Cap:</span>
                   <strong class="text-emerald">$80.00 / hr (§3.1)</strong>
                 </div>
-                <div class="flex justify-between border-b border-border/30 pb-1">
+                <div class="flex justify-between border-b border-border pb-1">
                   <span>Emergency Surcharge:</span>
                   <strong class="text-emerald">$0.00 (§4.2 Prohibited)</strong>
                 </div>
@@ -539,17 +529,17 @@
             </div>
 
             <!-- Invoice Reality -->
-            <div class="space-y-2.5 p-4 rounded-2xl bg-surface/80 border border-terracotta/40 bg-terracotta/5">
+            <div class="space-y-2.5 p-4 rounded-2xl inner-card border-terracotta/40 bg-terracotta/5">
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-mono text-terracotta uppercase tracking-wider font-bold">Billed Invoice Reality</span>
                 <span class="text-[10px] font-mono text-terracotta font-semibold">3 Violations</span>
               </div>
               <div class="space-y-1.5 font-mono text-slate-300">
-                <div class="flex justify-between border-b border-border/30 pb-1">
+                <div class="flex justify-between border-b border-border pb-1">
                   <span>Senior DevOps Billed:</span>
                   <strong class="text-terracotta font-bold">$95.00 / hr (+18.7%)</strong>
                 </div>
-                <div class="flex justify-between border-b border-border/30 pb-1">
+                <div class="flex justify-between border-b border-border pb-1">
                   <span>Off-Hours Surcharge:</span>
                   <strong class="text-terracotta font-bold">+$350.00 (Stealth Fee)</strong>
                 </div>
@@ -562,7 +552,7 @@
           </div>
 
           <!-- Bottom Metric & Takeaway -->
-          <div class="pt-2 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2 border-t border-border/60">
+          <div class="pt-2 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2 border-t border-border">
             <span class="flex items-center gap-1.5">
               <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-terracotta"></i>
               <span>Why LLMs Fail: In AP accounting, a 1-cent math hallucination is an external audit failure.</span>
@@ -577,12 +567,12 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 2: Deterministic Core (Live Profiler)  -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage hidden" data-slide="2" style="display: none;">
+    <section class="slide-stage hidden" data-slide="2" style="display: none; opacity: 0;">
       <div class="max-w-5xl w-full space-y-6 my-auto z-10 text-center px-4">
         
         <div class="space-y-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
             <span>SPEED & ACCURACY BENCHMARK</span>
           </div>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight hero-title-gradient">
@@ -595,12 +585,12 @@
 
         <!-- Live Interactive Profiler Box -->
         <div class="apple-glass p-6 md:p-8 rounded-3xl max-w-3xl mx-auto text-left space-y-5">
-          <div class="flex items-center justify-between pb-3 border-b border-border/60 text-xs">
+          <div class="flex items-center justify-between pb-3 border-b border-border text-xs">
             <div class="flex items-center gap-2 font-mono text-slate-300 font-semibold">
-              <i data-lucide="gauge" class="w-4 h-4 text-cyan-400"></i>
+              <i data-lucide="gauge" class="w-4 h-4 text-cyan-500"></i>
               <span>LIVE PIPELINE LATENCY PROFILE</span>
             </div>
-            <button onclick="runEngineBenchmark()" id="btnRunBenchmark" class="px-3 py-1 rounded-lg bg-brand hover:bg-brand-light text-white font-mono text-xs transition flex items-center gap-1.5 shadow-md">
+            <button onclick="runEngineBenchmark()" id="btnRunBenchmark" class="px-3 py-1 rounded-lg bg-brand hover:bg-brand-dark text-white font-mono text-xs transition flex items-center gap-1.5 shadow-md">
               <i data-lucide="play" class="w-3 h-3"></i>
               <span>Run Benchmark Race</span>
             </button>
@@ -608,22 +598,22 @@
 
           <!-- Microsecond Execution Steps -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center font-mono">
-            <div class="p-2.5 rounded-xl bg-surface/90 border border-border/50">
+            <div class="p-2.5 rounded-xl inner-card">
               <span class="text-[9px] text-slate-500 uppercase block">1. Schema Validation</span>
               <span class="text-xs font-bold text-emerald mt-0.5 block">0.03 ms</span>
               <span class="text-[9px] text-slate-400">Pydantic v2</span>
             </div>
-            <div class="p-2.5 rounded-xl bg-surface/90 border border-border/50">
+            <div class="p-2.5 rounded-xl inner-card">
               <span class="text-[9px] text-slate-500 uppercase block">2. Rate Card Match</span>
               <span class="text-xs font-bold text-emerald mt-0.5 block">0.04 ms</span>
               <span class="text-[9px] text-slate-400">Hash Lookup</span>
             </div>
-            <div class="p-2.5 rounded-xl bg-surface/90 border border-border/50">
+            <div class="p-2.5 rounded-xl inner-card">
               <span class="text-[9px] text-slate-500 uppercase block">3. Clause Surcharge</span>
               <span class="text-xs font-bold text-terracotta mt-0.5 block">0.03 ms</span>
               <span class="text-[9px] text-slate-400">§4.2 Guard</span>
             </div>
-            <div class="p-2.5 rounded-xl bg-surface/90 border border-border/50">
+            <div class="p-2.5 rounded-xl inner-card">
               <span class="text-[9px] text-slate-500 uppercase block">4. Terms Verifier</span>
               <span class="text-xs font-bold text-amber mt-0.5 block">0.05 ms</span>
               <span class="text-[9px] text-slate-400">§5.3 Guard</span>
@@ -641,12 +631,12 @@
                 </span>
                 <span class="text-terracotta font-bold">4,250 ms (4.25s)</span>
               </div>
-              <div class="h-2 w-full bg-surface rounded-full overflow-hidden">
+              <div class="h-2 w-full bg-subtle rounded-full overflow-hidden">
                 <div id="barGpt" class="h-full bg-terracotta/70 rounded-full transition-all duration-1000" style="width: 88%;"></div>
               </div>
               <div class="flex justify-between text-[10px] text-slate-500">
                 <span>Cost: $0.06 / invoice</span>
-                <span class="text-terracotta">3.2% Math Hallucination Risk</span>
+                <span class="text-terracotta font-semibold">3.2% Math Hallucination Risk</span>
               </div>
             </div>
 
@@ -659,12 +649,12 @@
                 </span>
                 <span class="text-amber font-bold">1,820 ms</span>
               </div>
-              <div class="h-2 w-full bg-surface rounded-full overflow-hidden">
+              <div class="h-2 w-full bg-subtle rounded-full overflow-hidden">
                 <div id="barOcr" class="h-full bg-amber/70 rounded-full transition-all duration-700" style="width: 48%;"></div>
               </div>
               <div class="flex justify-between text-[10px] text-slate-500">
                 <span>Cost: $0.02 / page</span>
-                <span class="text-amber">Fragile Table Coordinate Regressions</span>
+                <span class="text-amber font-semibold">Fragile Table Coordinate Regressions</span>
               </div>
             </div>
 
@@ -677,7 +667,7 @@
                 </span>
                 <span class="text-emerald text-sm">0.15 ms</span>
               </div>
-              <div class="h-2.5 w-full bg-surface rounded-full overflow-hidden p-0.5 border border-emerald/40">
+              <div class="h-2.5 w-full bg-subtle rounded-full overflow-hidden p-0.5 border border-emerald/40">
                 <div id="barVeritas" class="h-full bg-emerald rounded-full transition-all duration-300" style="width: 4%;"></div>
               </div>
               <div class="flex justify-between text-[10px] text-emerald font-semibold">
@@ -688,14 +678,14 @@
           </div>
 
           <!-- Bottom KPI Badges -->
-          <div class="pt-3 grid grid-cols-3 gap-3 text-center border-t border-border/60 font-mono">
+          <div class="pt-3 grid grid-cols-3 gap-3 text-center border-t border-border font-mono">
             <div>
               <div class="text-[10px] text-slate-500">MATH REASONING</div>
               <div class="text-base font-extrabold text-emerald mt-0.5">100.00%</div>
             </div>
             <div>
               <div class="text-[10px] text-slate-500">INGESTION COST</div>
-              <div class="text-base font-extrabold text-cyan-400 mt-0.5">$0.00</div>
+              <div class="text-base font-extrabold text-cyan-500 mt-0.5">$0.00</div>
             </div>
             <div>
               <div class="text-[10px] text-slate-500">TEST REPRODUCIBILITY</div>
@@ -710,12 +700,12 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 3: Optical Grounding (Document Canvas) -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage hidden" data-slide="3" style="display: none;">
+    <section class="slide-stage hidden" data-slide="3" style="display: none; opacity: 0;">
       <div class="max-w-5xl w-full space-y-6 my-auto z-10 text-center px-4">
         
         <div class="space-y-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-terracotta pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-terracotta"></span>
             <span>SUB-PIXEL OPTICAL GROUNDING</span>
           </div>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight hero-title-gradient">
@@ -728,7 +718,7 @@
 
         <!-- Simulated Document Mockup with Interactive Pins -->
         <div class="apple-glass p-6 md:p-8 rounded-3xl max-w-3xl mx-auto text-left space-y-4 relative">
-          <div class="flex items-center justify-between pb-3 border-b border-border/60 text-xs font-mono">
+          <div class="flex items-center justify-between pb-3 border-b border-border text-xs font-mono">
             <div class="flex items-center gap-2 text-slate-300">
               <i data-lucide="file-text" class="w-4 h-4 text-brand"></i>
               <span>invoice_overcharged.pdf • Page 1 of 1</span>
@@ -738,7 +728,7 @@
                 <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
                 <span>150 DPI Optical Grid Active</span>
               </span>
-              <button onclick="highlightAllPins()" class="px-2 py-0.5 rounded bg-surface hover:bg-panel text-slate-300 border border-border/60 text-[11px] transition">
+              <button onclick="highlightAllPins()" class="px-2 py-0.5 rounded inner-card text-slate-300 text-[11px] transition">
                 Toggle Pins
               </button>
             </div>
@@ -747,7 +737,7 @@
           <!-- Document Canvas Representation -->
           <div class="space-y-2.5 font-mono text-xs">
             <!-- Compliant Item -->
-            <div class="p-3.5 rounded-xl bg-surface/80 border border-border/40 flex items-center justify-between text-slate-400">
+            <div class="p-3.5 rounded-xl inner-card flex items-center justify-between text-slate-400">
               <div class="flex items-center gap-2">
                 <i data-lucide="check" class="w-3.5 h-3.5 text-emerald"></i>
                 <span>01. QA Automation Engineer (60 hrs @ $65/hr)</span>
@@ -797,7 +787,7 @@
           </div>
 
           <!-- Bottom Coordinates Summary -->
-          <div class="pt-2 flex items-center justify-between text-xs text-slate-300 border-t border-border/60">
+          <div class="pt-2 flex items-center justify-between text-xs text-slate-300 border-t border-border">
             <span class="text-slate-400">Total Quantified Discrepancy:</span>
             <span class="text-lg font-black text-terracotta font-mono">+$1,550.00 Withheld</span>
           </div>
@@ -809,12 +799,12 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 4: 4-Tier Action Hub (Interactive)     -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage hidden" data-slide="4" style="display: none;">
+    <section class="slide-stage hidden" data-slide="4" style="display: none; opacity: 0;">
       <div class="max-w-5xl w-full space-y-6 my-auto z-10 text-center px-4">
         
         <div class="space-y-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
             <span>ENTERPRISE ACCOUNTS PAYABLE OPERATIONS</span>
           </div>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight hero-title-gradient">
@@ -829,30 +819,30 @@
         <div class="apple-glass p-6 md:p-8 rounded-3xl max-w-4xl mx-auto text-left space-y-5">
           <!-- Tier Tab Bar -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            <button onclick="switchActionTier(1)" id="tierTab1" class="p-2.5 rounded-xl border border-border/60 bg-surface text-slate-300 font-semibold hover:border-brand transition text-center">
+            <button onclick="switchActionTier(1)" id="tierTab1" class="p-2.5 rounded-xl inner-card text-slate-300 font-semibold hover:border-brand transition text-center">
               <span class="text-[9px] font-mono text-slate-500 uppercase block">Tier 1</span>
               <span>Full Dispute</span>
             </button>
-            <button onclick="switchActionTier(2)" id="tierTab2" class="p-2.5 rounded-xl border border-emerald bg-emerald-950/20 text-emerald font-bold transition text-center shadow-sm">
+            <button onclick="switchActionTier(2)" id="tierTab2" class="p-2.5 rounded-xl border border-emerald bg-emerald-500/10 text-emerald font-bold transition text-center shadow-sm">
               <span class="text-[9px] font-mono text-emerald uppercase block">Tier 2 • Best Practice</span>
               <span>Partial Remittance</span>
             </button>
-            <button onclick="switchActionTier(3)" id="tierTab3" class="p-2.5 rounded-xl border border-border/60 bg-surface text-slate-300 font-semibold hover:border-amber transition text-center">
+            <button onclick="switchActionTier(3)" id="tierTab3" class="p-2.5 rounded-xl inner-card text-slate-300 font-semibold hover:border-amber transition text-center">
               <span class="text-[9px] font-mono text-slate-500 uppercase block">Tier 3</span>
               <span>Conditional Hold</span>
             </button>
-            <button onclick="switchActionTier(4)" id="tierTab4" class="p-2.5 rounded-xl border border-border/60 bg-surface text-slate-300 font-semibold hover:border-brand transition text-center">
+            <button onclick="switchActionTier(4)" id="tierTab4" class="p-2.5 rounded-xl inner-card text-slate-300 font-semibold hover:border-brand transition text-center">
               <span class="text-[9px] font-mono text-slate-500 uppercase block">Tier 4</span>
               <span>Escalation Hub</span>
             </button>
           </div>
 
           <!-- Dynamic Tier Preview Canvas -->
-          <div id="tierCanvas" class="p-5 rounded-2xl bg-surface/90 border border-border/50 space-y-4">
+          <div id="tierCanvas" class="p-5 rounded-2xl inner-card space-y-4">
             <!-- Populated via JS switchActionTier -->
           </div>
 
-          <div class="text-[11px] text-slate-400 flex items-center justify-between pt-1 border-t border-border/60">
+          <div class="text-[11px] text-slate-400 flex items-center justify-between pt-1 border-t border-border">
             <span>Relational Governance:</span>
             <span class="text-slate-300 font-medium">All 4 tiers log immutable entries to PostgreSQL audit ledger with SHA-256 integrity</span>
           </div>
@@ -864,12 +854,12 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 5: Copilot Concession Solver           -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage hidden" data-slide="5" style="display: none;">
+    <section class="slide-stage hidden" data-slide="5" style="display: none; opacity: 0;">
       <div class="max-w-5xl w-full space-y-6 my-auto z-10 text-center px-4">
         
         <div class="space-y-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-brand pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-brand"></span>
             <span>FINANCIAL INTELLIGENCE COPILOT</span>
           </div>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight hero-title-gradient">
@@ -885,7 +875,7 @@
           
           <!-- Left: Interactive Rate Slider -->
           <div class="space-y-4">
-            <div class="flex items-center justify-between pb-2 border-b border-border/60">
+            <div class="flex items-center justify-between pb-2 border-b border-border">
               <span class="text-xs font-mono text-slate-400 font-semibold">SETTLEMENT NEGOTIATION:</span>
               <span id="cleanSliderLabel" class="text-xl font-black text-brand font-mono">$85.00 / hr</span>
             </div>
@@ -901,13 +891,13 @@
             </div>
 
             <div class="space-y-3 pt-2">
-              <div class="p-3.5 rounded-xl bg-surface/90 border border-border/50 space-y-1">
+              <div class="p-3.5 rounded-xl inner-card space-y-1">
                 <span class="text-[10px] font-mono text-slate-500 block">CREDIT MEMO REQUIRED FROM VENDOR</span>
                 <div id="cleanCreditMemo" class="text-2xl font-black text-terracotta font-mono">+$1,150.00</div>
                 <span class="text-[11px] text-slate-400 font-sans block">$800 labor delta (80 hrs × $10) + $350 fee</span>
               </div>
 
-              <div class="p-3.5 rounded-xl bg-surface/90 border border-border/50 space-y-1">
+              <div class="p-3.5 rounded-xl inner-card space-y-1">
                 <span class="text-[10px] font-mono text-slate-500 block">AUTHORIZED IMMEDIATE PAYMENT (ACH)</span>
                 <div id="cleanAuthRemit" class="text-2xl font-black text-emerald font-mono">$3,600.00</div>
                 <span class="text-[11px] text-slate-400 font-sans block">Released directly to vendor without delay</span>
@@ -916,9 +906,9 @@
           </div>
 
           <!-- Right: Copilot Legal Rationale Chat -->
-          <div class="p-4 rounded-2xl bg-surface/90 border border-border/50 flex flex-col justify-between space-y-3">
+          <div class="p-4 rounded-2xl inner-card flex flex-col justify-between space-y-3">
             <div class="space-y-3">
-              <div class="flex items-center justify-between pb-2 border-b border-border/40 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-border text-xs">
                 <div class="flex items-center gap-2">
                   <div class="h-5 w-5 rounded-md bg-brand flex items-center justify-center">
                     <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
@@ -930,19 +920,19 @@
 
               <!-- Interactive Prompt Chips -->
               <div class="flex flex-wrap gap-1.5 text-[10px]">
-                <button onclick="setCopilotPrompt('compromise')" class="px-2 py-0.8 rounded-full bg-card hover:bg-panel border border-border/60 text-slate-300 hover:text-white transition">
+                <button onclick="setCopilotPrompt('compromise')" class="px-2 py-0.8 rounded-full inner-card text-slate-300 hover:text-white transition">
                   💬 $85/hr Compromise Rationale
                 </button>
-                <button onclick="setCopilotPrompt('terms')" class="px-2 py-0.8 rounded-full bg-card hover:bg-panel border border-border/60 text-slate-300 hover:text-white transition">
+                <button onclick="setCopilotPrompt('terms')" class="px-2 py-0.8 rounded-full inner-card text-slate-300 hover:text-white transition">
                   📋 Section 5.3 Net 30 Terms
                 </button>
-                <button onclick="setCopilotPrompt('surcharge')" class="px-2 py-0.8 rounded-full bg-card hover:bg-panel border border-border/60 text-slate-300 hover:text-white transition">
+                <button onclick="setCopilotPrompt('surcharge')" class="px-2 py-0.8 rounded-full inner-card text-slate-300 hover:text-white transition">
                   ⚖️ Section 4.2 Prohibited Fees
                 </button>
               </div>
 
               <!-- Copilot Dialogue Bubble -->
-              <div id="copilotBubble" class="p-3 rounded-xl bg-card border border-border/40 text-xs text-slate-300 leading-relaxed font-sans space-y-2">
+              <div id="copilotBubble" class="p-3 rounded-xl inner-card text-xs text-slate-300 leading-relaxed font-sans space-y-2">
                 <p>
                   "Under <strong>Master Services Agreement Section 3.1 & Schedule A</strong>, the authorized labor rate cap for Senior DevOps is <strong>$80.00/hr</strong>. The invoice billed $95.00/hr."
                 </p>
@@ -953,7 +943,7 @@
             </div>
 
             <!-- Action Bar -->
-            <button onclick="copyCopilotCounterOffer()" id="btnCopyCounterOffer" class="w-full py-2 rounded-xl bg-brand hover:bg-brand-light text-white text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
+            <button onclick="copyCopilotCounterOffer()" id="btnCopyCounterOffer" class="w-full py-2 rounded-xl bg-brand hover:bg-brand-dark text-white text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
               <i data-lucide="copy" class="w-3.5 h-3.5"></i>
               <span id="lblCopyCounter">Copy Formal Settlement Email</span>
             </button>
@@ -967,12 +957,12 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 6: Enterprise Interoperability Studio  -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage hidden" data-slide="6" style="display: none;">
+    <section class="slide-stage hidden" data-slide="6" style="display: none; opacity: 0;">
       <div class="max-w-5xl w-full space-y-6 my-auto z-10 text-center px-4">
         
         <div class="space-y-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
             <span>ENTERPRISE ECOSYSTEM INTEGRATIONS</span>
           </div>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight hero-title-gradient">
@@ -986,34 +976,34 @@
         <!-- Interactive ERP Studio Tabs -->
         <div class="apple-glass p-6 md:p-8 rounded-3xl max-w-4xl mx-auto text-left space-y-4">
           <!-- ERP Selector Tabs -->
-          <div class="flex items-center justify-between pb-2 border-b border-border/60">
+          <div class="flex items-center justify-between pb-2 border-b border-border">
             <div class="flex items-center gap-2">
               <button onclick="switchErpTab('sap')" id="erpTabSap" class="px-3 py-1.5 rounded-xl border border-brand bg-brand/10 text-brand font-mono text-xs font-bold transition">
                 SAP S/4HANA (IDoc XML)
               </button>
-              <button onclick="switchErpTab('netsuite')" id="erpTabNetsuite" class="px-3 py-1.5 rounded-xl border border-border/60 bg-surface text-slate-400 font-mono text-xs hover:text-white transition">
+              <button onclick="switchErpTab('netsuite')" id="erpTabNetsuite" class="px-3 py-1.5 rounded-xl inner-card text-slate-400 font-mono text-xs hover:text-white transition">
                 Oracle NetSuite (JSON)
               </button>
-              <button onclick="switchErpTab('quickbooks')" id="erpTabQuickbooks" class="px-3 py-1.5 rounded-xl border border-border/60 bg-surface text-slate-400 font-mono text-xs hover:text-white transition">
+              <button onclick="switchErpTab('quickbooks')" id="erpTabQuickbooks" class="px-3 py-1.5 rounded-xl inner-card text-slate-400 font-mono text-xs hover:text-white transition">
                 QuickBooks Online (CSV)
               </button>
-              <button onclick="switchErpTab('webhook')" id="erpTabWebhook" class="px-3 py-1.5 rounded-xl border border-border/60 bg-surface text-slate-400 font-mono text-xs hover:text-white transition hidden sm:inline-block">
+              <button onclick="switchErpTab('webhook')" id="erpTabWebhook" class="px-3 py-1.5 rounded-xl inner-card text-slate-400 font-mono text-xs hover:text-white transition hidden sm:inline-block">
                 Webhooks (HMAC-SHA256)
               </button>
             </div>
-            <button onclick="copyCurrentErpPayload()" id="btnCopyErp" class="px-2.5 py-1 rounded-lg bg-surface hover:bg-panel border border-border/60 text-slate-300 text-xs font-mono transition flex items-center gap-1.5">
+            <button onclick="copyCurrentErpPayload()" id="btnCopyErp" class="px-2.5 py-1 rounded-lg inner-card text-slate-300 text-xs font-mono transition flex items-center gap-1.5">
               <i data-lucide="copy" class="w-3 h-3 text-brand"></i>
               <span id="lblCopyErp">Copy Payload</span>
             </button>
           </div>
 
           <!-- Code Display Box -->
-          <div class="relative rounded-2xl bg-surface/90 border border-border/50 p-4 font-mono text-xs overflow-x-auto max-h-56">
-            <pre id="erpCodeBox" class="text-slate-300 whitespace-pre leading-relaxed"></pre>
+          <div class="relative rounded-2xl erp-code-container p-4 font-mono text-xs overflow-x-auto max-h-56">
+            <pre id="erpCodeBox" class="whitespace-pre leading-relaxed"></pre>
           </div>
 
           <!-- Tamper-Proof Security Box -->
-          <div class="p-3.5 rounded-xl bg-card/60 border border-border/60 flex items-center justify-between text-xs text-slate-400 font-mono">
+          <div class="p-3.5 rounded-xl inner-card flex items-center justify-between text-xs text-slate-400 font-mono">
             <span class="flex items-center gap-2">
               <i data-lucide="shield-alert" class="w-4 h-4 text-emerald"></i>
               <span>Outbound Event Security:</span>
@@ -1028,12 +1018,12 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 7: Verified Production Benchmarks      -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage hidden" data-slide="7" style="display: none;">
+    <section class="slide-stage hidden" data-slide="7" style="display: none; opacity: 0;">
       <div class="max-w-5xl w-full space-y-6 my-auto z-10 text-center px-4">
         
         <div class="space-y-3">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
             <span>PRODUCTION ENGINEERING METRICS</span>
           </div>
           <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight hero-title-gradient">
@@ -1048,7 +1038,7 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
           <div class="apple-glass p-5 rounded-2xl space-y-1">
             <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider">RULE LATENCY</span>
-            <div class="text-3xl font-extrabold text-cyan-400 font-mono">0.15ms</div>
+            <div class="text-3xl font-extrabold text-cyan-500 font-mono">0.15ms</div>
             <span class="text-[11px] text-slate-400 block">Deterministic Core</span>
           </div>
 
@@ -1073,21 +1063,21 @@
 
         <!-- Interactive Test Runner Simulation -->
         <div class="apple-glass p-5 rounded-2xl max-w-4xl mx-auto text-left space-y-3 font-mono text-xs">
-          <div class="flex items-center justify-between pb-2 border-b border-border/60">
+          <div class="flex items-center justify-between pb-2 border-b border-border">
             <div class="flex items-center gap-2">
               <span class="h-2 w-2 rounded-full bg-emerald"></span>
               <span class="text-slate-300 font-bold">AUTOMATED TEST SUITE EXECUTION</span>
             </div>
-            <button onclick="runPytestSimulation()" class="px-2.5 py-1 rounded-lg bg-surface hover:bg-panel border border-border/60 text-slate-300 text-[11px] transition">
+            <button onclick="runPytestSimulation()" class="px-2.5 py-1 rounded-lg inner-card text-slate-300 text-[11px] transition">
               Re-Verify 39 Suites
             </button>
           </div>
 
-          <div class="p-3 rounded-xl bg-surface/90 border border-border/50 text-[11px] space-y-1 text-slate-400 max-h-36 overflow-y-auto" id="terminalOutput">
-            <div class="text-emerald">tests/test_audit_engine.py::test_compliant_invoice_passes PASSED [ 89%]</div>
-            <div class="text-emerald">tests/test_audit_engine.py::test_rate_mismatch_detected PASSED [ 92%]</div>
-            <div class="text-emerald">tests/test_audit_engine.py::test_unapproved_fee_flagged PASSED [ 94%]</div>
-            <div class="text-emerald">tests/test_audit_engine.py::test_payment_term_mismatch PASSED [100%]</div>
+          <div class="p-3 rounded-xl bg-slate-950 text-slate-200 border border-border text-[11px] space-y-1 max-h-36 overflow-y-auto" id="terminalOutput">
+            <div class="text-emerald-400">tests/test_audit_engine.py::test_compliant_invoice_passes PASSED [ 89%]</div>
+            <div class="text-emerald-400">tests/test_audit_engine.py::test_rate_mismatch_detected PASSED [ 92%]</div>
+            <div class="text-emerald-400">tests/test_audit_engine.py::test_unapproved_fee_flagged PASSED [ 94%]</div>
+            <div class="text-emerald-400">tests/test_audit_engine.py::test_payment_term_mismatch PASSED [100%]</div>
             <div class="text-white font-bold pt-1">================== 39 passed in 3.14s (100% SUCCESS) ==================</div>
           </div>
         </div>
@@ -1098,12 +1088,12 @@
     <!-- -------------------------------------------- -->
     <!-- SLIDE 8: The VIP Keynote Grand Finale        -->
     <!-- -------------------------------------------- -->
-    <section class="slide-stage hidden" data-slide="8" style="display: none;">
+    <section class="slide-stage hidden" data-slide="8" style="display: none; opacity: 0;">
       <div class="max-w-5xl w-full space-y-6 my-auto z-10 text-center px-4">
         
         <div class="space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald pulse-glow"></span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full deck-category-pill text-xs font-mono">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald"></span>
             <span>VERITAS AP ENTERPRISE</span>
           </div>
           <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight hero-title-gradient leading-[1.08]">
@@ -1118,7 +1108,7 @@
         <!-- VIP Launch Center Card -->
         <div class="apple-glass p-6 md:p-8 rounded-3xl max-w-3xl mx-auto text-left space-y-5">
           <div class="text-center space-y-3">
-            <a href="/" target="_blank" class="deck-hero-enter inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white hover:bg-slate-200 text-obsidian font-extrabold text-sm transition shadow-2xl hover:scale-105">
+            <a href="/" target="_blank" class="deck-btn-enter inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-sm font-extrabold transition shadow-2xl hover:scale-105">
               <span>Enter Live Veritas Studio</span>
               <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </a>
@@ -1127,46 +1117,46 @@
             </div>
           </div>
 
-          <div class="pt-3 border-t border-border/60">
+          <div class="pt-3 border-t border-border">
             <div class="text-xs font-mono text-slate-400 font-semibold mb-2.5 text-center">
               OR TEST 1-CLICK LIVE AUDIT SCENARIOS:
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <a href="/?sample=overcharged" target="_blank" class="p-3 rounded-xl bg-surface/90 hover:bg-panel border border-border/50 text-slate-300 hover:text-white transition flex items-center justify-between group">
+              <a href="/?sample=overcharged" target="_blank" class="p-3 rounded-xl inner-card text-slate-300 hover:text-white transition flex items-center justify-between group">
                 <span class="flex items-center gap-2">
                   <span class="h-2 w-2 rounded-full bg-terracotta"></span>
                   <span>Overcharged PDF ($1,550 Breach)</span>
                 </span>
-                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition"></i>
+                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition"></i>
               </a>
 
-              <a href="/?sample=valid" target="_blank" class="p-3 rounded-xl bg-surface/90 hover:bg-panel border border-border/50 text-slate-300 hover:text-white transition flex items-center justify-between group">
+              <a href="/?sample=valid" target="_blank" class="p-3 rounded-xl inner-card text-slate-300 hover:text-white transition flex items-center justify-between group">
                 <span class="flex items-center gap-2">
                   <span class="h-2 w-2 rounded-full bg-emerald"></span>
                   <span>Compliant PDF ($0.00 Drift)</span>
                 </span>
-                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition"></i>
+                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition"></i>
               </a>
 
-              <a href="/?sample=scanned" target="_blank" class="p-3 rounded-xl bg-surface/90 hover:bg-panel border border-border/50 text-slate-300 hover:text-white transition flex items-center justify-between group">
+              <a href="/?sample=scanned" target="_blank" class="p-3 rounded-xl inner-card text-slate-300 hover:text-white transition flex items-center justify-between group">
                 <span class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full bg-cyan-400"></span>
+                  <span class="h-2 w-2 rounded-full bg-cyan-500"></span>
                   <span>Scanned Optical Receipt (OCR)</span>
                 </span>
-                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition"></i>
+                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition"></i>
               </a>
 
-              <a href="/?view=vendors" target="_blank" class="p-3 rounded-xl bg-surface/90 hover:bg-panel border border-border/50 text-slate-300 hover:text-white transition flex items-center justify-between group">
+              <a href="/?view=vendors" target="_blank" class="p-3 rounded-xl inner-card text-slate-300 hover:text-white transition flex items-center justify-between group">
                 <span class="flex items-center gap-2">
                   <span class="h-2 w-2 rounded-full bg-amber"></span>
                   <span>Supplier Risk Matrix (VRI)</span>
                 </span>
-                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition"></i>
+                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition"></i>
               </a>
             </div>
           </div>
 
-          <div class="pt-2 flex items-center justify-between text-xs text-slate-400 font-mono border-t border-border/60">
+          <div class="pt-2 flex items-center justify-between text-xs text-slate-400 font-mono border-t border-border">
             <button onclick="goToSlide(1)" class="hover:text-white transition flex items-center gap-1.5">
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               <span>Restart Keynote [R]</span>
@@ -1187,14 +1177,14 @@
   <!-- ============================================== -->
   <!-- 3. MINIMALIST DOCK STEPPER (Apple Style)       -->
   <!-- ============================================== -->
-  <footer class="h-14 px-6 lg:px-12 border-t border-border/50 bg-obsidian/80 backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative">
+  <footer class="h-14 px-4 sm:px-8 lg:px-12 border-t backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative">
     
     <!-- Prev / Next Controls -->
     <div class="flex items-center gap-1.5">
-      <button onclick="prevSlide()" id="dockBtnPrev" class="px-3 py-1 rounded-lg bg-card/60 hover:bg-panel border border-border/60 text-slate-300 hover:text-white text-xs font-mono transition disabled:opacity-30 disabled:cursor-not-allowed">
+      <button onclick="prevSlide()" id="dockBtnPrev" class="px-3 py-1 rounded-lg inner-card text-slate-300 hover:text-white text-xs font-mono transition disabled:opacity-30 disabled:cursor-not-allowed">
         [←] Prev
       </button>
-      <button onclick="nextSlide()" id="dockBtnNext" class="px-3 py-1 rounded-lg bg-white hover:bg-slate-200 text-obsidian text-xs font-mono font-bold transition">
+      <button onclick="nextSlide()" id="dockBtnNext" class="px-3 py-1 rounded-lg text-xs font-mono font-bold transition shadow-sm">
         Next [→]
       </button>
     </div>
@@ -1209,7 +1199,7 @@
       <button onclick="toggleShortcutsModal()" class="hover:text-white transition hidden md:inline" title="Keynote Shortcuts (?)">
         <span>Help [?]</span>
       </button>
-      <span class="text-slate-600 hidden md:inline">|</span>
+      <span class="text-slate-400 hidden md:inline">|</span>
       <span id="deckSlideCounter" class="text-white font-bold font-mono">01 / 08</span>
     </div>
   </footer>
@@ -1217,11 +1207,11 @@
   <!-- ============================================== -->
   <!-- 4. SLIDE-OUT SPEAKER NOTES DRAWER (PRESS N)    -->
   <!-- ============================================== -->
-  <aside id="speakerDrawer" class="hidden fixed top-14 right-0 bottom-14 w-96 bg-surface/95 backdrop-blur-2xl border-l border-border z-40 p-6 flex-col justify-between shadow-2xl transition-all duration-300">
+  <aside id="speakerDrawer" class="hidden fixed top-14 right-0 bottom-14 w-96 backdrop-blur-2xl border-l z-40 p-6 flex-col justify-between shadow-2xl transition-all duration-300">
     <div class="space-y-4 overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-border">
         <div class="flex items-center gap-2">
-          <i data-lucide="file-text" class="w-4 h-4 text-amber"></i>
+          <i data-lucide="file-text" class="w-4 h-4 text-amber-500"></i>
           <span class="text-xs font-bold text-white uppercase tracking-wider font-mono">Presenter Cues</span>
         </div>
         <button onclick="toggleSpeakerNotes()" class="text-slate-400 hover:text-white">
@@ -1245,14 +1235,14 @@
   <!-- ============================================== -->
   <!-- 5. SLIDE GRID OVERVIEW MODAL (PRESS G)         -->
   <!-- ============================================== -->
-  <div id="gridModal" class="hidden fixed inset-0 z-50 bg-obsidian/95 backdrop-blur-2xl p-6 sm:p-12 overflow-y-auto flex-col justify-between">
+  <div id="gridModal" class="hidden fixed inset-0 z-50 backdrop-blur-2xl p-6 sm:p-12 overflow-y-auto flex-col justify-between">
     <div class="max-w-6xl w-full mx-auto space-y-6">
       <div class="flex items-center justify-between pb-4 border-b border-border">
         <div>
           <h3 class="text-xl font-extrabold text-white">Keynote Slide Overview</h3>
           <p class="text-xs text-slate-400">Click any slide to navigate immediately or press [G] / [Esc] to exit.</p>
         </div>
-        <button onclick="toggleGridModal()" class="p-2 rounded-xl bg-card border border-border text-slate-400 hover:text-white transition">
+        <button onclick="toggleGridModal()" class="p-2 rounded-xl inner-card text-slate-400 hover:text-white transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -1267,9 +1257,9 @@
   <!-- ============================================== -->
   <!-- 6. KEYBOARD SHORTCUTS MODAL (PRESS ?)          -->
   <!-- ============================================== -->
-  <div id="shortcutsModal" class="hidden fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-md p-6 flex items-center justify-center">
+  <div id="shortcutsModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md p-6 flex items-center justify-center">
     <div class="apple-glass p-6 rounded-3xl max-w-md w-full space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-border/60">
+      <div class="flex items-center justify-between pb-3 border-b border-border">
         <div class="flex items-center gap-2">
           <i data-lucide="keyboard" class="w-4 h-4 text-brand"></i>
           <span class="font-bold text-sm text-white">Keynote Keyboard Navigation</span>
@@ -1280,41 +1270,41 @@
       </div>
 
       <div class="space-y-2 text-xs font-mono text-slate-300">
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Next Slide</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">Space / → / Enter</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">Space / → / Enter</kbd>
         </div>
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Previous Slide</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">← / Backspace</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">← / Backspace</kbd>
         </div>
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Jump to Slide</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">1 - 8</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">1 - 8</kbd>
         </div>
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Slide Grid Overview</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">G</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">G</kbd>
         </div>
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Toggle Light/Dark Theme</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">T</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">T</kbd>
         </div>
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Presenter Notes Teleprompter</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">N</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">N</kbd>
         </div>
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Fullscreen Mode</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">F</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">F</kbd>
         </div>
-        <div class="flex justify-between py-1 border-b border-border/30">
+        <div class="flex justify-between py-1 border-b border-border">
           <span>Restart Presentation</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">R</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">R</kbd>
         </div>
         <div class="flex justify-between py-1">
           <span>Print / Export PDF</span>
-          <kbd class="px-2 py-0.5 rounded bg-surface border border-border text-white">P</kbd>
+          <kbd class="px-2 py-0.5 rounded inner-card text-white">P</kbd>
         </div>
       </div>
     </div>
@@ -1622,7 +1612,7 @@
         card.className = `p-4 rounded-2xl border transition cursor-pointer text-left space-y-2 ${
           isActive 
             ? 'bg-brand/20 border-brand shadow-lg' 
-            : 'bg-card/80 hover:bg-panel border-border/60 hover:border-slate-500'
+            : 'inner-card hover:border-slate-400'
         }`;
         card.onclick = () => {
           goToSlide(item.num);
@@ -1631,7 +1621,7 @@
         card.innerHTML = `
           <div class="flex items-center justify-between text-xs font-mono">
             <span class="font-bold text-white">0${item.num}</span>
-            <span class="text-[9px] px-1.5 py-0.2 rounded bg-surface text-slate-400 font-semibold">${item.badge}</span>
+            <span class="text-[9px] px-1.5 py-0.2 rounded deck-category-pill font-semibold">${item.badge}</span>
           </div>
           <div class="text-sm font-bold text-white">${item.title}</div>
           <div class="text-[10px] text-slate-400">Click to present slide 0${item.num}</div>
@@ -1717,9 +1707,9 @@
       for (let i = 1; i <= 4; i++) {
         const tab = document.getElementById(`tierTab${i}`);
         if (i === tier) {
-          tab.className = 'p-2.5 rounded-xl border border-emerald bg-emerald-950/20 text-emerald font-bold transition text-center shadow-sm';
+          tab.className = 'p-2.5 rounded-xl border border-emerald bg-emerald-500/10 text-emerald font-bold transition text-center shadow-sm';
         } else {
-          tab.className = 'p-2.5 rounded-xl border border-border/60 bg-surface text-slate-300 font-semibold hover:border-slate-500 transition text-center';
+          tab.className = 'p-2.5 rounded-xl inner-card text-slate-300 font-semibold hover:border-slate-400 transition text-center';
         }
       }
 
@@ -1727,14 +1717,14 @@
       if (tier === 1) {
         canvas.innerHTML = `
           <div class="space-y-3 font-mono text-xs">
-            <div class="flex items-center justify-between pb-2 border-b border-border/40">
+            <div class="flex items-center justify-between pb-2 border-b border-border">
               <span class="text-terracotta font-bold flex items-center gap-1.5">
                 <i data-lucide="mail-warning" class="w-4 h-4"></i>
                 FORMAL LEGAL BREACH NOTICE DISPATCH (RFC-822)
               </span>
               <span class="text-slate-400">Target: CloudScale Innovations Legal</span>
             </div>
-            <div class="p-3 rounded-xl bg-card border border-border/40 space-y-1.5 text-slate-300 leading-relaxed font-sans">
+            <div class="p-3 rounded-xl inner-card space-y-1.5 text-slate-300 leading-relaxed font-sans">
               <p><strong>SUBJECT:</strong> Notice of Contractual Discrepancy — Invoice INV-2025-094</p>
               <p>Please be advised that Invoice INV-2025-094 includes an unapproved rate of <strong>$95.00/hr</strong> for Senior DevOps Architect (Master Agreement §3.1 Cap: <strong>$80.00/hr</strong>) and a prohibited off-hours support surcharge of <strong>$350.00</strong> under §4.2.</p>
               <p class="text-emerald font-semibold">ACTION: Full legal hold applied. Revised invoice or credit memo required within 10 business days.</p>
@@ -1747,7 +1737,7 @@
       } else if (tier === 2) {
         canvas.innerHTML = `
           <div class="space-y-3 font-mono text-xs">
-            <div class="flex items-center justify-between pb-2 border-b border-border/40">
+            <div class="flex items-center justify-between pb-2 border-b border-border">
               <span class="text-emerald font-bold flex items-center gap-1.5">
                 <i data-lucide="split" class="w-4 h-4"></i>
                 DUAL-PATH CASH FLOW REMITTANCE (ENTERPRISE BEST PRACTICE)
@@ -1755,7 +1745,7 @@
               <span class="text-slate-400">Auto-Split Engine</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-3 rounded-xl bg-emerald-950/20 border border-emerald/40 space-y-1">
+              <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald/40 space-y-1">
                 <span class="text-[10px] text-emerald uppercase font-bold block">1. Immediate ACH Payment Released</span>
                 <div class="text-xl font-extrabold text-emerald">$3,200.00</div>
                 <span class="text-[11px] text-slate-300 font-sans block">Authorizes 100% compliant base work to sustain vendor payroll without friction.</span>
@@ -1774,14 +1764,14 @@
       } else if (tier === 3) {
         canvas.innerHTML = `
           <div class="space-y-3 font-mono text-xs">
-            <div class="flex items-center justify-between pb-2 border-b border-border/40">
+            <div class="flex items-center justify-between pb-2 border-b border-border">
               <span class="text-amber font-bold flex items-center gap-1.5">
                 <i data-lucide="clock" class="w-4 h-4"></i>
                 CONDITIONAL AP HOLD — CONTINGENCY GATES
               </span>
               <span class="text-slate-400">Pending Deliverable</span>
             </div>
-            <div class="space-y-2 p-3 rounded-xl bg-card border border-border/40 text-slate-300 font-sans">
+            <div class="space-y-2 p-3 rounded-xl inner-card text-slate-300 font-sans">
               <div class="flex items-center gap-2 text-xs">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald"></i>
                 <span>Gate 1: Deliverable SOW Phase 2 Architecture Specs Uploaded (Verified)</span>
@@ -1800,19 +1790,19 @@
       } else if (tier === 4) {
         canvas.innerHTML = `
           <div class="space-y-3 font-mono text-xs">
-            <div class="flex items-center justify-between pb-2 border-b border-border/40">
+            <div class="flex items-center justify-between pb-2 border-b border-border">
               <span class="text-brand font-bold flex items-center gap-1.5">
                 <i data-lucide="users" class="w-4 h-4"></i>
                 WORKFLOW RBAC CLEARANCE LADDER
               </span>
               <span class="text-slate-400">Policy Matrix §8.1</span>
             </div>
-            <div class="space-y-2 p-3 rounded-xl bg-card border border-border/40 text-slate-300 font-sans text-xs">
-              <div class="flex items-center justify-between border-b border-border/30 pb-1.5">
+            <div class="space-y-2 p-3 rounded-xl inner-card text-slate-300 font-sans text-xs">
+              <div class="flex items-center justify-between border-b border-border pb-1.5">
                 <span class="font-bold text-white">Surya Prakash (AP Specialist / Maker)</span>
                 <span class="text-emerald font-mono text-[10px]">Flagged Exception ($1,550.00)</span>
               </div>
-              <div class="flex items-center justify-between border-b border-border/30 pb-1.5">
+              <div class="flex items-center justify-between border-b border-border pb-1.5">
                 <span class="font-bold text-white">Priya Patel (Finance VP / Checker)</span>
                 <span class="text-brand font-mono text-[10px]">Override Authority &gt; $1,000</span>
               </div>
@@ -1945,7 +1935,7 @@
           if (k === key) {
             btn.className = 'px-3 py-1.5 rounded-xl border border-brand bg-brand/10 text-brand font-mono text-xs font-bold transition';
           } else {
-            btn.className = 'px-3 py-1.5 rounded-xl border border-border/60 bg-surface text-slate-400 font-mono text-xs hover:text-white transition';
+            btn.className = 'px-3 py-1.5 rounded-xl inner-card text-slate-400 font-mono text-xs hover:text-white transition';
           }
         }
       });
@@ -1969,17 +1959,17 @@
 
       setTimeout(() => {
         term.innerHTML = `
-          <div class="text-emerald">tests/test_api.py::test_api_hitl_decision_dispute PASSED [ 10%]</div>
-          <div class="text-emerald">tests/test_api.py::test_api_evals_benchmark PASSED [ 15%]</div>
-          <div class="text-emerald">tests/test_api.py::test_api_batch_upload_and_task_polling PASSED [ 25%]</div>
-          <div class="text-emerald">tests/test_api.py::test_api_copilot_dynamic_rate_compromise PASSED [ 35%]</div>
-          <div class="text-emerald">tests/test_api.py::test_rbac_finance_vp_can_approve_override PASSED [ 53%]</div>
-          <div class="text-emerald">tests/test_api.py::test_erp_export_sap_s4hana PASSED [ 58%]</div>
-          <div class="text-emerald">tests/test_api.py::test_webhook_dispatch_and_signatures PASSED [ 69%]</div>
-          <div class="text-emerald">tests/test_api.py::test_slides_and_presentation_endpoints PASSED [ 87%]</div>
-          <div class="text-emerald">tests/test_audit_engine.py::test_compliant_invoice_passes PASSED [ 89%]</div>
-          <div class="text-emerald">tests/test_audit_engine.py::test_rate_mismatch_detected PASSED [ 92%]</div>
-          <div class="text-emerald">tests/test_audit_engine.py::test_unapproved_fee_flagged PASSED [ 94%]</div>
+          <div class="text-emerald-400">tests/test_api.py::test_api_hitl_decision_dispute PASSED [ 10%]</div>
+          <div class="text-emerald-400">tests/test_api.py::test_api_evals_benchmark PASSED [ 15%]</div>
+          <div class="text-emerald-400">tests/test_api.py::test_api_batch_upload_and_task_polling PASSED [ 25%]</div>
+          <div class="text-emerald-400">tests/test_api.py::test_api_copilot_dynamic_rate_compromise PASSED [ 35%]</div>
+          <div class="text-emerald-400">tests/test_rbac_finance_vp_can_approve_override PASSED [ 53%]</div>
+          <div class="text-emerald-400">tests/test_erp_export_sap_s4hana PASSED [ 58%]</div>
+          <div class="text-emerald-400">tests/test_webhook_dispatch_and_signatures PASSED [ 69%]</div>
+          <div class="text-emerald-400">tests/test_slides_and_presentation_endpoints PASSED [ 87%]</div>
+          <div class="text-emerald-400">tests/test_audit_engine.py::test_compliant_invoice_passes PASSED [ 89%]</div>
+          <div class="text-emerald-400">tests/test_audit_engine.py::test_rate_mismatch_detected PASSED [ 92%]</div>
+          <div class="text-emerald-400">tests/test_audit_engine.py::test_unapproved_fee_flagged PASSED [ 94%]</div>
           <div class="text-white font-bold pt-1">================== 39 passed in 3.14s (100% REGRESSION PASS) ==================</div>
         `;
         playTick(950, 0.08);
