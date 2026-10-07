@@ -1186,20 +1186,20 @@
   <!-- ============================================== -->
   <!-- 3. MINIMALIST DOCK STEPPER (Apple Style)       -->
   <!-- ============================================== -->
-  <footer class="h-14 px-4 sm:px-8 lg:px-12 border-t backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative">
+  <footer class="h-14 px-3 sm:px-8 lg:px-12 border-t backdrop-blur-xl flex items-center justify-between z-30 flex-shrink-0 relative pb-[env(safe-area-inset-bottom)]">
     
     <!-- Prev / Next Controls -->
     <div class="flex items-center gap-1.5">
-      <button onclick="prevSlide()" id="dockBtnPrev" class="px-3 py-1 rounded-lg inner-card text-slate-300 hover:text-white text-xs font-mono transition disabled:opacity-30 disabled:cursor-not-allowed">
+      <button onclick="prevSlide()" id="dockBtnPrev" class="px-2.5 sm:px-3 py-1 rounded-lg inner-card text-slate-300 hover:text-white text-xs font-mono transition disabled:opacity-30 disabled:cursor-not-allowed">
         [←] Prev
       </button>
-      <button onclick="nextSlide()" id="dockBtnNext" class="px-3 py-1 rounded-lg text-xs font-mono font-bold transition shadow-sm">
+      <button onclick="nextSlide()" id="dockBtnNext" class="px-2.5 sm:px-3 py-1 rounded-lg text-xs font-mono font-bold transition shadow-sm">
         Next [→]
       </button>
     </div>
 
     <!-- Center Slide Dots -->
-    <div class="flex items-center gap-2" id="dockSlideDots">
+    <div class="hidden sm:flex items-center gap-2" id="dockSlideDots">
       <!-- Generated via JS -->
     </div>
 
