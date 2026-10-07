@@ -284,10 +284,13 @@
 </head>
 <body class="h-screen w-screen flex bg-bg text-slate-100 overflow-hidden font-sans selection:bg-brand selection:text-white">
 
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebarBackdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity lg:hidden"></div>
+
   <!-- ============================================== -->
   <!-- 1. MODERN COLLAPSIBLE SIDEBAR NAVIGATION       -->
   <!-- ============================================== -->
-  <aside id="mainSidebar" class="w-64 border-r border-border bg-surface flex flex-col justify-between flex-shrink-0 z-40 select-none transition-all duration-300">
+  <aside id="mainSidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-surface border-r border-border flex flex-col justify-between flex-shrink-0 -translate-x-full lg:translate-x-0 lg:static lg:w-64 transition-transform duration-300 select-none shadow-2xl lg:shadow-none">
     
     <!-- Top Fixed Sidebar Header (56px / h-14 to match main header) -->
     <div class="h-14 border-b border-border px-4 flex items-center justify-between flex-shrink-0">
@@ -304,8 +307,14 @@
         </div>
       </div>
 
-      <button onclick="toggleSidebar()" class="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-subtle transition flex-shrink-0 ml-1" title="Toggle Sidebar Width">
+      <!-- Desktop Collapse Button (Hidden on Mobile) -->
+      <button onclick="toggleSidebar()" class="hidden lg:flex p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-subtle transition flex-shrink-0 ml-1" title="Toggle Sidebar Width">
         <i id="sidebarToggleIcon" data-lucide="chevrons-left" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Mobile Close Button (Visible only on Mobile) -->
+      <button onclick="closeMobileSidebar()" class="lg:hidden p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-subtle transition flex-shrink-0 ml-1" title="Close Menu">
+        <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
 
@@ -461,13 +470,18 @@
   <main class="flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-bg relative">
     
     <!-- Top Contextual Action Header -->
-    <header class="h-14 border-b border-border bg-surface/90 backdrop-blur-md px-6 lg:px-8 flex items-center justify-between flex-shrink-0 z-30">
+    <header class="h-14 border-b border-border bg-surface/90 backdrop-blur-md px-3 sm:px-6 lg:px-8 flex items-center justify-between flex-shrink-0 z-30">
       
-      <!-- Breadcrumb & Active Contract Pill with Generous Clearance -->
-      <div class="flex items-center gap-4 min-w-0">
-        <div class="flex items-center gap-2 text-xs text-slate-400 flex-shrink-0">
-          <span class="hover:text-slate-200 transition">Workspace</span>
-          <span class="text-slate-600">/</span>
+      <!-- Hamburger Menu (Mobile) & Breadcrumb / Active Contract Pill -->
+      <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+        <!-- Mobile Hamburger Button -->
+        <button onclick="openMobileSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-subtle transition flex-shrink-0 -ml-1" title="Open Menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <div class="flex items-center gap-1.5 sm:gap-2 text-xs text-slate-400 flex-shrink-0">
+          <span class="hidden sm:inline hover:text-slate-200 transition">Workspace</span>
+          <span class="hidden sm:inline text-slate-600">/</span>
           <span id="topBreadcrumbTitle" class="font-bold text-white tracking-tight">Audit Studio</span>
         </div>
 
@@ -481,31 +495,31 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex items-center gap-2.5 flex-shrink-0">
+      <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
         
         <!-- Upload Invoice Button -->
-        <label class="btn-primary px-3.5 py-1.5 rounded-lg text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm hover:brightness-110 transition shrink-0">
+        <label class="btn-primary p-2 sm:px-3.5 sm:py-1.5 rounded-lg text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-sm hover:brightness-110 transition shrink-0" title="Upload Document">
           <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-          <span>Upload Document</span>
+          <span class="hidden sm:inline">Upload Document</span>
           <input type="file" id="customPdfInput" accept="application/pdf,image/png,image/jpeg,image/webp" class="hidden" onchange="handleFileUpload(event)">
         </label>
 
         <!-- Executive Pitch Deck Button -->
-        <a href="/slides" target="_blank" class="btn-secondary px-3 py-1.5 rounded-lg text-slate-200 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition shadow-sm shrink-0" title="Open Executive Pitch Deck (/slides)">
+        <a href="/slides" target="_blank" class="btn-secondary p-2 sm:px-3 sm:py-1.5 rounded-lg text-slate-200 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition shadow-sm shrink-0" title="Open Executive Pitch Deck (/slides)">
           <i data-lucide="presentation" class="w-3.5 h-3.5 text-indigo-400"></i>
-          <span class="hidden sm:inline">Pitch Deck</span>
+          <span class="hidden md:inline">Pitch Deck</span>
         </a>
 
-        <span class="h-4 w-px bg-border hidden md:block"></span>
+        <span class="h-4 w-px bg-border hidden sm:block"></span>
 
         <!-- Drawer Segmented Control: Findings Hub & Copilot -->
         <div class="flex items-center bg-panel p-0.5 rounded-xl border border-border shrink-0">
-          <button onclick="toggleAuditDrawer('audit')" id="btnHeaderAuditFindings" class="px-2.5 py-1.5 rounded-lg text-slate-300 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition" title="View Audit Findings & Resolution Hub">
+          <button onclick="toggleAuditDrawer('audit')" id="btnHeaderAuditFindings" class="px-2 sm:px-2.5 py-1.5 rounded-lg text-slate-300 text-xs font-semibold flex items-center gap-1.5 hover:text-white transition" title="View Audit Findings & Resolution Hub">
             <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-brand"></i>
-            <span>Findings</span>
+            <span class="hidden sm:inline">Findings</span>
             <span id="btnHeaderAuditBadge" class="hidden text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-terracotta text-white">0</span>
           </button>
-          <button onclick="toggleAuditDrawer('copilot')" id="btnToggleCopilot" class="px-2.5 py-1.5 rounded-lg text-slate-400 text-xs font-medium flex items-center gap-1.5 hover:text-white transition" title="Toggle Veritas AP AI Copilot Assistant">
+          <button onclick="toggleAuditDrawer('copilot')" id="btnToggleCopilot" class="px-2 sm:px-2.5 py-1.5 rounded-lg text-slate-400 text-xs font-medium flex items-center gap-1.5 hover:text-white transition" title="Toggle Veritas AP AI Copilot Assistant">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
             <span class="hidden sm:inline">Copilot</span>
           </button>
@@ -525,24 +539,25 @@
       <div id="viewAuditStudio" class="h-full w-full flex flex-col justify-between overflow-hidden relative">
         
         <!-- Document Navigation Bar (Conditionally Rendered on Document Load) -->
-        <div id="docSecondaryToolbar" style="display: none;" class="hidden h-12 px-4 sm:px-6 border-b border-border bg-surface/90 backdrop-blur-md flex items-center justify-between text-xs text-slate-400 flex-shrink-0 z-10 gap-2 overflow-hidden select-none">
+        <div id="docSecondaryToolbar" style="display: none;" class="hidden h-12 px-2 sm:px-6 border-b border-border bg-surface/90 backdrop-blur-md flex items-center justify-between text-xs text-slate-400 flex-shrink-0 z-10 gap-1.5 sm:gap-2 overflow-x-auto select-none">
           
           <!-- Left: Document vs Contract Tab & Page Navigator -->
-          <div class="flex items-center gap-2.5 shrink-0 min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
             <!-- Document vs Contract Tab -->
             <div class="flex items-center bg-panel p-0.5 rounded-lg border border-border shrink-0">
-              <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-2.5 py-1 rounded-md text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5 whitespace-nowrap">
+              <button onclick="switchViewerTab('invoice')" id="tabBtnInvoice" class="px-2 sm:px-2.5 py-1 rounded-md text-xs font-semibold text-white bg-brand/20 border border-brand/40 transition flex items-center gap-1.5 whitespace-nowrap">
                 <i data-lucide="file-text" class="w-3.5 h-3.5 text-brand"></i>
                 <span>Invoice</span>
               </button>
-              <button onclick="switchViewerTab('contract')" id="tabBtnContract" class="px-2.5 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5 whitespace-nowrap">
+              <button onclick="switchViewerTab('contract')" id="tabBtnContract" class="px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5 whitespace-nowrap">
                 <i data-lucide="scale" class="w-3.5 h-3.5"></i>
-                <span>Contract (§4.2)</span>
+                <span class="hidden sm:inline">Contract (§4.2)</span>
+                <span class="sm:hidden">Contract</span>
               </button>
             </div>
 
             <!-- Multi-Page Navigator -->
-            <div id="pageNavControls" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-panel border border-border shrink-0">
+            <div id="pageNavControls" class="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 rounded-lg bg-panel border border-border shrink-0">
               <button id="prevPageBtn" onclick="changePdfPage(-1)" class="p-0.5 rounded hover:bg-subtle text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
                 <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
               </button>
@@ -555,11 +570,11 @@
 
           <!-- Center: Dynamic Findings Pill (Guaranteed Single-Line, Never Wraps) -->
           <div class="flex items-center justify-center min-w-0 px-1 overflow-hidden">
-            <div id="viewerFindingsPill" class="hidden items-center gap-1.5 cursor-pointer px-3 py-1 rounded-full text-xs font-semibold transition hover:scale-105 whitespace-nowrap shrink-0 shadow-sm" onclick="toggleAuditDrawer('audit')"></div>
+            <div id="viewerFindingsPill" class="hidden items-center gap-1.5 cursor-pointer px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold transition hover:scale-105 whitespace-nowrap shrink-0 shadow-sm" onclick="toggleAuditDrawer('audit')"></div>
           </div>
 
           <!-- Right: Optical Telemetry & Drawer Trigger -->
-          <div class="flex items-center gap-2.5 shrink-0">
+          <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             <span id="docScaleIndicator" class="hidden 2xl:inline-block text-[11px] text-slate-400 font-mono whitespace-nowrap">115% Vector</span>
             <span class="hidden 2xl:inline-block h-3 w-px bg-border"></span>
             
@@ -569,15 +584,15 @@
             </span>
             <span class="hidden xl:inline-block h-3 w-px bg-border"></span>
 
-            <button id="btnToolbarReviewPanel" onclick="toggleAuditDrawer()" class="btn-secondary px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-200 flex items-center gap-1.5 hover:text-white transition whitespace-nowrap shrink-0" title="Toggle Side-by-Side Review Panel">
+            <button id="btnToolbarReviewPanel" onclick="toggleAuditDrawer()" class="btn-secondary px-2 sm:px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-200 flex items-center gap-1.5 hover:text-white transition whitespace-nowrap shrink-0" title="Toggle Side-by-Side Review Panel">
               <i id="iconToolbarReviewPanel" data-lucide="panel-right" class="w-3.5 h-3.5 text-brand"></i>
-              <span id="txtToolbarReviewPanel">Review Panel</span>
+              <span id="txtToolbarReviewPanel" class="hidden sm:inline">Review Panel</span>
             </button>
           </div>
         </div>
 
         <!-- Document Canvas Scroll Area (Full Width, Centered, Breathable!) -->
-        <div id="viewerScrollArea" class="flex-1 overflow-y-auto p-8 flex items-start justify-center relative bg-bg">
+        <div id="viewerScrollArea" class="flex-1 overflow-y-auto p-2 sm:p-6 lg:p-8 flex items-start justify-center relative bg-bg">
           
           <!-- Empty State -->
           <div id="viewerEmptyState" class="m-auto text-center space-y-4 max-w-md py-24">
@@ -1104,7 +1119,7 @@
       <!-- ============================================== -->
       <!-- 3. SIDE-BY-SIDE AUDIT INTELLIGENCE & COPILOT   -->
       <!-- ============================================== -->
-      <aside id="auditRightDrawer" class="hidden w-[460px] xl:w-[480px] h-full border-l border-border bg-surface flex flex-col flex-shrink-0 transition-all duration-200">
+      <aside id="auditRightDrawer" class="hidden fixed inset-y-0 right-0 z-50 w-full sm:w-[460px] xl:w-[480px] h-full border-l border-border bg-surface flex flex-col flex-shrink-0 lg:static lg:h-full transition-all duration-300 shadow-2xl lg:shadow-none">
       
       <!-- Drawer Top Header: Segmented Tab Switcher & Close -->
       <div class="p-3.5 border-b border-border bg-panel/60 flex items-center justify-between flex-shrink-0">
@@ -1351,6 +1366,30 @@
       </aside>
 
     </div>
+
+    <!-- Mobile Bottom Navigation Dock (Visible only on mobile screens < lg) -->
+    <nav id="mobileBottomDock" class="lg:hidden h-14 border-t border-border bg-surface/95 backdrop-blur-md px-2 flex items-center justify-around flex-shrink-0 z-30 select-none">
+      <button onclick="switchView('audit')" id="mobileNavAudit" class="flex flex-col items-center justify-center gap-1 py-1 px-3 text-brand transition">
+        <i data-lucide="scan-line" class="w-4 h-4"></i>
+        <span class="text-[10px] font-semibold">Studio</span>
+      </button>
+      <button onclick="switchView('analytics')" id="mobileNavAnalytics" class="flex flex-col items-center justify-center gap-1 py-1 px-3 text-slate-400 hover:text-white transition">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+        <span class="text-[10px] font-semibold">Analytics</span>
+      </button>
+      <button onclick="switchView('vendors')" id="mobileNavVendors" class="flex flex-col items-center justify-center gap-1 py-1 px-3 text-slate-400 hover:text-white transition">
+        <i data-lucide="shield-alert" class="w-4 h-4"></i>
+        <span class="text-[10px] font-semibold">Risk</span>
+      </button>
+      <button onclick="switchView('integrations')" id="mobileNavIntegrations" class="flex flex-col items-center justify-center gap-1 py-1 px-3 text-slate-400 hover:text-white transition">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        <span class="text-[10px] font-semibold">ERP</span>
+      </button>
+      <button onclick="openMobileSidebar()" class="flex flex-col items-center justify-center gap-1 py-1 px-3 text-slate-400 hover:text-white transition" title="More Options & Test Samples">
+        <i data-lucide="menu" class="w-4 h-4"></i>
+        <span class="text-[10px] font-semibold">More</span>
+      </button>
+    </nav>
 
   </main>
 
@@ -1659,8 +1698,31 @@
         }
       });
 
+      // Update Mobile Bottom Dock Active State
+      const mobileNavMap = {
+        audit: 'mobileNavAudit',
+        analytics: 'mobileNavAnalytics',
+        vendors: 'mobileNavVendors',
+        integrations: 'mobileNavIntegrations',
+      };
+      Object.keys(mobileNavMap).forEach(key => {
+        const btn = document.getElementById(mobileNavMap[key]);
+        if (btn) {
+          if (key === viewName) {
+            btn.className = "flex flex-col items-center justify-center gap-1 py-1 px-3 text-brand transition";
+          } else {
+            btn.className = "flex flex-col items-center justify-center gap-1 py-1 px-3 text-slate-400 hover:text-white transition";
+          }
+        }
+      });
+
       // Update Top Breadcrumb
       document.getElementById('topBreadcrumbTitle').textContent = titles[viewName] || 'Audit Studio';
+
+      // Auto-close mobile sidebar if open
+      if (window.innerWidth < 1024) {
+        closeMobileSidebar();
+      }
 
       // View-Specific Data Loading
       if (viewName === 'analytics') {
@@ -1675,7 +1737,31 @@
       lucide.createIcons();
     }
 
-    // Toggle Collapsible Sidebar
+    // Mobile Sidebar Drawer Controls
+    function openMobileSidebar() {
+      const sidebar = document.getElementById('mainSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sidebar) sidebar.classList.remove('-translate-x-full');
+      if (backdrop) backdrop.classList.remove('hidden');
+    }
+
+    function closeMobileSidebar() {
+      const sidebar = document.getElementById('mainSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sidebar) sidebar.classList.add('-translate-x-full');
+      if (backdrop) backdrop.classList.add('hidden');
+    }
+
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('mainSidebar');
+      if (sidebar && sidebar.classList.contains('-translate-x-full')) {
+        openMobileSidebar();
+      } else {
+        closeMobileSidebar();
+      }
+    }
+
+    // Toggle Collapsible Sidebar (Desktop)
     function toggleSidebar() {
       isSidebarCollapsed = !isSidebarCollapsed;
       const sidebar = document.getElementById('mainSidebar');
@@ -1683,13 +1769,13 @@
       const texts = document.querySelectorAll('.sidebar-text');
 
       if (isSidebarCollapsed) {
-        sidebar.classList.remove('w-64');
-        sidebar.classList.add('w-20');
+        sidebar.classList.remove('lg:w-64');
+        sidebar.classList.add('lg:w-20');
         texts.forEach(t => t.classList.add('hidden'));
         icon.setAttribute('data-lucide', 'chevrons-right');
       } else {
-        sidebar.classList.remove('w-20');
-        sidebar.classList.add('w-64');
+        sidebar.classList.remove('lg:w-20');
+        sidebar.classList.add('lg:w-64');
         texts.forEach(t => t.classList.remove('hidden'));
         icon.setAttribute('data-lucide', 'chevrons-left');
       }
@@ -2140,8 +2226,11 @@
       });
 
       const scrollArea = document.getElementById('viewerScrollArea');
-      const availWidth = (scrollArea && scrollArea.clientWidth > 400 ? scrollArea.clientWidth - 100 : 850);
-      const targetWidth = Math.min(950, Math.max(680, availWidth));
+      const isMobile = window.innerWidth < 640;
+      const paddingOffset = isMobile ? 16 : 80;
+      const clientW = (scrollArea && scrollArea.clientWidth > 100) ? scrollArea.clientWidth : window.innerWidth;
+      const availWidth = Math.max(clientW - paddingOffset, 280);
+      const targetWidth = Math.min(950, Math.max(isMobile ? 300 : 680, availWidth));
       const scale = targetWidth / (img.naturalWidth || 800);
       canvas.width = targetWidth;
       canvas.height = (img.naturalHeight || 1000) * scale;
@@ -2172,9 +2261,13 @@
       const ctx = canvas.getContext('2d');
       
       const scrollArea = document.getElementById('viewerScrollArea');
-      const availWidth = (scrollArea && scrollArea.clientWidth > 400 ? scrollArea.clientWidth - 100 : 850);
+      const isMobile = window.innerWidth < 640;
+      const paddingOffset = isMobile ? 16 : 80;
+      const clientW = (scrollArea && scrollArea.clientWidth > 100) ? scrollArea.clientWidth : window.innerWidth;
+      const availWidth = Math.max(clientW - paddingOffset, 280);
       const unscaledViewport = page.getViewport({ scale: 1.0 });
-      const targetScale = Math.min(1.5, Math.max(1.15, availWidth / unscaledViewport.width));
+      const autoFitScale = availWidth / unscaledViewport.width;
+      const targetScale = Math.min(1.5, Math.max(0.40, autoFitScale));
       const viewport = page.getViewport({ scale: targetScale });
 
       canvas.width = viewport.width;
